@@ -347,7 +347,6 @@ function getCompetencyQuestions() {
       difficulty: q.difficulty || 'standard',
       question: q.question,
       options: String(q.options || '').split('|').filter(Boolean),
-      answer: q.answer,
       points: Number(q.points || 1)
     }))
   };
@@ -415,13 +414,14 @@ function heartbeatCompetencySession(payload) {
 function submitCompetencyTest(payload) {
   if (!payload.session_id) return { status: 'error', message: 'session_id wajib diisi.' };
   const now = new Date().toISOString();
+  const scoreResult = calculateCompetencyScores(payload);
   const updates = {
     status: 'submitted',
     answered_count: Number(payload.total_questions || 0),
     total_questions: Number(payload.total_questions || 0),
-    score: Number(payload.score || 0),
-    weighted_score: Number(payload.weighted_score || 0),
-    section_scores: JSON.stringify(payload.section_scores || {}),
+    score: scoreResult.rawScore,
+    weighted_score: scoreResult.weightedScore,
+    section_scores: JSON.stringify(scoreResult.sectionScores || {}),
     answers: JSON.stringify(payload.answers || {}),
     focus_flags: Number(payload.focus_flags || 0),
     active_section: payload.active_section || '',
@@ -446,6 +446,70 @@ function submitCompetencyTest(payload) {
     });
   }
   return { status: 'success', session: { session_id: payload.session_id, ...updates } };
+}
+
+function calculateCompetencyScores(payload) {
+  const answers = payload.answers || {};
+  const variant = getCompetencyVariant(payload.nik || '');
+  const questions = getRows(SHEETS.competencyQuestions).filter(q => String(q.status || 'active') === 'active');
+  const byId = {};
+  questions.forEach(q => {
+    byId[String(q.id)] = q;
+    byId[String(q.id) + '_v' + variant] = q;
+  });
+
+  const sectionScores = {};
+  let rawScore = 0;
+  let weightedScore = 0;
+
+  Object.keys(answers).forEach(answerId => {
+    const q = byId[String(answerId)];
+    if (!q) return;
+    const section = q.section || q.type || 'logic';
+    const expected = applyCompetencyVariantText(q.answer, variant);
+    const submitted = String(answers[answerId] || '');
+    const correct = submitted !== '' && submitted === expected;
+    const base = submitted === '' ? 0 : correct ? 1 : -0.3;
+    const weight = getCompetencyQuestionWeight(q);
+    rawScore += base;
+    weightedScore += base * weight;
+    sectionScores[section] = (sectionScores[section] || 0) + base * weight;
+  });
+
+  Object.keys(sectionScores).forEach(section => {
+    sectionScores[section] = Number(sectionScores[section].toFixed(2));
+  });
+
+  return {
+    rawScore: Number(rawScore.toFixed(2)),
+    weightedScore: Number(weightedScore.toFixed(2)),
+    sectionScores
+  };
+}
+
+function getCompetencyQuestionWeight(q) {
+  const section = String(q.section || q.type || '');
+  const difficulty = String(q.difficulty || 'standard');
+  if (section === 'math' && difficulty === 'advanced') return 1.35;
+  if (section === 'math' && difficulty === 'medium') return 1.1;
+  if (section === 'psychology') return 0.9;
+  return 1;
+}
+
+function getCompetencyVariant(nik) {
+  const digits = String(nik || '').replace(/\D/g, '').split('');
+  const sum = digits.reduce(function(total, value) { return total + Number(value || 0); }, 0);
+  return (sum % 3) + 1;
+}
+
+function applyCompetencyVariantText(value, variant) {
+  if (variant === 1) return String(value || '');
+  const swaps = variant === 2
+    ? [['HerAI', 'program fellowship'], ['Rina', 'Nadia'], ['Program A', 'Program B'], ['proposal', 'proyek']]
+    : [['HerAI', 'kohort AI'], ['Rina', 'Salsabila'], ['Program A', 'Program C'], ['proposal', 'portofolio']];
+  return swaps.reduce(function(text, pair) {
+    return text.split(pair[0]).join(pair[1]);
+  }, String(value || ''));
 }
 
 function appendSessionHistory(sessionId, event) {

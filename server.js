@@ -382,7 +382,7 @@ function handleLocalGasFallback(body, res) {
         }),
         runAiAnalysis: () => runLocalAiAnalysis(payload),
         updateCompetencyDecision: () => updateLocalCompetencyDecision(payload),
-        getCompetencyQuestions: () => ({ status: 'success', questions: TEST_COMPETENCY_QUESTIONS }),
+        getCompetencyQuestions: () => ({ status: 'success', questions: stripCompetencyAnswers(TEST_COMPETENCY_QUESTIONS) }),
         getCompetencySessions: () => ({ status: 'success', sessions: readLocalCompetencySessions() }),
         startCompetencySession: () => saveLocalCompetencySession(payload, 'started'),
         heartbeatCompetencySession: () => saveLocalCompetencySession(payload, payload.status || 'started'),
@@ -617,6 +617,7 @@ function saveLocalCompetencySession(payload, status) {
     const existingIndex = sessions.findIndex(session => session.session_id === sessionId);
     const existing = existingIndex >= 0 ? sessions[existingIndex] : {};
     const now = new Date().toISOString();
+    const scoreResult = status === 'submitted' ? calculateLocalCompetencyScores(payload) : {};
     const session = {
         ...existing,
         session_id: sessionId,
@@ -627,15 +628,15 @@ function saveLocalCompetencySession(payload, status) {
         mic_status: payload.mic_status || existing.mic_status || 'unknown',
         answered_count: Number(payload.answered_count || existing.answered_count || 0),
         total_questions: Number(payload.total_questions || existing.total_questions || TEST_COMPETENCY_QUESTIONS.length),
-        score: payload.score ?? existing.score ?? '',
+        score: scoreResult.rawScore ?? payload.score ?? existing.score ?? '',
         answers: JSON.stringify(payload.answers || {}),
         focus_flags: Number(payload.focus_flags || existing.focus_flags || 0),
         page_visible: payload.page_visible ?? existing.page_visible ?? true,
         active_section: payload.active_section || existing.active_section || '',
         section_remaining: JSON.stringify(payload.section_remaining || {}),
         completed_sections: JSON.stringify(payload.completed_sections || []),
-        weighted_score: payload.weighted_score ?? existing.weighted_score ?? '',
-        section_scores: JSON.stringify(payload.section_scores || {}),
+        weighted_score: scoreResult.weightedScore ?? payload.weighted_score ?? existing.weighted_score ?? '',
+        section_scores: JSON.stringify(scoreResult.sectionScores || payload.section_scores || {}),
         camera_snapshot: payload.camera_snapshot || existing.camera_snapshot || '',
         history_events: JSON.stringify(appendHistoryEvent(existing.history_events, {
             at: now,
@@ -668,6 +669,66 @@ function submitLocalCompetencyTest(payload) {
         });
     }
     return result;
+}
+
+function stripCompetencyAnswers(questions) {
+    return questions.map(({ answer, ...question }) => question);
+}
+
+function calculateLocalCompetencyScores(payload) {
+    const answers = payload.answers || {};
+    const variant = getLocalCompetencyVariant(payload.nik || '');
+    const byId = new Map();
+    TEST_COMPETENCY_QUESTIONS.forEach(question => {
+        byId.set(String(question.id), question);
+        byId.set(`${question.id}_v${variant}`, question);
+    });
+
+    const sectionScores = {};
+    let rawScore = 0;
+    let weightedScore = 0;
+    Object.entries(answers).forEach(([answerId, submitted]) => {
+        const question = byId.get(String(answerId));
+        if (!question) return;
+        const expected = applyLocalCompetencyVariantText(question.answer, variant);
+        const selected = String(submitted || '');
+        const correct = selected !== '' && selected === expected;
+        const base = selected === '' ? 0 : correct ? 1 : -0.3;
+        const weight = getLocalCompetencyWeight(question);
+        rawScore += base;
+        weightedScore += base * weight;
+        sectionScores[question.section] = (sectionScores[question.section] || 0) + base * weight;
+    });
+
+    Object.keys(sectionScores).forEach(section => {
+        sectionScores[section] = Number(sectionScores[section].toFixed(2));
+    });
+
+    return {
+        rawScore: Number(rawScore.toFixed(2)),
+        weightedScore: Number(weightedScore.toFixed(2)),
+        sectionScores
+    };
+}
+
+function getLocalCompetencyWeight(question) {
+    if (question.section === 'math' && question.difficulty === 'advanced') return 1.35;
+    if (question.section === 'math' && question.difficulty === 'medium') return 1.1;
+    if (question.section === 'psychology') return 0.9;
+    return 1;
+}
+
+function getLocalCompetencyVariant(nik) {
+    const sum = String(nik || '').replace(/\D/g, '').split('').reduce((total, value) => total + Number(value || 0), 0);
+    return (sum % 3) + 1;
+}
+
+function applyLocalCompetencyVariantText(value, variant) {
+    if (variant === 1) return String(value || '');
+    const swaps = variant === 2
+        ? [['HerAI', 'program fellowship'], ['Rina', 'Nadia'], ['Program A', 'Program B'], ['proposal', 'proyek']]
+        : [['HerAI', 'kohort AI'], ['Rina', 'Salsabila'], ['Program A', 'Program C'], ['proposal', 'portofolio']];
+    return swaps.reduce((text, [from, to]) => text.split(from).join(to), String(value || ''));
 }
 
 function appendHistoryEvent(historyJson, event) {

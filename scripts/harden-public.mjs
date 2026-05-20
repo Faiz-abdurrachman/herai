@@ -62,9 +62,69 @@ function hashContent(content) {
 }
 
 function obfuscateJavaScript(source) {
-  const encoded = Buffer.from(source, 'utf8').toString('base64');
+  const encoded = Buffer.from(minifyJavaScript(source), 'utf8').toString('base64');
   const chunks = encoded.match(/.{1,6000}/g) || [];
   return `(()=>{const p=${JSON.stringify(chunks)}.join("");const b=atob(p);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);(0,eval)(new TextDecoder().decode(a));})();\n`;
+}
+
+function minifyJavaScript(source) {
+  const withoutComments = stripJavaScriptComments(source);
+  return withoutComments
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+function stripJavaScriptComments(source) {
+  let output = '';
+  let quote = '';
+  let escaped = false;
+  let templateDepth = 0;
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i];
+    const next = source[i + 1];
+
+    if (quote) {
+      output += char;
+      if (escaped) {
+        escaped = false;
+      } else if (char === '\\') {
+        escaped = true;
+      } else if (quote === '`' && char === '$' && next === '{') {
+        output += next;
+        i++;
+        templateDepth++;
+      } else if (quote === '`' && char === '}' && templateDepth > 0) {
+        templateDepth--;
+      } else if (char === quote && (quote !== '`' || templateDepth === 0)) {
+        quote = '';
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      output += char;
+      continue;
+    }
+
+    if (char === '/' && next === '/') {
+      while (i < source.length && source[i] !== '\n') i++;
+      output += '\n';
+      continue;
+    }
+
+    if (char === '/' && next === '*') {
+      i += 2;
+      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/')) i++;
+      i++;
+      continue;
+    }
+
+    output += char;
+  }
+  return output;
 }
 
 function minifyCss(source) {

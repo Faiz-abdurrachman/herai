@@ -306,15 +306,11 @@ const COMPETENCY_API_URL = '/__gas';
             if (!ok) return;
         }
 
-        const scorePayload = calculateScores();
         const result = await postCompetencyApi({
             action: 'submitCompetencyTest',
             session_id: sessionId,
             nik: participant.nik,
             answers,
-            score: scorePayload.rawScore,
-            weighted_score: scorePayload.weightedScore,
-            section_scores: scorePayload.sectionScores,
             total_questions: questions.length,
             focus_flags: focusFlags,
             camera_snapshot: latestSnapshot
@@ -324,33 +320,6 @@ const COMPETENCY_API_URL = '/__gas';
         stopCompetencyRuntime();
         showThankYouView();
         document.getElementById('btnSubmitCompetency').disabled = true;
-    }
-
-    function calculateScores() {
-        const sectionScores = {};
-        let rawScore = 0;
-        let weightedScore = 0;
-        questions.forEach(question => {
-            const answer = answers[question.id];
-            const correct = answer && answer === question.answer;
-            const base = !answer ? 0 : correct ? 1 : -0.3;
-            const weight = getQuestionWeight(question);
-            rawScore += base;
-            weightedScore += base * weight;
-            sectionScores[question.section] = (sectionScores[question.section] || 0) + base * weight;
-        });
-        return {
-            rawScore: Number(rawScore.toFixed(2)),
-            weightedScore: Number(weightedScore.toFixed(2)),
-            sectionScores
-        };
-    }
-
-    function getQuestionWeight(question) {
-        if (question.section === 'math' && question.difficulty === 'advanced') return 1.35;
-        if (question.section === 'math' && question.difficulty === 'medium') return 1.1;
-        if (question.section === 'psychology') return 0.9;
-        return 1;
     }
 
     function startTimers() {
@@ -483,15 +452,17 @@ const COMPETENCY_API_URL = '/__gas';
     }
 
     function normalizeQuestionBank(incoming, nik = '') {
-        const bank = buildDefaultQuestionBank();
-        if (!Array.isArray(incoming) || incoming.length < 115) return prepareQuestionVariant(bank, nik);
+        if (!Array.isArray(incoming) || incoming.length < 115) {
+            throw new Error('Bank soal belum tersedia dari server.');
+        }
         const normalized = incoming.map((q, index) => ({
             ...q,
             id: q.id || `q${index + 1}`,
             section: q.section || inferSection(q.type, index),
-            difficulty: q.difficulty || 'standard'
+            difficulty: q.difficulty || 'standard',
+            answer: undefined
         }));
-        return prepareQuestionVariant(normalized.length >= 115 ? normalized : bank, nik);
+        return prepareQuestionVariant(normalized, nik);
     }
 
     function groupQuestionsBySection(bank) {
@@ -542,8 +513,7 @@ const COMPETENCY_API_URL = '/__gas';
             ...question,
             id: `${question.id}_v${variant}`,
             question: mutate(question.question),
-            options: (question.options || []).map(mutate),
-            answer: mutate(question.answer)
+            options: (question.options || []).map(mutate)
         };
     }
 
@@ -562,65 +532,6 @@ const COMPETENCY_API_URL = '/__gas';
             [output[i], output[j]] = [output[j], output[i]];
         }
         return output;
-    }
-
-    function buildDefaultQuestionBank() {
-        const mathEasy = [
-            ['m1', 'easy', '12 + 18 = ...', ['20', '28', '30', '32'], '30'],
-            ['m2', 'easy', '45 - 17 = ...', ['18', '26', '28', '32'], '28'],
-            ['m3', 'easy', '7 x 8 = ...', ['48', '54', '56', '64'], '56'],
-            ['m4', 'easy', '72 / 9 = ...', ['6', '7', '8', '9'], '8'],
-            ['m5', 'easy', '25% dari 80 adalah...', ['15', '20', '25', '30'], '20']
-        ];
-        const mathMedium = [
-            ['m6', 'medium', 'Jika 3x + 5 = 20, maka x = ...', ['3', '5', '7', '9'], '5'],
-            ['m7', 'medium', 'Rata-rata dari 6, 8, 10, 12 adalah...', ['8', '9', '10', '11'], '9'],
-            ['m8', 'medium', 'Sebuah barang Rp200.000 diskon 15%. Harga akhirnya...', ['Rp160.000', 'Rp170.000', 'Rp175.000', 'Rp185.000'], 'Rp170.000'],
-            ['m9', 'medium', 'Perbandingan 2:3 total 50. Bagian pertama adalah...', ['15', '20', '25', '30'], '20'],
-            ['m10', 'medium', 'Jika 5 pekerja selesai 12 hari, 10 pekerja selesai dalam...', ['4 hari', '5 hari', '6 hari', '8 hari'], '6 hari']
-        ];
-        const mathAdvanced = [
-            ['m11', 'advanced', 'Jika f(x)=e^(2x) sin(x), nilai f\'(0) adalah...', ['0', '1', '2', '3'], '1'],
-            ['m12', 'advanced', 'Untuk g(x)=ln(x^2+1), nilai g\'(1) adalah...', ['1/2', '1', '2', '4'], '1'],
-            ['m13', 'advanced', 'Nilai integral dari 0 sampai 1 untuk 6x(1-x) dx adalah...', ['1/2', '1', '3/2', '2'], '1'],
-            ['m14', 'advanced', 'Limit sin(3x)/x saat x mendekati 0 adalah...', ['0', '1', '3', 'Tidak ada'], '3'],
-            ['m15', 'advanced', 'Jika A=[[3,1],[0,2]], hasil kali eigenvalue A adalah...', ['2', '3', '5', '6'], '6']
-        ];
-        const logic = Array.from({ length: 50 }, (_, i) => {
-            const n = i + 1;
-            const templates = [
-                [`l${n}`, `Semua proposal yang lolos review memiliki data valid. Sebagian proposal HerAI lolos review. Kesimpulan paling kuat adalah...`, ['Semua proposal HerAI valid', 'Sebagian proposal HerAI memiliki data valid', 'Tidak ada proposal HerAI valid', 'Semua data valid lolos review'], 'Sebagian proposal HerAI memiliki data valid'],
-                [`l${n}`, `Kecukupan data: x dan y bilangan bulat positif. Apakah x > y? (1) x+y=11 (2) x-y=3`, ['Pernyataan 1 saja cukup', 'Pernyataan 2 saja cukup', 'Keduanya bersama cukup', 'Keduanya tidak cukup'], 'Pernyataan 2 saja cukup'],
-                [`l${n}`, `Pola analitis: 4, 9, 19, 39, 79, ... berikutnya adalah...`, ['119', '139', '159', '179'], '159'],
-                [`l${n}`, `Program A meningkatkan skor rata-rata 20% pada kelompok kecil yang sukarela ikut. Kesimpulan "semua peserta wajib ikut A" paling lemah karena...`, ['Mengasumsikan efek sama untuk semua peserta', 'Menggunakan angka persentase', 'Membahas program', 'Tidak menyebut lokasi'], 'Mengasumsikan efek sama untuk semua peserta'],
-                [`l${n}`, `Jika hanya kandidat dengan skor AI tinggi atau reviewer tinggi yang lolos. Rina lolos tetapi skor AI rendah. Maka...`, ['Reviewer Rina tinggi', 'AI Rina tinggi', 'Rina tidak lolos', 'Tidak ada kesimpulan'], 'Reviewer Rina tinggi']
-            ];
-            const selected = templates[i % templates.length];
-            return [selected[0], 'standard', selected[1], selected[2], selected[3]];
-        });
-        const psych = Array.from({ length: 50 }, (_, i) => {
-            const n = i + 1;
-            const prompts = [
-                [`p${n}`, 'Saat tim berbeda pendapat, respons terbaik adalah...', ['Memaksakan pendapat sendiri', 'Mendengar alasan tiap pihak lalu mencari titik temu', 'Diam agar konflik selesai', 'Menyalahkan anggota paling pasif'], 'Mendengar alasan tiap pihak lalu mencari titik temu'],
-                [`p${n}`, 'Ketika mendapat feedback keras, sikap paling adaptif adalah...', ['Menolak feedback', 'Mencatat poin valid dan membuat rencana perbaikan', 'Menghindari pemberi feedback', 'Membalas dengan kritik'], 'Mencatat poin valid dan membuat rencana perbaikan'],
-                [`p${n}`, 'Jika deadline mendekat dan tugas belum selesai, prioritas utama adalah...', ['Panik', 'Memecah tugas, komunikasikan risiko, dan selesaikan bagian kritis', 'Menunggu instruksi', 'Mengabaikan kualitas sepenuhnya'], 'Memecah tugas, komunikasikan risiko, dan selesaikan bagian kritis'],
-                [`p${n}`, 'Dalam belajar teknologi baru, perilaku paling sehat adalah...', ['Menyerah saat error pertama', 'Mencoba, mencari referensi, dan meminta bantuan saat buntu', 'Menyalin tanpa memahami', 'Menyalahkan tools'], 'Mencoba, mencari referensi, dan meminta bantuan saat buntu']
-            ];
-            const selected = prompts[i % prompts.length];
-            return [selected[0], 'situational', selected[1], selected[2], selected[3]];
-        });
-
-        return [...mathEasy, ...mathMedium, ...mathAdvanced].map(toMathQuestion)
-            .concat(logic.map(item => toQuestion(item, 'logic')))
-            .concat(psych.map(item => toQuestion(item, 'psychology')));
-    }
-
-    function toMathQuestion(item) {
-        return toQuestion(item, 'math');
-    }
-
-    function toQuestion(item, section) {
-        return { id: item[0], section, difficulty: item[1], question: item[2], options: item[3], answer: item[4], points: 1 };
     }
 
     function setCompetencyMessage(message, isError = false) {
