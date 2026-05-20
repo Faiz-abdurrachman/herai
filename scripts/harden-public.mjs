@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const publicDir = path.resolve(process.argv[2] || 'public');
@@ -176,16 +176,71 @@ function rewriteReferences(html) {
   return nextHtml;
 }
 
+function isLocalJavaScriptAsset(src) {
+  if (!src || /^https?:\/\//i.test(src) || src.startsWith('//')) return false;
+  return src.replace(/\?.*$/, '').endsWith('.js');
+}
+
+function normalizePublicPath(src) {
+  const clean = src.split('?')[0].split('#')[0];
+  return clean.startsWith('/') ? clean : `/${clean}`;
+}
+
+async function bundleIndexScripts(indexPath) {
+  const html = await readFile(indexPath, 'utf8');
+  const scriptRegex = /<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>\s*<\/script>/gi;
+  const localScripts = [];
+  const seenScripts = new Set();
+  let match;
+
+  while ((match = scriptRegex.exec(html)) !== null) {
+    const src = match[1];
+    if (!isLocalJavaScriptAsset(src)) continue;
+    const publicPath = normalizePublicPath(src);
+    if (seenScripts.has(publicPath)) continue;
+    seenScripts.add(publicPath);
+    localScripts.push(publicPath);
+  }
+
+  if (localScripts.length === 0) return html;
+
+  const bundleParts = [];
+  for (const publicPath of localScripts) {
+    const filePath = path.join(publicDir, publicPath.replace(/^\//, ''));
+    const source = await readFile(filePath, 'utf8');
+    bundleParts.push(`\n;/* ${publicPath} */\n${source}\n`);
+  }
+
+  const assetsDir = path.join(publicDir, 'assets');
+  await mkdir(assetsDir, { recursive: true });
+  await writeFile(path.join(assetsDir, 'index.js'), bundleParts.join('\n'));
+
+  for (const publicPath of localScripts) {
+    const filePath = path.join(publicDir, publicPath.replace(/^\//, ''));
+    await unlink(filePath).catch(() => {});
+  }
+
+  let insertedBundle = false;
+  return html.replace(scriptRegex, (fullMatch, src) => {
+    if (!isLocalJavaScriptAsset(src)) return fullMatch;
+    if (insertedBundle) return '';
+    insertedBundle = true;
+    return '    <script src="/assets/index.js"></script>';
+  });
+}
+
 async function main() {
   const rootInfo = await stat(publicDir);
   if (!rootInfo.isDirectory()) throw new Error(`${publicDir} is not a directory`);
+
+  const indexPath = path.join(publicDir, 'index.html');
+  await writeFile(indexPath, rewriteRoutes(await bundleIndexScripts(indexPath)));
 
   const files = await walk(publicDir);
   for (const file of files) {
     await processAsset(file);
   }
 
-  const indexPath = path.join(publicDir, 'index.html');
   const indexHtml = await readFile(indexPath, 'utf8');
   await writeFile(indexPath, rewriteReferences(indexHtml));
   await writeFile(path.join(publicDir, 'asset-manifest.json'), JSON.stringify(manifest, null, 2));
