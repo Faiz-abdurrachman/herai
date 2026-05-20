@@ -1,0 +1,215 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Communication Engine</h1>
+                <p class="page-subtitle">Pusat kendali notifikasi massal (Email & WhatsApp Blast)</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p>Communication Access</p>
+                    </div>
+                    <div class="admin-avatar" style="background: rgba(59, 130, 246, 0.1); color: var(--icon-blue);">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--icon-purple); background: rgba(139, 92, 246, 0.1);"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="stat-data">
+                    <p>Total Pesan Terkirim</p>
+                    <h3 id="statSent">0</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--success); background: rgba(5, 205, 153, 0.1);"><i class="fas fa-check-double"></i></div>
+                <div class="stat-data">
+                    <p>Delivery Success Rate</p>
+                    <h3 id="statDelivery">0%</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--warning); background: rgba(255, 206, 32, 0.1);"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-data">
+                    <p>Antrean Pengiriman</p>
+                    <h3 id="statQueue">0 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Pesan</span></h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="comm-workspace" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start;">
+            
+            <div class="comm-config glass-panel" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+                <h3 style="font-family: 'Space Grotesk', sans-serif; color: var(--dark-purple); margin: 0; font-weight: 800; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px;">Broadcast Setup</h3>
+                
+                <div class="form-group">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px;">1. Pilih Target Penerima</label>
+                    <select id="blastTarget" class="cyber-select" style="width: 100%; font-size: 0.95rem;">
+                        <option value="none" selected disabled>-- Pilih Grup Target --</option>
+                        <option value="lolos">Peserta Lolos Tahap 1</option>
+                        <option value="gugur">Peserta Gugur Tahap 1</option>
+                        <option value="all">Semua Pendaftar</option>
+                        <option value="test">Test ke Admin Saja</option>
+                    </select>
+                    <p style="font-size: 0.8rem; color: var(--icon-blue); margin: 5px 0 0 0; font-weight: 600;" id="targetCountText"><i class="fas fa-info-circle"></i> Estimasi penerima: 0 orang</p>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px;">2. Jalur Pengiriman</label>
+                    <div style="display: flex; gap: 10px;">
+                        <label class="channel-radio">
+                            <input type="radio" name="channel" value="email" checked>
+                            <div class="channel-box">
+                                <i class="fas fa-envelope"></i> Email
+                            </div>
+                        </label>
+                        <label class="channel-radio">
+                            <input type="radio" name="channel" value="whatsapp">
+                            <div class="channel-box" style="color: var(--success);">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px;">3. Load Template (Opsional)</label>
+                    <select id="templateSelector" class="cyber-select" style="width: 100%; font-size: 0.95rem;">
+                        <option value="custom">Pesan Custom / Tulis Baru</option>
+                        <option value="tpl-lolos">Template Pengumuman Lolos</option>
+                        <option value="tpl-gugur">Template Pengumuman Gugur</option>
+                        <option value="tpl-wawancara">Undangan Interview</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="comm-editor glass-panel" style="padding: 30px; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h3 style="font-family: 'Space Grotesk', sans-serif; color: var(--dark-purple); margin: 0; font-weight: 800;">Message Editor</h3>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-cyber" id="btnPreview" style="background: var(--bg-main); color: var(--dark-purple); border: 1px solid var(--gray-border); box-shadow: none; font-size: 0.85rem; padding: 8px 15px;">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px 0; font-weight: 600;">Klik variabel untuk menyisipkan ke dalam pesan:</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="varButtons">
+                        <button class="var-tag">[NAMA_PESERTA]</button>
+                        <button class="var-tag">[STATUS_SELEKSI]</button>
+                        <button class="var-tag">[JALUR]</button>
+                        <button class="var-tag">[ASAL_KAMPUS]</button>
+                    </div>
+                </div>
+
+                <div id="subjectArea" style="margin-bottom: 15px;">
+                    <input type="text" id="msgSubject" placeholder="Subjek Pesan (Contoh: Pengumuman Seleksi HerAI Fellowship)" style="width: 100%; background: #f8fafc; border: 1px solid var(--gray-border); color: var(--dark-purple); padding: 12px 15px; border-radius: 8px; outline: none; font-weight: 600; font-family: 'Inter', sans-serif;">
+                </div>
+
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <textarea id="msgBody" placeholder="Ketik pesan Anda di sini..." style="width: 100%; height: 300px; background: #f8fafc; border: 1px solid var(--gray-border); color: var(--text-dark); padding: 15px; border-radius: 8px; outline: none; font-family: 'Inter', sans-serif; line-height: 1.6; resize: none; margin-bottom: 20px;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; border-top: 1px solid var(--gray-border); padding-top: 20px;">
+                    <button class="btn-cyber" id="btnTestSend" style="background: var(--gray-border); color: var(--text-muted); box-shadow: none;">
+                        <i class="fas fa-paper-plane"></i> Test Send (To Me)
+                    </button>
+                    <button class="btn-cyber" id="btnBlastExecute" style="background: var(--primary-pink); font-size: 1.1rem; padding: 12px 25px;">
+                        <i class="fas fa-rocket"></i> BLAST MESSAGE NOW
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div class="modal-overlay" id="blastConfirmModal">
+    <div class="modal-content" style="max-width: 450px; text-align: center; padding: 40px 30px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: #fff;">
+        <div class="confirm-icon-wrapper" style="font-size: 4rem; color: var(--danger); margin-bottom: 20px;">
+            <i class="fas fa-exclamation-triangle fa-beat"></i>
+        </div>
+        <h2 style="color: var(--dark-purple); font-size: 1.6rem; font-weight: 800; margin-bottom: 10px;">Warning: Mass Broadcast</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">
+            Anda akan mengirimkan pesan ini secara serentak ke <strong id="confirmCountTarget" style="color: var(--danger); font-size: 1.1rem;">0</strong> kandidat melalui jalur <strong id="confirmChannel" style="text-transform: capitalize;">Email</strong>. Aksi ini tidak dapat dibatalkan.
+        </p>
+        
+        <div id="blastProgressArea" style="display: none; margin-bottom: 25px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: var(--dark-purple); margin-bottom: 5px;">
+                <span>Status Pengiriman</span>
+                <span id="blastProgressText">0%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: var(--gray-border); border-radius: 10px; overflow: hidden;">
+                <div id="blastProgressBar" style="height: 100%; width: 0%; background: var(--success); transition: width 0.3s;"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center;" id="blastActionButtons">
+            <button class="btn-cyber" id="btnCancelBlast" style="background: var(--gray-border); color: var(--text-muted); box-shadow: none; width: 100%;">Batal</button>
+            <button class="btn-cyber" id="btnConfirmBlast" style="background: var(--danger); width: 100%;">
+                <i class="fas fa-radiation"></i> Ya, Eksekusi
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling khusus Comm Engine */
+    .channel-radio {
+        flex: 1;
+        cursor: pointer;
+    }
+    .channel-radio input {
+        display: none;
+    }
+    .channel-box {
+        padding: 12px;
+        text-align: center;
+        border: 2px solid var(--gray-border);
+        border-radius: 8px;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: 0.2s;
+        background: #f8fafc;
+    }
+    .channel-box i { margin-right: 5px; }
+    
+    .channel-radio input:checked + .channel-box {
+        border-color: var(--primary-pink);
+        background: var(--light-pink);
+        color: var(--dark-purple);
+    }
+    
+    .channel-radio input[value="whatsapp"]:checked + .channel-box {
+        border-color: var(--success);
+        background: rgba(5, 205, 153, 0.1);
+        color: var(--dark-purple);
+    }
+
+    .var-tag {
+        background: var(--dark-purple);
+        color: #fff;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-family: monospace;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .var-tag:hover {
+        background: var(--primary-pink);
+        transform: translateY(-2px);
+    }
+</style>

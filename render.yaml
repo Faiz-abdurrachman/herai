@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: herai-signaling
+    runtime: go
+    rootDir: signaling
+    plan: free
+    buildCommand: go build -tags netgo -ldflags "-s -w" -o app .
+    startCommand: ./app
+    healthCheckPath: /healthz
+    autoDeploy: true

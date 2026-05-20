@@ -1,0 +1,303 @@
+/* ==========================================================================
+   Styling Khusus Halaman Register (css/register.css)
+   VERSI FINAL: ALIGNMENT & DYNAMIC CONTAINER ANTI-JEBOL
+   ========================================================================== */
+
+/* --- 1. HEADER SECTION --- */
+.register-header {
+    padding-top: 160px;
+    padding-bottom: 100px;
+    background: linear-gradient(135deg, var(--light-pink) 0%, var(--white) 100%);
+    text-align: center;
+}
+
+.register-header h1 {
+    color: var(--dark-purple);
+    font-size: 3.2rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.register-header h1 span { color: var(--primary-pink); }
+.register-header p { 
+    color: var(--text-muted); 
+    font-size: 1.1rem; 
+    max-width: 650px; 
+    margin: 0 auto; 
+    line-height: 1.6; 
+}
+
+/* --- 2. MAIN FORM CONTAINER --- */
+.form-section-wrapper {
+    padding: 0 20px;
+}
+
+.form-container {
+    max-width: 1100px; /* Lebar optimal 1100px */
+    margin: -60px auto 100px;
+    background: var(--white);
+    padding: 60px 80px; 
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 10;
+    box-sizing: border-box; /* KUNCI: Menahan batas padding agar tidak menambah lebar form */
+}
+
+/* --- 3. FORM SECTIONS --- */
+.form-section {
+    margin-bottom: 40px;
+}
+
+.form-section h3 {
+    color: var(--secondary-purple);
+    font-size: 1.4rem;
+    font-weight: 800;
+    border-bottom: 3px solid var(--primary-pink);
+    display: inline-block;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: -15px;
+    margin-bottom: 10px;
+}
+
+/* --- 4. GRID SYSTEM UTAMA --- */
+.form-row {
+    display: grid;
+    /* Memaksa grid menyusut dan tidak menjebol parent */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); 
+    gap: 25px 40px; 
+    align-items: start;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.form-group, .form-group-full {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0; /* Gembok anti-overlap untuk input di dalam grid */
+}
+
+.form-group-full {
+    margin-bottom: 25px;
+}
+
+/* --- 5. LABELS --- */
+.form-group label, .form-group-full label {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--dark-purple);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 6px;
+}
+
+label span { color: var(--primary-pink); }
+
+.form-group label small { 
+    color: var(--text-muted); 
+    font-weight: 500; 
+    font-size: 0.8rem; 
+    margin: 0;
+    display: inline-block;
+}
+
+/* FIX 1: TANGGAL LAHIR & NIK SEJAJAR MUTLAK */
+.label-inline-strict {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important; /* Haram turun baris */
+    gap: 6px;
+    width: 100%;
+}
+
+.label-inline-strict small {
+    white-space: nowrap !important; /* Teks tidak akan terpotong ke bawah */
+    display: inline-block;
+    margin: 0;
+}
+
+/* --- 6. INPUT CONTROLS --- */
+.form-control {
+    width: 100%;
+    padding: 14px 18px !important; 
+    border: 1.5px solid var(--gray-medium);
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    background-color: #fafbfe;
+    box-sizing: border-box !important; 
+    transition: all 0.3s ease;
+    line-height: 1.5;
+}
+
+.form-control::placeholder { color: #a0aabf; opacity: 1; }
+.form-control:focus { outline: none; border-color: var(--primary-pink); background-color: var(--white); box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.15); }
+.form-control[readonly] { background-color: #f1f3f5; color: var(--text-muted); cursor: not-allowed; font-weight: 600; }
+
+textarea.textarea-short { min-height: 100px; resize: vertical; }
+textarea.textarea-tall { min-height: 140px; resize: vertical; }
+
+/* --- 7. DYNAMIC FIELDS (FIX 2: WADAH ANTI MELUBER/OVERLAP) --- */
+.dynamic-box {
+    background: #F8F9FF;
+    border: 2px dashed #8A2BE2;
+    border-radius: 16px;
+    padding: 25px 35px; /* Ramping dan proporsional */
+    margin-top: 10px;
+    margin-bottom: 25px;
+    width: 100%;
+    box-sizing: border-box !important; /* Gembok mutlak agar padding tidak menjebol form luar */
+    overflow: hidden; /* Potong apapun yang berusaha mendobrak keluar */
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.dynamic-box h4 {
+    color: #4B0082;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dynamic-box h4 i { color: var(--primary-pink); }
+
+/* Menggunakan auto-fit: Otomatis membagi 2 kolom, kalau layar sempit jadi 1 kolom, TIDAK AKAN JEBOL */
+.dynamic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px 30px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- 8. NIK INFO BOX & ALERTS --- */
+.nik-info-box {
+    display: none; margin-top: 12px; padding: 16px 20px;
+    background: #f0f4ff; border-radius: 12px; border-left: 5px solid var(--secondary-purple);
+    font-size: 0.85rem; color: var(--dark-purple); line-height: 1.6;
+    box-sizing: border-box; animation: fadeIn 0.3s ease;
+}
+.nik-info-box strong { color: var(--secondary-purple); display: block; margin-bottom: 8px; }
+.icon-dim { width: 20px; color: var(--gray-medium); }
+.text-dim { color: var(--text-muted); }
+
+.input-info-alert {
+    color: #FF1493; font-size: 0.8rem; font-weight: 600; margin-top: 8px;
+    display: flex; align-items: center; gap: 6px;
+}
+
+/* --- 9. WORD COUNTER --- */
+.word-counter { display: block; text-align: right; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 8px; }
+.word-counter.limit-reached { color: #e74c3c; }
+
+/* --- 10. TERMS & CONDITIONS (FIX 3: CHECKBOX SEJAJAR MUTLAK) --- */
+.terms-container {
+    background: #fff5f8; padding: 30px 40px; border-radius: 16px;
+    border-left: 6px solid var(--primary-pink); margin: 40px 0 30px; box-sizing: border-box;
+}
+
+.terms-label {
+    display: flex;
+    align-items: flex-start; /* Mengunci checkbox tepat di baris teratas teks */
+    gap: 15px;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.terms-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 4px; /* Penyesuaian presisi vertikal dengan tinggi huruf */
+    flex-shrink: 0;  /* GEMBOK: Mencegah checkbox tertekan/gepeng oleh teks di sebelahnya */
+    accent-color: var(--primary-pink);
+    cursor: pointer;
+}
+
+.terms-text { 
+    font-size: 0.95rem; 
+    line-height: 1.7; 
+    color: var(--dark-purple); 
+    display: block; 
+}
+.link-popup { color: var(--secondary-purple); text-decoration: underline; font-weight: 800; transition: all 0.3s ease; }
+.link-popup:hover { color: var(--primary-pink); }
+
+/* --- 11. SUBMIT BUTTON --- */
+.submit-btn-wrapper { text-align: center; margin-top: 30px; }
+.submit-btn-wrapper button { width: 100%; max-width: 450px; padding: 18px; font-weight: 700; font-size: 1.1rem; }
+
+/* --- 12. MODALS (T&C DAN SUCCESS) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
+    z-index: 9999; display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.modal-overlay.active { display: flex; opacity: 1; }
+
+.modal-content {
+    background: var(--white); width: 90%; max-width: 850px;
+    border-radius: 28px; position: relative; transform: translateY(30px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;
+    overflow: hidden; max-height: 88vh;
+}
+.modal-overlay.active .modal-content { transform: translateY(0); }
+
+.modal-header {
+    padding: 25px 35px; border-bottom: 2px solid #eee; display: flex;
+    justify-content: space-between; align-items: center; background: var(--white);
+}
+.modal-header h2 { color: var(--dark-purple); font-size: 1.6rem; font-weight: 800; }
+.modal-close { font-size: 1.6rem; background: none; border: none; color: #ccc; cursor: pointer; transition: all 0.3s ease; }
+.modal-close:hover { color: var(--primary-pink); transform: rotate(90deg); }
+
+.modal-body-scroll { padding: 40px; overflow-y: auto; flex-grow: 1; background: #fafafa; }
+.modal-body-scroll h4 { color: var(--secondary-purple); margin-top: 30px; margin-bottom: 12px; font-size: 1.2rem; font-weight: 700; }
+.modal-body-scroll p, .modal-body-scroll li { color: var(--text-dark); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px; }
+
+.modal-footer {
+    padding: 25px 35px; background: var(--white); border-top: 2px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.scroll-alert { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+.btn-agree {
+    background: var(--primary-pink); color: var(--white); padding: 14px 35px;
+    border-radius: 50px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+}
+.btn-agree:disabled { background: #e0e0e0; color: #aaa; cursor: not-allowed; }
+
+/* SUCCESS MODAL SPECIFIC */
+.success-modal-content { max-width: 480px !important; text-align: center; padding: 60px 45px !important; display: block !important; }
+.success-icon-wrapper {
+    width: 100px; height: 100px; background: rgba(46, 204, 113, 0.1); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;
+}
+.success-icon-wrapper i { font-size: 3.5rem; color: #2ecc71; }
+
+/* --- 13. RESPONSIVE --- */
+@media (max-width: 768px) {
+    .register-header { padding-top: 130px; padding-bottom: 80px; }
+    .form-container { padding: 40px 25px; margin-top: -40px; }
+    /* Memaksa grid utama menjadi satu kolom di layar HP agar tidak sesak */
+    .form-row { grid-template-columns: minmax(0, 1fr); gap: 20px; } 
+    .dynamic-box { padding: 25px; }
+    .terms-container { padding: 25px; }
+    .modal-footer { flex-direction: column; gap: 20px; text-align: center; }
+    .btn-agree { width: 100%; }
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }

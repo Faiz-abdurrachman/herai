@@ -1,0 +1,33 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Bootcamp Control</h1>
+                <p class="page-subtitle">Jadwal sesi, presensi, tugas, dan status fellow aktif</p>
+            </div>
+            <div class="topbar-right"><button id="btnAddBootcampSession" class="btn-cyber"><i class="fas fa-plus"></i> Sesi Baru</button></div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel"><div class="stat-icon neon-blue"><i class="fas fa-users"></i></div><div class="stat-data"><p>Active Fellows</p><h3 id="bootcampActiveCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-green"><i class="fas fa-calendar-check"></i></div><div class="stat-data"><p>Sessions Done</p><h3 id="bootcampDoneCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-pink"><i class="fas fa-clipboard-check"></i></div><div class="stat-data"><p>Avg Attendance</p><h3 id="bootcampAttendanceAvg">0%</h3></div></div>
+        </section>
+
+        <section class="glass-panel ops-panel">
+            <div class="ops-panel-header">
+                <h3>Session Schedule</h3>
+                <button id="btnSyncBootcamp" class="btn-action"><i class="fas fa-rotate"></i> Sync</button>
+            </div>
+            <div class="table-responsive">
+                <table class="cyber-table ops-table">
+                    <thead><tr><th>Session</th><th>Date</th><th>Mentor</th><th>Link</th><th>Attendance</th><th>Status</th></tr></thead>
+                    <tbody id="bootcampSessionBody">
+                        <tr><td>AI Fundamentals</td><td>TBD</td><td>Mentor Team</td><td><a href="#/assets">Set Asset</a></td><td>0 / 100</td><td><span class="badge pending">Planned</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>

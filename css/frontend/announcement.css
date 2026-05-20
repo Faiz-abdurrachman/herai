@@ -1,0 +1,259 @@
+/* ==========================================================================
+   Announcement Page - Portal Seleksi Style
+   ========================================================================== */
+
+   .announcement-page {
+    background-color: var(--gray-light);
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 0 80px;
+    background-image: radial-gradient(var(--light-pink) 1px, transparent 1px);
+    background-size: 30px 30px; /* Subtle pattern background */
+}
+
+.announcement-container {
+    max-width: 650px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--dark-purple);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(75, 0, 130, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(75, 0, 130, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(75, 0, 130, 0); }
+}
+
+/* Header Text */
+.announcement-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    color: var(--dark-purple);
+    line-height: 1.2;
+    margin-bottom: 15px;
+}
+
+.announcement-header h1 span {
+    color: var(--primary-pink);
+}
+
+.announcement-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Portal Selection Card (UTBK Style) */
+.announcement-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--gray-medium);
+    text-align: left;
+}
+
+.card-top-bar {
+    height: 8px;
+    background: linear-gradient(90deg, var(--primary-pink), var(--secondary-purple));
+}
+
+.card-body {
+    padding: 40px;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: var(--secondary-purple);
+    margin-right: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--gray-medium);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-pink);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px var(--light-pink);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* Button Check Selection */
+.btn-check {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--secondary-purple);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-check:hover {
+    background-color: var(--dark-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(75, 0, 130, 0.2);
+}
+
+/* Info Note */
+.info-note {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: rgba(138, 43, 226, 0.05);
+    border-radius: 12px;
+    border: 1px dashed var(--secondary-purple);
+    text-align: left;
+}
+
+.info-note p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.info-note i {
+    color: var(--secondary-purple);
+    margin-right: 5px;
+}
+
+/* ==========================================================================
+   CSS KARTU HASIL (RESULT CARD)
+   ========================================================================== */
+.result-card-container {
+    display: none;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.result-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+/* Tema Lolos (Hijau) */
+.theme-lolos { border-color: #05cd99; }
+.theme-lolos .status-box { background: rgba(5, 205, 153, 0.1); color: #009e74; border: 1px solid #05cd99; }
+
+/* Tema Gugur (Merah) */
+.theme-gugur { border-color: #e63946; }
+.theme-gugur .status-box { background: rgba(230, 57, 70, 0.1); color: #c1121f; border: 1px solid #e63946; }
+
+/* Tema Pending (Kuning) */
+.theme-pending { border-color: #f59e0b; }
+.theme-pending .status-box { background: rgba(245, 158, 11, 0.1); color: #b45309; border: 1px solid #f59e0b; }
+
+.certificate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px dashed var(--gray-medium);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.candidate-info { margin-bottom: 25px; }
+.candidate-info h2 { margin: 0 0 5px 0; color: var(--dark-purple); font-size: 1.5rem; text-transform: uppercase; }
+.candidate-info p { margin: 0; color: var(--text-muted); font-size: 1rem; }
+
+.status-box { padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+.status-box h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
+.status-box p { margin: 0; font-size: 0.95rem; line-height: 1.5; }
+
+.qr-wrapper { display: flex; justify-content: center; align-items: center; margin-top: 20px; }
+.action-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
+
+@media (max-width: 768px) {
+    .announcement-page { padding: 100px 20px 60px; }
+    .announcement-header h1 { font-size: 1.8rem; }
+    .card-body { padding: 30px 20px; }
+    .result-card { padding: 25px 20px; }
+    .action-buttons { flex-direction: column; }
+}
+.countdown-box {
+    background: #fafbfe;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 10px;
+}
+
+.countdown-box strong {
+    display: block;
+    color: #ff1493;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.countdown-box span {
+    display: block;
+    color: #6b7a90;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+    #announcementCountdown {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}

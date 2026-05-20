@@ -1,0 +1,8 @@
+.DS_Store
+**/.DS_Store
+.cursor/debug-*.log
+node_modules/
+dist/
+build/
+.env
+.env.*

@@ -1,0 +1,92 @@
+<section class="profile-page">
+    <div class="container">
+        <div id="participantAuthView" class="profile-auth-card">
+            <div>
+                <span class="profile-badge">Participant Portal</span>
+                <h1>Masuk ke Profil Peserta</h1>
+                <p>Gunakan NIK yang dipakai saat pendaftaran. Jika pertama kali masuk, buat password baru untuk mengamankan profil.</p>
+            </div>
+
+            <form id="participantLoginForm" class="profile-form">
+                <label for="profileNik">NIK Peserta</label>
+                <input type="text" id="profileNik" maxlength="16" placeholder="16 digit NIK" required>
+
+                <label for="profilePassword">Password</label>
+                <input type="password" id="profilePassword" placeholder="Password profil" required>
+
+                <div id="newPasswordBox" class="new-password-box" style="display: none;">
+                    <label for="profilePasswordConfirm">Konfirmasi Password Baru</label>
+                    <input type="password" id="profilePasswordConfirm" placeholder="Ulangi password baru">
+                    <small>Peserta belum punya password. Password ini akan disimpan sebagai akses profil berikutnya.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="btnParticipantLogin">Masuk Profil</button>
+                <button type="button" class="btn btn-outline" id="btnFirstLoginMode">Pertama kali masuk? Buat password</button>
+                <p id="participantLoginMessage" class="profile-message"></p>
+            </form>
+        </div>
+
+        <div id="participantDashboardView" class="participant-dashboard" style="display: none;">
+            <div class="profile-hero-card">
+                <div>
+                    <span class="profile-badge">HerAI Fellow Profile</span>
+                    <h1 id="profileName">Nama Peserta</h1>
+                    <p id="profileStage">Status peserta akan tampil di sini.</p>
+                </div>
+                <div class="profile-actions">
+                    <button type="button" class="btn btn-outline" id="btnGenerateAtsCv"><i class="fas fa-file-lines"></i> Generate CV ATS</button>
+                    <button type="button" class="btn btn-primary" id="btnLogoutParticipant">Logout</button>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <section class="profile-panel">
+                    <h3>Data Diri</h3>
+                    <form id="participantProfileForm" class="profile-form compact">
+                        <label>NIK</label>
+                        <input type="text" id="editNik" readonly>
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="editName">
+                        <label>Email</label>
+                        <input type="email" id="editEmail">
+                        <label>WhatsApp</label>
+                        <input type="tel" id="editWhatsapp">
+                        <label>Alamat</label>
+                        <textarea id="editAddress" rows="3"></textarea>
+                        <label>LinkedIn / Portfolio</label>
+                        <input type="url" id="editPortfolio" placeholder="https://...">
+                        <button type="submit" class="btn btn-primary">Simpan Profil</button>
+                    </form>
+                </section>
+
+                <section class="profile-panel">
+                    <h3>Progress Program</h3>
+                    <div class="profile-progress-list" id="profileProgressList"></div>
+                </section>
+
+                <section class="profile-panel profile-full">
+                    <h3>Data Pendaftaran</h3>
+                    <div id="profileRegistrationDetails" class="profile-detail-list"></div>
+                </section>
+
+                <section class="profile-panel">
+                    <h3>Task Peserta</h3>
+                    <div id="participantTaskList" class="profile-list"></div>
+                </section>
+
+                <section class="profile-panel">
+                    <h3>Mentoring</h3>
+                    <div id="participantMentoringList" class="profile-list"></div>
+                </section>
+            </div>
+
+            <section class="profile-panel ats-panel">
+                <div class="ats-header">
+                    <h3>Draft CV ATS</h3>
+                    <button type="button" class="btn btn-outline" id="btnCopyAtsCv"><i class="far fa-copy"></i> Copy</button>
+                </div>
+                <textarea id="atsCvOutput" rows="14" readonly placeholder="Klik Generate CV ATS untuk membuat draft dari profil dan progress program."></textarea>
+            </section>
+        </div>
+    </div>
+</section>

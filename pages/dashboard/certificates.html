@@ -1,0 +1,30 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Certificate Manager</h1>
+                <p class="page-subtitle">Eligibility, nomor sertifikat, dan distribusi sertifikat kelulusan</p>
+            </div>
+            <div class="topbar-right"><button id="btnGenerateCertificates" class="btn-cyber"><i class="fas fa-wand-magic-sparkles"></i> Generate Eligible</button></div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel"><div class="stat-icon neon-green"><i class="fas fa-certificate"></i></div><div class="stat-data"><p>Eligible</p><h3 id="certEligibleCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-blue"><i class="fas fa-paper-plane"></i></div><div class="stat-data"><p>Sent</p><h3 id="certSentCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-pink"><i class="fas fa-clock"></i></div><div class="stat-data"><p>Pending</p><h3 id="certPendingCount">0</h3></div></div>
+        </section>
+
+        <section class="glass-panel ops-panel">
+            <div class="ops-panel-header"><h3>Certificate Registry</h3><button id="btnSyncCertificates" class="btn-action"><i class="fas fa-rotate"></i> Sync</button></div>
+            <div class="table-responsive">
+                <table class="cyber-table ops-table">
+                    <thead><tr><th>Certificate No</th><th>Name</th><th>Final Score</th><th>Status</th><th>Issued At</th><th>Action</th></tr></thead>
+                    <tbody id="certificateRegistryBody">
+                        <tr><td>HERAI-2026-0001</td><td>-</td><td>0</td><td><span class="badge pending">Pending</span></td><td>-</td><td><button class="btn-action">Preview</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>

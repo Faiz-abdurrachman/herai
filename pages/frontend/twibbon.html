@@ -1,0 +1,108 @@
+<section class="twibbon-page">
+    <div class="navbar-spacer"></div>
+
+    <div class="container">
+        <div class="page-title-wrapper">
+            <span class="badge-herai">Social Media Kit</span>
+            <h1>I'm Ready to Join <span>HerAI Fellowship 2026</span></h1>
+            <p class="slogan">"Built by Her. Powered by AI."</p>
+        </div>
+
+        <div class="editor-grid">
+            
+            <div class="preview-column">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <div class="upload-placeholder" id="uploadPlaceholder">
+                        <div class="placeholder-content">
+                            <i class="fas fa-image"></i>
+                            <p>Preview foto Anda akan muncul di sini</p>
+                            <span class="hint">Pastikan foto beresolusi tinggi</span>
+                        </div>
+                    </div>
+                    
+                    <div class="twibbon-container" id="twibbonContainer" style="display: none;">
+                        <img id="userPhoto" src="" alt="User Photo" draggable="false">
+                        
+                        <img id="twibbonFrame" src="/assets/twibbon.png" crossorigin="anonymous" alt="HerAI Twibbon Frame" draggable="false" class="png-twibbon-frame">
+                    </div>
+                </div>
+
+                <div class="photo-controls" id="photoControls" style="display: none;">
+                    <div class="control-group">
+                        <button class="btn-control" id="btnZoomOut" title="Perkecil"><i class="fas fa-search-minus"></i></button>
+                        <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1">
+                        <button class="btn-control" id="btnZoomIn" title="Perbesar"><i class="fas fa-search-plus"></i></button>
+                    </div>
+                    <button class="btn-control btn-reset" id="btnReset" title="Reset Posisi">
+                        <i class="fas fa-sync-alt"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-column">
+                
+                <div class="action-card">
+                    <h3><span class="step-num">1</span> Pilih Foto Terbaikmu</h3>
+                    <label for="imageUpload" class="btn-upload">
+                        <i class="fas fa-cloud-upload-alt"></i> Unggah Foto (JPG/PNG)
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+                </div>
+
+                <div class="action-card">
+                    <h3><span class="step-num">2</span> Unduh Twibbon</h3>
+                    <p class="desc">Pastikan posisi foto sudah pas. Klik tombol di bawah untuk menyimpan gambar ke perangkat Anda.</p>
+                    <button id="btnDownload" class="btn-download" disabled>
+                        <i class="fas fa-download"></i> Simpan Gambar
+                    </button>
+                </div>
+
+                <div class="action-card">
+                    <h3><span class="step-num">3</span> Salin Caption</h3>
+                    <p class="desc">Gunakan caption ini agar postingan kamu seragam dan profesional.</p>
+                    <div class="caption-box">
+<textarea id="captionText" class="allow-select" readonly>🔐 HerAI Fellowship: 100 Women in AI
+
+Halo, aku [Nama] 👋
+Aku bangga menjadi bagian dari HerAI Fellowship: 100 Women in AI 🚀
+
+Program ini adalah beasiswa digital untuk 100 perempuan Indonesia yang ingin belajar dan berkembang di bidang Artificial Intelligence melalui pelatihan intensif, mentorship, dan sertifikasi global. Bukan hanya tentang skill, tapi juga tentang membuka akses dan membangun masa depan perempuan di dunia teknologi.
+
+📌 Pendaftaran dibuka hingga 20 Mei 2026
+
+Perjalanan ini baru dimulai, dan aku siap untuk belajar, bertumbuh, dan menjadi bagian dari generasi perempuan yang membangun masa depan dengan AI.
+
+Built by Her. Powered by AI.
+
+Aku juga mau ngajak kamu untuk jadi bagian dari gerakan ini ✨
+👉 Yuk daftar sekarang dan jangan lupa ajak teman-teman kamu!
+
+Tag 5 teman perempuan kamu yang juga punya mimpi besar di dunia teknologi 👇
+@.....
+
+@datasorcerers @womanhub.id @pyronyx.academy
+
+#HerAIFellowship #WomenInAI #EmpowerHer #WomanHub #DataSorcerers</textarea>
+                        <button id="btnCopyCaption" class="btn-copy">
+                            <i class="far fa-copy"></i> Salin Caption
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="magic-overlay" id="magicOverlay" style="display: none;">
+    <div class="magic-content">
+        <div class="magic-wand">
+            <i class="fas fa-wand-magic-sparkles"></i>
+        </div>
+        <h2 class="magic-text">Casting Tech Magic...</h2>
+        <p class="magic-subtext">Menyatukan auramu dengan HerAI Fellowship</p>
+        <div class="magic-progress">
+            <div class="magic-bar" id="magicBar"></div>
+        </div>
+    </div>
+</div>

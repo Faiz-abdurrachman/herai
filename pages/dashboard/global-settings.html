@@ -1,0 +1,238 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Global Settings</h1>
+                <p class="page-subtitle">Kontrol utama visibilitas platform dan status pendaftaran</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile" style="border-color: var(--danger);">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p style="color: var(--danger);">Root Access</p>
+                    </div>
+                    <div class="admin-avatar" style="background: rgba(230, 57, 70, 0.1); color: var(--danger);">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div style="background: rgba(255, 206, 32, 0.1); border-left: 4px solid var(--warning); padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-exclamation-triangle" style="color: var(--warning); font-size: 1.5rem;"></i>
+            <div>
+                <h4 style="margin: 0; color: var(--dark-purple); font-size: 0.95rem;">Area Kritis / Root Access</h4>
+                <p style="margin: 3px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Perubahan pada halaman ini akan langsung berdampak pada halaman publik yang diakses oleh user.</p>
+            </div>
+        </div>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+            
+            <div class="glass-panel" style="padding: 30px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple); border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-top: 0;">
+                    <i class="fas fa-door-open" style="color: var(--icon-blue);"></i> Kontrol Pendaftaran
+                </h3>
+                
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Status Pendaftaran</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 250px;">Buka atau tutup form pendaftaran di halaman `/register`.</p>
+                        </div>
+                        <label class="master-switch">
+                            <input type="checkbox" checked id="toggleRegis">
+                            <span class="slider-master"></span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Jalur Afirmasi 3T</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 250px;">Matikan jika kuota afirmasi sudah terpenuhi lebih dulu.</p>
+                        </div>
+                        <label class="master-switch">
+                            <input type="checkbox" checked id="toggleAfirmasi">
+                            <span class="slider-master"></span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Pesan Penutupan Pendaftaran</label>
+                        <textarea id="msgRegisClosed" rows="3" style="width: 100%; padding: 12px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; background: #f8fafc;" placeholder="Contoh: Maaf, kuota HerAI Fellowship 2026 telah terpenuhi.">Pendaftaran HerAI Fellowship Batch 1 (2026) telah resmi ditutup.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 30px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple); border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-top: 0;">
+                    <i class="fas fa-bullhorn" style="color: var(--primary-pink);"></i> Halaman Pengumuman
+                </h3>
+                
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Live Pengumuman Tahap 1</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 250px;">Buka akses peserta untuk mengecek hasil seleksi (NIK Checker).</p>
+                        </div>
+                        <label class="master-switch">
+                            <input type="checkbox" id="togglePengumuman"> <span class="slider-master"></span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">URL Generator Twibbon</label>
+                        <input type="text" id="urlTwibbon" value="#/twibbon" style="width: 100%; padding: 12px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; background: #f8fafc;">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Jadwal Buka Pengumuman Otomatis</label>
+                        <input type="datetime-local" id="announcementLaunchAt" style="width: 100%; padding: 12px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; background: #f8fafc;">
+                        <p style="margin: 8px 0 0; font-size: 0.8rem; color: var(--text-muted);">Jika diisi, halaman pengumuman akan menampilkan countdown dan otomatis terbuka saat waktunya tiba.</p>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Notifikasi Tambahan (Peserta Lolos)</label>
+                        <input type="text" id="msgLolosInfo" value="Harap periksa email Anda untuk undangan grup Telegram." style="width: 100%; padding: 12px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; background: #f8fafc;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 30px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple); border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-top: 0;">
+                    <i class="fas fa-user-lock" style="color: var(--icon-purple);"></i> Portal Profil Peserta
+                </h3>
+                
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Tampilkan Login Peserta</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 250px;">Aktifkan link `/profile` setelah peserta boleh membuat password dan masuk ke dashboard profil.</p>
+                        </div>
+                        <label class="master-switch">
+                            <input type="checkbox" id="toggleParticipantPortal">
+                            <span class="slider-master"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 30px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple); border-bottom: 1px solid var(--gray-border); padding-bottom: 15px; margin-top: 0;">
+                    <i class="fas fa-square-root-variable" style="color: var(--icon-blue);"></i> Seleksi Tahap 2
+                </h3>
+                
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Aktifkan Tes Kompetensi</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 250px;">Buka akses `/competency-test` untuk peserta yang lolos tahap 1.</p>
+                        </div>
+                        <label class="master-switch">
+                            <input type="checkbox" id="toggleCompetencyTest">
+                            <span class="slider-master"></span>
+                        </label>
+                    </div>
+                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); background: #f8fafc; border: 1px solid var(--gray-border); border-radius: 8px; padding: 12px;">
+                        Jika toggle ini nonaktif, peserta akan melihat halaman terkunci walaupun sudah login profil.
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 30px; border: 1px solid rgba(230,57,70,0.3); background: #fffafb;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: var(--danger); border-bottom: 1px solid rgba(230,57,70,0.2); padding-bottom: 15px; margin-top: 0;">
+                    <i class="fas fa-radiation"></i> Danger Zone
+                </h3>
+                
+                <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(230,57,70,0.05); border-radius: 8px; border: 1px dashed rgba(230,57,70,0.3);">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--danger);">Maintenance Mode</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Tutup sementara seluruh front-end website.</p>
+                        </div>
+                        <label class="master-switch danger-switch">
+                            <input type="checkbox" id="toggleMaintenance">
+                            <span class="slider-master"></span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 8px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">Reset Cache Sistem</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Paksa perbarui data jika sinkronisasi macet.</p>
+                        </div>
+                        <button class="btn-cyber" id="btnClearGlobalCache" style="background: transparent; border: 1px solid var(--gray-border); color: var(--text-dark); box-shadow: none;">
+                            <i class="fas fa-sync"></i> Clear Cache
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: flex-end; padding-top: 15px;">
+                <span id="globalSettingsStatus" style="margin-right: 15px; color: var(--text-muted); font-size: 0.9rem; font-weight: 700;"></span>
+                <button class="btn-cyber" id="btnSaveGlobalSettings" style="background: var(--dark-purple); font-size: 1.1rem; padding: 12px 30px;">
+                    <i class="fas fa-cloud-upload-alt"></i> Terapkan Pengaturan Global
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<style>
+    /* Styling khusus Master Switch untuk Global Settings */
+    .master-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    .master-switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider-master {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider-master:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    /* Warna nyala default (Biru/Pink tergantung tema, kita pakai biru tech) */
+    .master-switch input:checked + .slider-master {
+        background-color: var(--icon-blue);
+    }
+    .master-switch input:checked + .slider-master:before {
+        transform: translateX(22px);
+    }
+    
+    /* Warna nyala untuk Danger Zone (Merah) */
+    .danger-switch input:checked + .slider-master {
+        background-color: var(--danger);
+    }
+    
+    /* Fokus Input */
+    input[type="text"]:focus, textarea:focus {
+        border-color: var(--icon-blue) !important;
+    }
+</style>

@@ -1,0 +1,234 @@
+/* ==========================================================================
+   FAQ STYLES (css/faq.css)
+   SYNC DENGAN NAVBAR 1400px
+   ========================================================================== */
+
+   .faq-page {
+    /* Pastikan tidak tertutup navbar */
+    padding-top: 140px;
+    padding-bottom: 100px;
+    background-color: #f9fafb;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Container Utama - SYNC DENGAN NAVBAR */
+.faq-page .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px; /* ← UBAH JADI 15px SAMA DENGAN NAVBAR */
+    box-sizing: border-box;
+}
+
+/* Header FAQ */
+.faq-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.faq-badge {
+    display: inline-block;
+    background: var(--light-pink, #ffe5f0);
+    color: var(--primary-pink, #ff1493);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.faq-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--dark-purple, #1a1a2e);
+    margin: 0 0 20px 0;
+    letter-spacing: -1.5px;
+    line-height: 1.2;
+}
+
+.faq-header p {
+    color: var(--text-muted, #64748b);
+    font-size: 1.15rem;
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Grid System untuk Cards */
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    align-items: start;
+}
+
+/* Card Styling */
+.faq-card {
+    background: #ffffff;
+    padding: 35px 28px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.faq-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-pink, #ff1493);
+    box-shadow: 0 20px 40px rgba(255, 20, 147, 0.12);
+}
+
+.faq-card-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: rgba(255, 20, 147, 0.08);
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    line-height: 1;
+}
+
+.faq-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark-purple, #1a1a2e);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    padding-right: 50px;
+}
+
+.faq-card p {
+    color: var(--text-muted, #64748b);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* Responsive Breakpoints */
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+    .faq-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Desktop */
+@media (max-width: 1399px) and (min-width: 992px) {
+    .faq-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet & Mobile - SYNC DENGAN NAVBAR */
+@media (max-width: 991px) {
+    .faq-page {
+        padding-top: 120px;
+    }
+    
+    .faq-page .container {
+        padding: 0 20px; /* ← SYNC DENGAN NAVBAR MOBILE */
+    }
+    
+    .faq-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .faq-header h1 {
+        font-size: 2.8rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .faq-page {
+        padding-top: 110px;
+        padding-bottom: 60px;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    
+    .faq-header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .faq-header p {
+        font-size: 1rem;
+    }
+    
+    .faq-card {
+        padding: 30px 24px;
+    }
+}
+
+@media (max-width: 575px) {
+    .faq-page {
+        padding-top: 100px;
+        padding-bottom: 50px;
+    }
+    
+    .faq-header {
+        margin-bottom: 40px;
+    }
+    
+    .faq-badge {
+        font-size: 0.7rem;
+        padding: 6px 16px;
+    }
+    
+    .faq-header h1 {
+        font-size: 1.8rem;
+        letter-spacing: -1px;
+    }
+    
+    .faq-header p {
+        font-size: 0.95rem;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .faq-card {
+        padding: 25px 20px;
+    }
+    
+    .faq-card-num {
+        font-size: 1.8rem;
+        top: 18px;
+        right: 20px;
+    }
+    
+    .faq-card h4 {
+        font-size: 1.1rem;
+        padding-right: 45px;
+    }
+    
+    .faq-card p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .faq-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .faq-card {
+        padding: 20px 18px;
+    }
+}

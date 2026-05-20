@@ -1,0 +1,75 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Seleksi Tahap 2</h1>
+                <p class="page-subtitle">Monitoring Tes Kompetensi: logika dasar dan matematika daring</p>
+            </div>
+            <div class="topbar-right">
+                <button type="button" id="btnSyncCompetency" class="btn-cyber"><i class="fas fa-sync-alt"></i> Sync Sessions</button>
+            </div>
+        </header>
+
+        <section class="competency-summary-grid">
+            <div class="competency-summary-card"><span>Sedang Tes</span><strong id="competencyLiveCount">0</strong></div>
+            <div class="competency-summary-card"><span>Submitted</span><strong id="competencySubmittedCount">0</strong></div>
+            <div class="competency-summary-card"><span>Media Aktif</span><strong id="competencyMediaCount">0</strong></div>
+            <div class="competency-summary-card"><span>Flag Focus</span><strong id="competencyFlagCount">0</strong></div>
+        </section>
+
+        <section class="data-section glass-panel">
+            <div class="table-header">
+                <div class="table-title">
+                    <h3>Live Participant Monitor</h3>
+                </div>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="competencySearch" placeholder="Cari nama / NIK...">
+                    </div>
+                    <select id="competencyStatusFilter" class="cyber-select">
+                        <option value="all">Semua Status</option>
+                        <option value="not_started">Belum Mulai</option>
+                        <option value="started">Sedang Tes</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="media_denied">Media Ditolak</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="cyber-table competency-monitor-table">
+                    <thead>
+                        <tr>
+                            <th>Peserta</th>
+                            <th>Status</th>
+                            <th>Live Camera</th>
+                            <th>Media</th>
+                            <th>Progress</th>
+                            <th>Skor</th>
+                            <th>Aktivitas</th>
+                            <th>Decision T2</th>
+                            <th>Update</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="competencyMonitorBody">
+                        <tr><td colspan="10" style="text-align:center; padding:40px; color:var(--text-muted);">Klik Sync Sessions untuk memuat monitoring.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="competencyDetailModal">
+    <div class="modal-content glass-panel" style="max-width: 860px;">
+        <div class="modal-header">
+            <h2>Detail Tes Peserta</h2>
+            <button class="btn-close" id="btnCloseCompetencyDetail"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="competencyDetailBody"></div>
+    </div>
+</div>

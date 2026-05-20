@@ -1,0 +1,104 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Stage Control</h1>
+                <p class="page-subtitle">Pusat kendali fase acara dari pendaftaran sampai alumni</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>Program Control</h4>
+                        <p>Event Operations</p>
+                    </div>
+                    <div class="admin-avatar"><i class="fas fa-diagram-project"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stage-summary-grid">
+            <div class="stage-summary-card"><span>Fase Aktif</span><strong id="stageSummaryActive">Draft</strong></div>
+            <div class="stage-summary-card"><span>Pendaftaran</span><strong id="stageSummaryRegistration">-</strong></div>
+            <div class="stage-summary-card"><span>Pengumuman</span><strong id="stageSummaryAnnouncement">-</strong></div>
+            <div class="stage-summary-card"><span>Portal Peserta</span><strong id="stageSummaryPortal">-</strong></div>
+        </section>
+
+        <section class="ops-grid">
+            <div class="glass-panel ops-panel">
+                <div class="ops-panel-header">
+                    <h3>Current Program Stage</h3>
+                    <span class="badge pending" id="stageLiveBadge">Draft</span>
+                </div>
+                <label class="ops-label" for="stageSelect">Pilih fase aktif</label>
+                <select id="stageSelect" class="cyber-select ops-input">
+                    <option value="draft">Draft / Preparation</option>
+                    <option value="registration_open">Pendaftaran Dibuka</option>
+                    <option value="registration_closed">Pendaftaran Ditutup</option>
+                    <option value="selection_1">Seleksi Tahap 1</option>
+                    <option value="ai_prescreening">AI Pre-Screening</option>
+                    <option value="review_scoring">Reviewer Scoring</option>
+                    <option value="announcement_stage_1">Pengumuman Lolos Tahap 1</option>
+                    <option value="competency_test">Seleksi Tahap 2 / Tes Kompetensi</option>
+                    <option value="announcement_stage_2">Pengumuman Lolos Tahap 2</option>
+                    <option value="bootcamp_active">Bootcamp Aktif</option>
+                    <option value="final_project">Final Project</option>
+                    <option value="announcement_final">Pengumuman Final</option>
+                    <option value="graduation">Graduation</option>
+                    <option value="alumni">Alumni / Wall of Fame</option>
+                </select>
+                <label class="ops-label" for="stageNotes">Catatan internal</label>
+                <textarea id="stageNotes" class="ops-input" rows="5" placeholder="Catatan operasional untuk fase saat ini"></textarea>
+                <button type="button" id="btnSaveStage" class="btn-cyber ops-primary"><i class="fas fa-save"></i> Simpan Stage</button>
+            </div>
+
+            <div class="glass-panel ops-panel">
+                <div class="ops-panel-header">
+                    <h3>Automation Impact</h3>
+                    <span class="badge lolos">Connected</span>
+                </div>
+                <div class="ops-checklist">
+                    <label><input type="checkbox" id="stageAutoRegistration"> Sinkronkan status pendaftaran publik</label>
+                    <label><input type="checkbox" id="stageAutoAnnouncement"> Sinkronkan halaman pengumuman</label>
+                    <label><input type="checkbox" id="stageAutoLeaderboard"> Tampilkan leaderboard setelah scoring</label>
+                    <label><input type="checkbox" id="stageAutoGraduation"> Aktifkan halaman graduation saat fase selesai</label>
+                </div>
+                <p class="ops-muted">Kontrol ini menyimpan aturan stage ke GAS/local settings agar halaman publik mengikuti status acara.</p>
+            </div>
+        </section>
+
+        <section class="glass-panel ops-panel" style="margin-top: 25px;">
+            <div class="ops-panel-header">
+                <h3>Program Timeline</h3>
+                <button type="button" id="btnAddStageMilestone" class="btn-action"><i class="fas fa-plus"></i> Tambah Milestone</button>
+            </div>
+            <div class="table-responsive">
+                <table class="cyber-table ops-table">
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Target Date</th>
+                            <th>Owner</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stageTimelineBody">
+                        <tr><td>Registration Open</td><td>Set from Global Settings</td><td>Admin</td><td><span class="badge pending">Planned</span></td><td><button class="btn-action">Edit</button></td></tr>
+                        <tr><td>Announcement Live</td><td>Countdown schedule</td><td>Program Lead</td><td><span class="badge pending">Planned</span></td><td><button class="btn-action">Edit</button></td></tr>
+                        <tr><td>Bootcamp Week 1</td><td>TBD</td><td>Mentor Team</td><td><span class="badge pending">Planned</span></td><td><button class="btn-action">Edit</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel ops-panel" style="margin-top: 25px;">
+            <div class="ops-panel-header">
+                <h3>Operational Flow</h3>
+                <span class="badge reguler">Checklist</span>
+            </div>
+            <div class="stage-flow" id="stageFlowList"></div>
+        </section>
+    </main>
+</div>

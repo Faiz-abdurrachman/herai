@@ -1,0 +1,30 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Final Project Tracker</h1>
+                <p class="page-subtitle">Pantau kelompok, mentor, submission, demo, dan nilai akhir</p>
+            </div>
+            <div class="topbar-right"><button id="btnAddProjectTeam" class="btn-cyber"><i class="fas fa-plus"></i> Team Baru</button></div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel"><div class="stat-icon neon-purple"><i class="fas fa-people-group"></i></div><div class="stat-data"><p>Total Teams</p><h3 id="projectTeamCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-blue"><i class="fas fa-upload"></i></div><div class="stat-data"><p>Submitted</p><h3 id="projectSubmittedCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-green"><i class="fas fa-star"></i></div><div class="stat-data"><p>Ready Demo</p><h3 id="projectReadyCount">0</h3></div></div>
+        </section>
+
+        <section class="glass-panel ops-panel">
+            <div class="ops-panel-header"><h3>Project Board</h3><button id="btnSyncProjects" class="btn-action"><i class="fas fa-rotate"></i> Sync</button></div>
+            <div class="table-responsive">
+                <table class="cyber-table ops-table">
+                    <thead><tr><th>Team</th><th>Project</th><th>Mentor</th><th>Repository</th><th>Score</th><th>Status</th></tr></thead>
+                    <tbody id="projectBoardBody">
+                        <tr><td>Team A</td><td>Untitled AI Project</td><td>TBD</td><td>-</td><td>0</td><td><span class="badge pending">Draft</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>

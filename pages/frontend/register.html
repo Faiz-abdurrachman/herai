@@ -1,0 +1,263 @@
+<section class="register-header">
+    <div class="container">
+        <h1>Application <span>Form</span></h1>
+        <p>Ambil langkah pertamamu menjadi inovator masa depan. Lengkapi data diri dan berikan jawaban esai terbaikmu.</p>
+    </div>
+</section>
+
+<section class="form-section-wrapper">
+    <div class="form-container">
+        <form id="registrationForm">
+            
+            <input type="hidden" id="asalKampus" name="asalKampus">
+            <input type="hidden" id="programStudi" name="programStudi">
+            <input type="hidden" id="namaInstansi" name="namaInstansi">
+            <input type="hidden" id="posisiJabatan" name="posisiJabatan">
+            <input type="hidden" id="deskripsiKerja" name="deskripsiKerja">
+
+            <div class="form-section">
+                <h3>1. Informasi Data Diri Lengkap</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="namaLengkap">Nama Lengkap <span>*</span></label>
+                        <input type="text" id="namaLengkap" name="namaLengkap" class="form-control" placeholder="Sesuai KTP/Kartu Pelajar" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNIK">NIK (Nomor Induk Kependudukan) <span>*</span></label>
+                        <input type="text" id="inputNIK" name="nik" class="form-control" placeholder="16 digit NIK" maxlength="16" required>
+                        
+                        <div class="nik-info-box" id="nikInfo">
+                            <strong id="nikTitle"><i class="fas fa-spinner fa-spin"></i> Mendeteksi NIK...</strong>
+                            <div id="nikProv"><i class="fas fa-map icon-dim"></i> <span class="text-dim">Provinsi: -</span></div>
+                            <div id="nikKab"><i class="fas fa-city icon-dim"></i> <span class="text-dim">Kab/Kota: -</span></div>
+                            <div id="nikKec"><i class="fas fa-map-marker-alt icon-dim"></i> <span class="text-dim">Kecamatan: -</span></div>
+                            <div id="nikGender" style="margin-top: 8px;"><i class="fas fa-venus-mars icon-dim"></i> <span class="text-dim">Gender: -</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tempatLahir">Tempat Lahir <span>*</span></label>
+                        <input type="text" id="tempatLahir" name="tempatLahir" class="form-control" placeholder="Kota / Kabupaten Lahir" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputTanggalLahir" class="label-inline-strict">
+                            Tanggal Lahir <span>*</span> <small>(Otomatis dari NIK)</small>
+                        </label>
+                        <input type="date" id="inputTanggalLahir" name="tanggalLahir" class="form-control" required readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="whatsapp">Nomor WhatsApp Aktif <span>*</span></label>
+                        <input type="tel" id="whatsapp" name="whatsapp" class="form-control" placeholder="+62 812-xxxx-xxxx" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Aktif <span>*</span></label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="contoh@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="alamat">Alamat Tempat Tinggal Lengkap <span>*</span></label>
+                    <textarea id="alamat" name="alamat" class="form-control textarea-short" placeholder="Nama Jalan, RT/RW, Kelurahan, Kecamatan, Kota/Kabupaten, Kode Pos" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jalurPendaftaran">Jalur Pendaftaran <span>*</span></label>
+                        <select id="jalurPendaftaran" name="jalurPendaftaran" class="form-control" required>
+                            <option value="" disabled selected>Pilih jalur pendaftaran</option>
+                            <option value="reguler">Jalur Reguler Umum</option>
+                            <option value="afirmasi">Jalur Afirmasi Khusus (Daerah 3T)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="statusSelect">Status Saat Ini <span>*</span></label>
+                        <select id="statusSelect" name="statusSelect" class="form-control" required>
+                            <option value="" disabled selected>Pilih status</option>
+                            <option value="mahasiswa">Mahasiswa</option>
+                            <option value="fresh_graduate">Fresh Graduate</option>
+                            <option value="profesional">Profesional / Pekerja</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                        
+                        <div id="statusFeedback" style="display: none; margin-top: 12px; align-items: center; justify-content: space-between; background: #f0f4ff; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #2ecc71;">
+                            <span style="color: #2ecc71; font-weight: 700; font-size: 0.85rem;"><i class="fas fa-check-circle"></i> Detail Tersimpan</span>
+                            <button type="button" id="btnEditDetail" style="background: none; border: 1.5px solid var(--primary-pink); color: var(--primary-pink); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: all 0.2s;">Edit Detail</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group-full" style="margin-top: 15px;">
+                    <label for="kejuaraan">Kejuaraan dan Penghargaan <small>(Opsional)</small></label>
+                    <textarea id="kejuaraan" name="kejuaraan" class="form-control textarea-short" placeholder="Tahun, Nama Penghargaan, Tingkat"></textarea>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="organisasi">Pengalaman Organisasi <small>(Opsional)</small></label>
+                    <textarea id="organisasi" name="organisasi" class="form-control textarea-short" placeholder="Nama organisasi, jabatan, masa bakti"></textarea>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="linkCv">Link CV / Portfolio Online <small>(Opsional)</small></label>
+                    <input type="url" id="linkCv" name="linkCv" class="form-control" placeholder="https://...">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>2. Essay Questions</h3>
+                <p class="section-subtitle">Jawablah setiap pertanyaan di bawah ini dengan jujur. <strong>(Maksimal 500 kata per pertanyaan)</strong>.</p>
+
+                <div class="form-group-full">
+                    <label for="essay1">1. Tell us about yourself! <span>*</span></label>
+                    <textarea id="essay1" name="essay1" class="form-control textarea-tall word-count-textarea" data-max="500" required placeholder="Describe your background, passions, and what drives you..."></textarea>
+                    <span class="word-counter">0 / 500 kata</span>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="essay2">2. Why you choose this program? <span>*</span></label>
+                    <textarea id="essay2" name="essay2" class="form-control textarea-tall word-count-textarea" data-max="500" required placeholder="What caught your interest in Woman in Tech 2026..."></textarea>
+                    <span class="word-counter">0 / 500 kata</span>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="essay3">3. How this program can help your future career? <span>*</span></label>
+                    <textarea id="essay3" name="essay3" class="form-control textarea-tall word-count-textarea" data-max="500" required placeholder="Explain your career goals and how AI skills align with them..."></textarea>
+                    <span class="word-counter">0 / 500 kata</span>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="essay4">4. What you expect to join this program? <span>*</span></label>
+                    <textarea id="essay4" name="essay4" class="form-control textarea-tall word-count-textarea" data-max="500" required placeholder="What knowledge, networking, or outcomes do you anticipate..."></textarea>
+                    <span class="word-counter">0 / 500 kata</span>
+                </div>
+
+                <div class="form-group-full">
+                    <label for="essay5">5. What makes you outstanding? <span>*</span></label>
+                    <textarea id="essay5" name="essay5" class="form-control textarea-tall word-count-textarea" data-max="500" required placeholder="Share your unique strengths, achievements, or perspectives..."></textarea>
+                    <span class="word-counter">0 / 500 kata</span>
+                </div>
+            </div>
+
+            <div class="terms-container">
+                <label class="terms-label" title="Anda wajib membaca detail di pop-up untuk menyetujui">
+                    <input type="checkbox" id="agreeCheckbox" name="agreeCheckbox" required disabled>
+                    <span class="terms-text">
+                        Saya dengan ini menyatakan bahwa seluruh data, dokumen, dan esai yang saya berikan adalah benar dan dapat dipertanggungjawabkan. Saya telah membaca, menggulir hingga akhir, dan menyetujui <span class="link-popup" id="btnOpenModal">Syarat dan Ketentuan (Terms & Conditions) serta Kebijakan Privasi</span>. <span>*</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="submit-btn-wrapper">
+                <button type="submit" class="btn btn-primary" id="btnSubmit">Kirim Aplikasi Pendaftaran <i class="fas fa-paper-plane" style="margin-left: 8px;"></i></button>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">Pastikan seluruh kolom dengan tanda bintang (*) telah terisi.</p>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<div class="modal-overlay" id="modalMahasiswa">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-graduation-cap" style="color: var(--primary-pink); margin-right:10px;"></i> Detail Akademik</h2>
+            <button class="modal-close" id="btnCloseMahasiswa"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body-scroll">
+            <div class="form-group-full" style="margin-bottom: 20px;">
+                <label>Asal Kampus / Universitas <span style="color:var(--primary-pink)">*</span></label>
+                <input type="text" id="popAsalKampus" class="form-control" placeholder="Cth: Universitas Teknologi Yogyakarta">
+                <div class="input-info-alert" style="color:#FF1493; font-size:0.8rem; margin-top:8px;"><i class="fas fa-exclamation-circle"></i> Tulis nama kampus lengkap.</div>
+            </div>
+            <div class="form-group-full" style="margin-bottom: 0;">
+                <label>Program Studi / Jurusan <span style="color:var(--primary-pink)">*</span></label>
+                <input type="text" id="popProgramStudi" class="form-control" placeholder="Cth: Informatika / Ilmu Komputer">
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: flex-end;">
+            <button type="button" class="btn-agree" id="btnSaveMahasiswa">Simpan Detail</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalProfesional">
+    <div class="modal-content" style="max-width: 650px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-briefcase" style="color: var(--primary-pink); margin-right:10px;"></i> Detail Profesional</h2>
+            <button class="modal-close" id="btnCloseProfesional"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body-scroll">
+            <div class="form-row" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Nama Instansi / Perusahaan <span style="color:var(--primary-pink)">*</span></label>
+                    <input type="text" id="popNamaInstansi" class="form-control" placeholder="Cth: PT. Data Sorcerers Indonesia">
+                </div>
+                <div class="form-group">
+                    <label>Posisi / Jabatan <span style="color:var(--primary-pink)">*</span></label>
+                    <input type="text" id="popPosisiJabatan" class="form-control" placeholder="Cth: Data Scientist">
+                </div>
+            </div>
+            <div class="form-group-full" style="margin-bottom: 0;">
+                <label>Deskripsi Pengalaman Bekerja <span style="color:var(--primary-pink)">*</span></label>
+                <textarea id="popDeskripsiKerja" class="form-control textarea-short" placeholder="Jelaskan secara singkat tanggung jawab Anda..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: flex-end;">
+            <button type="button" class="btn-agree" id="btnSaveProfesional">Simpan Detail</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="tncModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Syarat, Ketentuan & Kebijakan Privasi</h2>
+            <button class="modal-close" id="btnCloseModal"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="modal-body-scroll" id="scrollArea">
+            <h4>Syarat & Ketentuan (Terms & Conditions)</h4>
+            <p>Dengan mendaftar pada Program <strong>Woman in Tech 2026</strong> yang diselenggarakan oleh konsorsium Data Sorcerers dan Womanhub.id, calon peserta menyetujui secara sadar seluruh hal berikut:</p>
+            <ul>
+                <li><strong>Kelayakan Peserta:</strong> Pendaftar wajib merupakan Warga Negara Indonesia (WNI) yang mengidentifikasi diri sebagai perempuan, memiliki dedikasi terhadap teknologi, serta berkomitmen terhadap pengembangan karir di bidang Artificial Intelligence.</li>
+                <li><strong>Ketentuan Afirmasi 3T:</strong> Pendaftar <strong>Jalur Afirmasi 3T</strong> wajib mempertanggungjawabkan bukti domisilinya. Proses pendaftaran akan divalidasi langsung melalui NIK yang terhubung dengan basis data wilayah Kementerian Dalam Negeri. Jika di kemudian hari ditemukan pemalsuan identitas KTP/NIK untuk memanipulasi kuota daerah 3T, penyelenggara berhak memberikan sanksi tegas berupa pencoretan dan blacklist dari seluruh ekosistem penyelenggara.</li>
+                <li><strong>Komitmen Kehadiran:</strong> Peserta yang lolos beasiswa penuh wajib mengikuti kegiatan pembelajaran sinkronus (Live Session) sekurang-kurangnya 80% dari total sesi. Peserta wajib menyelesaikan tugas mingguan dan Final Project untuk mendapatkan kelulusan dan sertifikasi industri.</li>
+                <li><strong>Hak Kekayaan Intelektual (HAKI):</strong> Kode sumber (*source code*), model AI, dan produk hasil karya selama pengerjaan proyek akhir tetap menjadi milik penuh peserta/kelompok. Namun, penyelenggara berhak mendapatkan lisensi non-eksklusif secara gratis untuk mempublikasikan dan menggunakan karya tersebut sebagai portofolio, publikasi media, dan materi edukasi berkelanjutan.</li>
+                <li><strong>Kode Etik, Etika, & Keselamatan:</strong> Peserta dilarang keras melakukan tindak plagiarisme karya orang lain, pelecehan, diskriminasi SARA, atau menggunakan fasilitas komputasi dari program ini untuk tindakan ilegal, pembuatan malware, dan hal berbahaya lainnya.</li>
+                <li><strong>Sanksi:</strong> Segala bentuk pelanggaran berat terhadap syarat, ketentuan, maupun kode etik akan mengakibatkan pemutusan sepihak (Drop-Out) dari program tanpa pemberitahuan dan surat peringatan sebelumnya. Keputusan panitia seleksi bersifat mutlak dan tidak dapat diganggu gugat.</li>
+            </ul>
+
+            <h4>Kebijakan Privasi (Privacy Policy)</h4>
+            <p>Kami di <strong>PT. Data Sorcerers Indonesia</strong> bersama <strong>Womanhub.id</strong> menaruh perhatian penuh pada keamanan dan kerahasiaan data pribadi Anda:</p>
+            <ul>
+                <li><strong>Pengumpulan Data:</strong> Kami mengumpulkan data secara sah melalui formulir ini. Data ini dikumpulkan murni untuk tujuan seleksi administrasi, penyusunan demografi peserta, serta validasi untuk pendaftar afirmasi 3T.</li>
+                <li><strong>Penggunaan & Pembagian Data:</strong> Data Anda TIDAK AKAN diperjualbelikan, disewakan, dipindahtangankan, atau diungkapkan kepada pihak ketiga mana pun di luar konsorsium penyelenggara program, kecuali jika secara tegas diwajibkan oleh hukum dan perundang-undangan yang berlaku di Republik Indonesia.</li>
+                <li><strong>Keamanan & Penyimpanan:</strong> Informasi yang bersifat pribadi dan sensitif (seperti NIK) Anda disimpan menggunakan protokol perlindungan berlapis dan enkripsi yang aman di peladen cloud tepercaya kami. Akses data ini hanya diberikan secara terbatas kepada tim kurasi dan komite seleksi yang terikat dengan Non-Disclosure Agreement (NDA).</li>
+                <li><strong>Retensi Data (Data Retention):</strong> Guna melindungi privasi, data pribadi dari pendaftar yang tidak lolos seleksi akan dihapus sepenuhnya dari sistem utama kami selambat-lambatnya 3 (tiga) bulan setelah rangkaian program berakhir.</li>
+                <li><strong>Izin Publikasi:</strong> Apabila Anda dinyatakan lulus dan menerima beasiswa, Anda memberikan izin dan wewenang kepada penyelenggara untuk menggunakan nama, foto visual, asal daerah, serta testimoni Anda di materi promosi digital dan situs web resmi Woman in Tech 2026.</li>
+            </ul>
+            <p style="margin-top: 30px; font-weight: 600; text-align: center; color: var(--primary-pink);">Silakan gulir ke paling bawah untuk menyetujui kebijakan hukum ini.</p>
+        </div>
+
+        <div class="modal-footer">
+            <span class="scroll-alert" id="scrollAlertText"><i class="fas fa-arrow-down"></i> Gulir teks ke bawah untuk mengaktifkan tombol persetujuan</span>
+            <button class="btn-agree" id="btnAgreeTnc" disabled>Saya Setuju & Lanjutkan</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content success-modal-content">
+        <div class="success-icon-wrapper">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Pendaftaran Berhasil!</h2>
+        <p>Aplikasi pendaftaran Anda untuk program Woman in Tech 2026 telah kami terima. Silakan periksa kotak masuk (atau folder spam) email Anda secara berkala untuk informasi dan instruksi seleksi selanjutnya.</p>
+        <a href="/home" class="btn btn-primary nav-link" id="btnSuccessClose" style="width: 100%; display: block; text-align: center; margin-top: 15px;">Kembali ke Beranda</a>
+    </div>
+</div>

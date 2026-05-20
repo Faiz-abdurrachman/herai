@@ -1,0 +1,205 @@
+/* ==========================================================================
+   INDUSTRY APPLICATIONS STYLES (css/industry.css)
+   VERSI PRO: LINEAR 1400px, CLEAN GRID, & PREMIUM CARDS
+   ========================================================================== */
+
+   .industry-page {
+    background-color: #fcfcfd;
+    min-height: 100vh;
+    padding-bottom: 120px;
+    width: 100%;
+}
+
+/* --- ANTI-OVERLAP NAVBAR --- */
+.navbar-spacer {
+    height: 130px; /* Jarak aman agar judul tidak tertutup Navbar Fixed */
+    width: 100%;
+}
+
+/* --- CONTAINER UTAMA (1400px) --- */
+.industry-page .container {
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    padding: 0 30px !important;
+    box-sizing: border-box;
+}
+
+/* --- HEADER SECTION --- */
+.industry-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.badge-pro {
+    display: inline-block;
+    background: var(--light-pink);
+    color: var(--primary-pink);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.industry-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--dark-purple);
+    margin-bottom: 20px;
+    letter-spacing: -2px;
+}
+
+.industry-header p {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* --- GRID SYSTEM --- */
+.industry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 Kolom di Monitor Gede */
+    gap: 35px; /* Spasi antar card yang lega */
+}
+
+/* --- INDUSTRY CARD STYLING --- */
+.industry-card {
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 32px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.industry-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px rgba(255, 20, 147, 0.1);
+    border-color: var(--primary-pink);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card-header i {
+    font-size: 2rem;
+    color: var(--primary-pink);
+    background: var(--light-pink);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+}
+
+.card-header h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--dark-purple);
+}
+
+.industry-card > p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    flex-grow: 1; /* Biar tinggi card seragam */
+}
+
+/* --- CASE STUDY TAG --- */
+.project-tag {
+    background: #f1f3f9;
+    color: var(--dark-purple);
+    padding: 12px 20px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--primary-pink);
+}
+
+.project-tag strong {
+    color: var(--primary-pink);
+    text-transform: uppercase;
+}
+
+/* --- FEATURE LIST --- */
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+    padding-left: 28px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.feature-list li::before {
+    content: '\f054'; /* FontAwesome Chevron Right */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--primary-pink);
+    font-size: 0.8rem;
+    top: 3px;
+}
+
+.feature-list li strong {
+    color: var(--secondary-purple);
+}
+
+/* --- RESPONSIVE TUNING --- */
+@media (max-width: 1200px) {
+    .industry-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 992px) {
+    .industry-header h1 { font-size: 2.8rem; }
+    .navbar-spacer { height: 100px; }
+}
+
+@media (max-width: 768px) {
+    .industry-grid { grid-template-columns: 1fr; }
+    .industry-header h1 { font-size: 2.2rem; }
+    .industry-card { padding: 40px 30px; }
+    .industry-page .container { padding: 0 20px !important; }
+}
+
+/* Staggered Entrance Animation */
+.industry-card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUpPro 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.industry-card:nth-child(1) { animation-delay: 0.1s; }
+.industry-card:nth-child(2) { animation-delay: 0.2s; }
+.industry-card:nth-child(3) { animation-delay: 0.3s; }
+.industry-card:nth-child(4) { animation-delay: 0.4s; }
+.industry-card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUpPro {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

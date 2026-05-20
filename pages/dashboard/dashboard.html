@@ -1,0 +1,238 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title" id="dynamicPageTitle">System Overview</h1>
+                <p class="page-subtitle" id="dynamicPageSubtitle">Pusat kendali operasional HerAI Fellowship 2026</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p>Super Admin Access</p>
+                    </div>
+                    <div class="admin-avatar">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="section-overview" class="dashboard-section">
+            
+            <section class="quota-widget glass-panel">
+                <div class="quota-header">
+                    <div>
+                        <h2><i class="fas fa-bullseye neon-pink-text"></i> Fellowship Quota & Target</h2>
+                        <p>Progres kurasi peserta terpilih untuk batch 2026</p>
+                    </div>
+                    <div class="quota-numbers">
+                        <span class="current-quota">0</span>
+                        <span class="max-quota">/ 100</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar-glow" style="width: 0%;"></div>
+                </div>
+                <p class="quota-status">Menghitung kuota...</p>
+            </section>
+
+            <section class="features-grid">
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-purple"><i class="fas fa-cogs"></i></div>
+                    <h3>Global Settings</h3>
+                    <p>Kontrol akses publik. Matikan/nyalakan form pendaftaran, tahan halaman pengumuman, dan aktifkan Maintenance Mode.</p>
+                    <a href="#/global-settings" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-blue"><i class="fas fa-brain"></i></div>
+                    <h3>AI Pre-Screening</h3>
+                    <p>Generasi ringkasan esai otomatis dan ekstraksi skill teknis pendaftar menggunakan API LLM.</p>
+                    <a href="#/ai-prescreening" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-pink"><i class="fas fa-user-secret"></i></div>
+                    <h3>Anti-Fraud Checker</h3>
+                    <p>Deteksi duplikasi NIK, email, dan WhatsApp pendaftar tanpa memakai limit AI.</p>
+                    <a href="#/anti-fraud" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-green"><i class="fas fa-tasks"></i></div>
+                    <h3>Sistem Skoring</h3>
+                    <p>Rubrik penilaian interaktif (Skala 1-10) untuk Logika, Motivasi, dan Teknis. Dilengkapi Leaderboard.</p>
+                    <a href="#/skoring" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-blue"><i class="fas fa-mail-bulk"></i></div>
+                    <h3>Comm. Engine</h3>
+                    <p>Sistem template email/WA untuk notifikasi status kelolosan massal langsung dari dashboard.</p>
+                    <a href="#/comm-engine" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-purple"><i class="fas fa-cloud-download-alt"></i></div>
+                    <h3>Asset & Links</h3>
+                    <p>Manajemen tautan terpusat untuk Zoom/Meet webinar, grup Telegram, dan modul kurikulum peserta.</p>
+                    <a href="#/assets" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-blue"><i class="fas fa-video"></i></div>
+                    <h3>Video Conference</h3>
+                    <p>Buat room mentoring, briefing, dan koordinasi peserta lalu simpan link ke Asset & Links.</p>
+                    <a href="#/video-conference" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-pink"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>Admin Audit Trail</h3>
+                    <p>Pemantauan aktivitas tim. Catat siapa melakukan apa, kapan, IP Address, dengan fitur History Revert.</p>
+                    <a href="#/audit-trail" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card glass-panel">
+                    <div class="feature-icon neon-green"><i class="fas fa-key"></i></div>
+                    <h3>RBAC Auth</h3>
+                    <p>Manajemen peran tim Data Sorcerers. Atur hak akses spesifik untuk Super Admin dan Reviewer/Kurator.</p>
+                    <a href="#/rbac" class="btn-feature" style="text-decoration: none;">Akses Modul <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </section>
+        </div>
+
+        <div id="section-seleksi" class="dashboard-section" style="display: none;">
+            
+            <section class="stats-grid">
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon neon-blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-data">
+                        <p>Total Pendaftar</p>
+                        <h3 id="statTotal">Loading...</h3>
+                    </div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon neon-purple"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-data">
+                        <p>Jalur Afirmasi 3T</p>
+                        <h3 id="stat3T">Loading...</h3>
+                    </div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon neon-pink"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-data">
+                        <p>Mahasiswa / Freshgrad</p>
+                        <h3 id="statMahasiswa">Loading...</h3>
+                    </div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-icon neon-green"><i class="fas fa-check-double"></i></div>
+                    <div class="stat-data">
+                        <p>Lolos Tahap 1</p>
+                        <h3 id="statLolos">Loading...</h3>
+                    </div>
+                </div>
+            </section>
+
+            <section class="data-section glass-panel">
+                <div class="table-header">
+                    <div class="table-title">
+                        <h3>Database Pendaftar</h3>
+                    </div>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Cari Nama / NIK peserta...">
+                        </div>
+                        <select id="filterJalur" class="cyber-select">
+                            <option value="all">Semua Jalur</option>
+                            <option value="reguler">Jalur Reguler</option>
+                            <option value="afirmasi">Afirmasi 3T</option>
+                        </select>
+                        <select id="filterStatus" class="cyber-select">
+                            <option value="all">Semua Status</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="lolos">Lolos</option>
+                            <option value="gugur">Gugur</option>
+                        </select>
+                        <select id="filterBackground" class="cyber-select">
+                            <option value="all">Semua Latar Belakang</option>
+                            <option value="mahasiswa">Mahasiswa</option>
+                            <option value="fresh_graduate">Fresh Graduate</option>
+                            <option value="profesional">Profesional</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                        <select id="pageSizeSelect" class="cyber-select page-size-select" aria-label="Jumlah data per halaman">
+                            <option value="10">10 data</option>
+                            <option value="25" selected>25 data</option>
+                            <option value="50">50 data</option>
+                            <option value="100">100 data</option>
+                        </select>
+                        <button id="btnSync" class="btn-cyber"><i class="fas fa-sync-alt"></i> Sync Data</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>NAMA & NIK</th>
+                                <th>JALUR</th>
+                                <th>LATAR BELAKANG</th>
+                                <th>ASAL DAERAH</th>
+                                <th>STATUS SELEKSI</th>
+                                <th>TINDAKAN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr class="loading-row">
+                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--icon-blue);"></i>
+                                    <p style="margin-top: 15px; color: var(--text-muted);">Menghubungkan ke secure database...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-pagination" id="tablePagination">
+                    <p id="tablePageInfo">Menampilkan 0 data</p>
+                    <div class="pagination-actions">
+                        <button type="button" class="btn-page" id="btnPrevPage"><i class="fas fa-chevron-left"></i> Prev</button>
+                        <span id="pageIndicator">1 / 1</span>
+                        <button type="button" class="btn-page" id="btnNextPage">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-content glass-panel">
+        <div class="modal-header">
+            <h2>Profil Kandidat</h2>
+            <button class="btn-close" id="btnCloseModal"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="modal-body" id="modalBodyContent">
+            </div>
+        
+        <div class="modal-footer" id="modalFooterControls">
+            </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 40px 30px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <div class="confirm-icon-wrapper" id="confirmIcon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <h2 style="color: var(--dark-purple); font-size: 1.6rem; font-weight: 800; margin-bottom: 10px;">Konfirmasi</h2>
+        <p id="confirmMessage" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px;">
+            Apakah Anda yakin ingin menandai peserta ini sebagai LOLOS?
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button class="btn-cyber" id="btnCancelConfirm" style="background-color: var(--gray-border); color: var(--text-muted); box-shadow: none;">Batal</button>
+            <button class="btn-cyber" id="btnProceedConfirm" style="background-color: var(--success);">Ya, Lanjutkan</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,217 @@
+/* ==========================================================================
+   Styling Khusus Halaman Curriculum (css/curriculum.css)
+   VERSI FINAL: TIMELINE & MODULE CARDS
+   ========================================================================== */
+
+/* --- 1. HERO SECTION --- */
+.curriculum-hero {
+    padding: 180px 20px 100px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #fff5f8 100%);
+    text-align: center;
+    position: relative;
+}
+
+.curriculum-hero h1 {
+    color: var(--dark-purple);
+    font-size: 3.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.curriculum-hero h1 span { color: var(--secondary-purple); }
+
+.curriculum-hero p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* --- 2. PHASE SECTION LAYOUT --- */
+.phase-section {
+    padding: 80px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.phase-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.phase-badge {
+    background: var(--dark-purple);
+    color: var(--white);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 20px rgba(75, 0, 130, 0.2);
+}
+
+.phase-header h2 {
+    font-size: 2.5rem;
+    color: var(--dark-purple);
+    margin-bottom: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.phase-date {
+    color: var(--primary-pink);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.phase-desc {
+    color: var(--text-dark);
+    max-width: 700px;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+/* --- 3. MODULE CARDS (FOUNDATION & SOFT SKILLS) --- */
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.module-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.module-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--secondary-purple);
+}
+
+.module-card.pink-accent::before { background: var(--primary-pink); }
+.module-card.green-accent::before { background: #2ecc71; }
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.module-icon {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--dark-purple);
+}
+
+.module-card h3 {
+    font-size: 1.25rem;
+    color: var(--dark-purple);
+    margin-bottom: 15px;
+}
+
+.module-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.module-list li {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+}
+
+.module-list li i {
+    color: var(--primary-pink);
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+/* --- 4. SPECIALIZATION TRACKS --- */
+.track-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.track-card {
+    background: var(--dark-purple);
+    border-radius: 24px;
+    padding: 35px 30px;
+    color: var(--white);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.track-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.track-card:hover {
+    transform: translateY(-10px);
+    background: #3a0066;
+    box-shadow: 0 25px 50px rgba(75, 0, 130, 0.3);
+}
+
+.track-icon {
+    background: rgba(255,255,255,0.1);
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; color: var(--light-pink);
+    margin-bottom: 20px;
+}
+
+.track-card h3 { font-size: 1.4rem; margin-bottom: 15px; color: var(--white); }
+.track-card p { font-size: 0.95rem; color: #d0d0d0; line-height: 1.6; margin-bottom: 20px; }
+
+.track-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.track-tools span {
+    background: rgba(255, 105, 180, 0.2);
+    color: var(--light-pink);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .curriculum-hero { padding: 140px 20px 80px; }
+    .curriculum-hero h1 { font-size: 2.8rem; }
+    .phase-header h2 { font-size: 2rem; }
+    .phase-section { padding: 60px 0; }
+}

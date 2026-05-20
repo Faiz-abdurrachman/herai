@@ -1,0 +1,400 @@
+/* ==========================================================================
+   CSS HALAMAN AUDIT TRAIL (Admin Activity Log)
+   HerAI Fellowship 2026 - Data Sorcerers
+   ========================================================================== */
+
+/* --- 1. GLOBAL VARIABLES FALLBACK --- */
+:root {
+    --primary-pink: #FF1493;
+    --dark-purple: #1a0b2e;
+    --text-muted: #6b7a90;
+    --text-dark: #334155;
+    --gray-border: #e2e8f0;
+    --bg-main: #f8fafc;
+    --icon-blue: #3b82f6;
+    --icon-purple: #8b5cf6;
+    --success: #10b981;
+    --danger: #e63946;
+}
+
+/* --- 2. TOPBAR HEADER --- */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gray-border);
+}
+
+.page-title {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--dark-purple);
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 5px 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.admin-info { text-align: right; }
+.admin-info h4 { margin: 0; color: var(--dark-purple); font-size: 1rem; }
+.admin-info p { margin: 0; color: var(--text-muted); font-size: 0.8rem; }
+
+/* --- 3. LAYOUT GRID UTAMA --- */
+.audit-grid-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Panel kiri lebih kecil (fixed), panel kanan fleksibel */
+    gap: 25px;
+    align-items: start;
+}
+
+/* Glass Panel (Wadah Card) */
+.glass-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--gray-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    padding: 25px;
+}
+
+.panel-header-border {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-border);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--dark-purple);
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- 4. PANEL KIRI: ACTIVE SESSIONS --- */
+.live-indicator {
+    background: rgba(230, 57, 70, 0.1);
+    color: var(--danger);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.active-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.active-user-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: var(--bg-main);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.active-user-card:hover {
+    border-color: var(--primary-pink);
+    box-shadow: 0 5px 15px rgba(255, 20, 147, 0.08);
+    transform: translateY(-2px);
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    flex-shrink: 0;
+}
+
+.avatar-pink { background: rgba(255, 20, 147, 0.1); color: var(--primary-pink); }
+.avatar-blue { background: #eff6ff; color: #3b82f6; }
+.avatar-purple { background: #fdf4ff; color: #d946ef; }
+
+.user-info { flex: 1; }
+.user-name { margin: 0; color: var(--dark-purple); font-size: 0.95rem; font-weight: 700; }
+.user-role { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--text-muted); }
+
+.current-action {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--gray-border);
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+/* Utility Colors for Icons */
+.icon-blue { color: var(--icon-blue); }
+.icon-purple { color: var(--icon-purple); }
+.icon-success { color: var(--success); }
+
+/* --- 5. PANEL KANAN: AUDIT LOG TABLE --- */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+}
+
+.search-box input {
+    padding: 10px 15px 10px 35px;
+    border: 1px solid var(--gray-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s;
+    width: 250px;
+    font-family: inherit;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.1);
+}
+
+.btn-outline {
+    background: #ffffff;
+    color: var(--dark-purple);
+    border: 1px solid var(--gray-border);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background: var(--dark-purple);
+    color: #fff;
+    border-color: var(--dark-purple);
+}
+
+/* Table Styling */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Biar scroll smooth di iOS */
+}
+
+.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.cyber-table th {
+    text-align: left;
+    padding: 15px 20px;
+    background: var(--bg-main);
+    color: var(--dark-purple);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--gray-border);
+}
+
+.cyber-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--gray-border);
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.cyber-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.empty-row td {
+    padding: 40px !important;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Loading State */
+.audit-loading {
+    text-align: center;
+    padding: 50px 20px;
+}
+.audit-loading i { font-size: 2.5rem; color: var(--primary-pink); }
+.audit-loading p { margin-top: 15px; color: var(--dark-purple); font-weight: 600; }
+.hidden { display: none !important; }
+
+/* --- 6. LOG BADGES (Kategori Tindakan) --- */
+.log-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.log-update   { background: rgba(5, 205, 153, 0.15); color: #047857; border: 1px solid rgba(5, 205, 153, 0.3); }
+.log-settings { background: rgba(139, 92, 246, 0.15); color: #6d28d9; border: 1px solid rgba(139, 92, 246, 0.3); }
+.log-status   { background: rgba(59, 130, 246, 0.15); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.3); }
+.log-ai       { background: rgba(255, 20, 147, 0.15); color: var(--primary-pink); border: 1px solid rgba(255, 20, 147, 0.3); }
+.log-login    { background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+#auditTable th:nth-child(1),
+#auditTable td:nth-child(1) { width: 14%; }
+#auditTable th:nth-child(2),
+#auditTable td:nth-child(2) { width: 18%; }
+#auditTable th:nth-child(3),
+#auditTable td:nth-child(3) { width: 34%; }
+#auditTable th:nth-child(4),
+#auditTable td:nth-child(4) { width: 18%; }
+#auditTable th:nth-child(5),
+#auditTable td:nth-child(5) { width: 16%; }
+
+.col-action {
+    min-width: 0;
+}
+
+.col-action .log-badge {
+    margin-bottom: 8px;
+}
+
+.log-desc {
+    color: var(--text-dark);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+/* --- 7. RESPONSIVE DESIGN (HP & TABLET) --- */
+@media (max-width: 1024px) {
+    /* Tablet: Ubah jadi 1 kolom bertumpuk */
+    .audit-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile: Rombak topbar dan kontrol tabel */
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .topbar-right {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .admin-info { text-align: left; }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .table-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-box, .search-box input {
+        width: 100%;
+    }
+
+    .btn-outline {
+        flex: 1; /* Tombol jadi setengah-setengah lebarnya */
+        justify-content: center;
+    }
+    
+    .glass-panel {
+        padding: 15px; /* Kurangi padding di HP biar luas */
+    }
+
+    /* Pastikan Sidebar dan Main Content bersebelahan */
+    .dashboard-layout {
+        display: flex;
+        min-height: 100vh;
+        background-color: var(--bg-main, #f8fafc);
+    }
+
+    #sidebar-container {
+        width: 280px; /* Sesuaikan lebar sidebar lu */
+        flex-shrink: 0;
+        background: var(--dark-purple, #1a0b2e);
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 30px;
+        overflow-y: auto;
+    }
+
+    /* Responsive: Kalau di HP sidebar biasanya disembunyikan/dijadikan overlay */
+    @media (max-width: 768px) {
+        #sidebar-container {
+            display: none; /* Atau buat logic sidebar mobile di sini */
+        }
+        .dashboard-layout {
+            flex-direction: column;
+        }
+    }
+}

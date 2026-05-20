@@ -1,0 +1,356 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Asset & Links Manager</h1>
+                <p class="page-subtitle">Pusat kontrol tautan, modul kurikulum, dan resource virtual HerAI</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p>Resource Access</p>
+                    </div>
+                    <div class="admin-avatar" style="background: rgba(139, 92, 246, 0.1); color: var(--icon-purple);">
+                        <i class="fas fa-link"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--icon-blue); background: rgba(59, 130, 246, 0.1);"><i class="fas fa-globe"></i></div>
+                <div class="stat-data">
+                    <p>Total Tautan Aktif</p>
+                    <h3 id="statTotalLinks">12</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--success); background: rgba(5, 205, 153, 0.1);"><i class="fas fa-book-open"></i></div>
+                <div class="stat-data">
+                    <p>Modul & Kurikulum</p>
+                    <h3 id="statModules">5 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">File</span></h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--primary-pink); background: var(--light-pink);"><i class="fas fa-video"></i></div>
+                <div class="stat-data">
+                    <p>Virtual Meetings</p>
+                    <h3 id="statMeetings">2 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Ruang</span></h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="data-section glass-panel">
+            <div class="table-header" style="border-bottom: 1px solid var(--gray-border); padding-bottom: 20px; margin-bottom: 20px;">
+                <div class="table-title">
+                    <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple);">
+                        <i class="fas fa-folder-open" style="color: var(--icon-purple);"></i> Direktori Resource Peserta
+                    </h3>
+                </div>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchAsset" placeholder="Cari nama tautan...">
+                    </div>
+                    <select id="filterCategory" class="cyber-select">
+                        <option value="all">Semua Kategori</option>
+                        <option value="komunitas">Komunitas & Grup</option>
+                        <option value="webinar">Webinar & Zoom</option>
+                        <option value="kurikulum">Kurikulum (Pyronyx)</option>
+                        <option value="branding">Branding Kit</option>
+                    </select>
+                    <button id="btnAddAsset" class="btn-cyber" style="background: var(--dark-purple);">
+                        <i class="fas fa-plus"></i> Tambah Baru
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>NAMA ASSET / TAUTAN</th>
+                            <th>KATEGORI</th>
+                            <th>TARGET URL</th>
+                            <th>STATUS AKSES</th>
+                            <th>TINDAKAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assetTableBody">
+                        
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple); display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 35px; height: 35px; border-radius: 8px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="fab fa-telegram-plane"></i>
+                                    </div>
+                                    <div>
+                                        Grup Telegram Resmi HerAI
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Batch 1 (2026)</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge cat-komunitas">Komunitas</span></td>
+                            <td>
+                                <div class="url-display">
+                                    <span class="url-text">https://t.me/+HerAI2026SecureLink</span>
+                                    <button class="btn-copy-url" title="Salin Tautan"><i class="far fa-copy"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="cyber-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action"><i class="fas fa-pen"></i> Edit</button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple); display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 35px; height: 35px; border-radius: 8px; background: #eff6ff; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <div>
+                                        Zoom: Kick-off ASCEND 2026
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Passcode: HERAI26</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge cat-webinar">Webinar</span></td>
+                            <td>
+                                <div class="url-display">
+                                    <span class="url-text">https://zoom.us/j/123456789</span>
+                                    <button class="btn-copy-url" title="Salin Tautan"><i class="far fa-copy"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="cyber-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action"><i class="fas fa-pen"></i> Edit</button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple); display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 35px; height: 35px; border-radius: 8px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div>
+                                        Modul 1: Intro to Python & AI
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Pyronyx Academy Syllabus</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge cat-kurikulum">Kurikulum</span></td>
+                            <td>
+                                <div class="url-display">
+                                    <span class="url-text">https://drive.google.com/file/d/...</span>
+                                    <button class="btn-copy-url" title="Salin Tautan"><i class="far fa-copy"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="cyber-switch">
+                                    <input type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action"><i class="fas fa-pen"></i> Edit</button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple); display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 35px; height: 35px; border-radius: 8px; background: var(--light-pink); color: var(--primary-pink); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <div>
+                                        HerAI Virtual Background
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Gunakan saat sesi Mentoring</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge cat-branding">Branding Kit</span></td>
+                            <td>
+                                <div class="url-display">
+                                    <span class="url-text">https://datasorcerers.id/vbg-herai</span>
+                                    <button class="btn-copy-url" title="Salin Tautan"><i class="far fa-copy"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="cyber-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action"><i class="fas fa-pen"></i> Edit</button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div class="modal-overlay" id="assetModal">
+    <div class="modal-content glass-panel" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 id="assetModalTitle" style="color: var(--dark-purple);">Tambah Tautan Baru</h2>
+            <button class="btn-close" id="btnCloseAsset"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="modal-body" style="padding: 25px;">
+            <form id="assetForm" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Nama Tautan / Resource</label>
+                    <input type="text" id="assetName" placeholder="Contoh: Zoom Mentoring Sesi 1" required style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif;">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Kategori</label>
+                    <select id="assetCategory" class="cyber-select" required style="width: 100%;">
+                        <option value="komunitas">Komunitas & Grup (Telegram/WA)</option>
+                        <option value="webinar">Webinar & Zoom Meeting</option>
+                        <option value="kurikulum">Kurikulum (Drive/Notion/PDF)</option>
+                        <option value="branding">Branding Kit & Media</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">URL Tujuan</label>
+                    <input type="url" id="assetUrl" placeholder="https://..." required style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif;">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Catatan Tambahan (Opsional)</label>
+                    <input type="text" id="assetNotes" placeholder="Contoh: Passcode: 123456" style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif;">
+                </div>
+
+            </form>
+        </div>
+        
+        <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid var(--gray-border);">
+            <button class="btn-cyber" id="btnCancelAsset" style="background: var(--gray-border); color: var(--text-muted); box-shadow: none;">Batal</button>
+            <button class="btn-cyber" id="btnSaveAsset" style="background: var(--primary-pink);">
+                <i class="fas fa-save"></i> Simpan Tautan
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles untuk Asset Page */
+    
+    /* Category Badges */
+    .cat-komunitas { background: rgba(2, 132, 199, 0.1); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.2); }
+    .cat-webinar { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .cat-kurikulum { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.2); }
+    .cat-branding { background: var(--light-pink); color: var(--primary-pink); border: 1px solid rgba(255, 20, 147, 0.2); }
+
+    /* URL Display & Copy Button */
+    .url-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8fafc;
+        border: 1px dashed var(--gray-border);
+        padding: 6px 12px;
+        border-radius: 8px;
+        width: fit-content;
+        max-width: 250px;
+    }
+    .url-text {
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: var(--icon-blue);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .btn-copy-url {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 5px;
+        transition: 0.2s;
+    }
+    .btn-copy-url:hover {
+        color: var(--primary-pink);
+    }
+
+    /* Modern Toggle Switch */
+    .cyber-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+    }
+    .cyber-switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: var(--gray-border);
+        transition: .4s;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+    }
+    input:checked + .slider {
+        background-color: var(--success);
+    }
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+    .slider.round {
+        border-radius: 34px;
+    }
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>

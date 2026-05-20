@@ -1,0 +1,169 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Sistem Skoring & Leaderboard</h1>
+                <p class="page-subtitle">Kurasi esai dan penilaian profil peserta secara interaktif</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p>Super Admin Access</p>
+                    </div>
+                    <div class="admin-avatar" style="background: rgba(59, 130, 246, 0.1); color: var(--icon-blue);">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-purple"><i class="fas fa-clipboard-check"></i></div>
+                <div class="stat-data">
+                    <p>Kandidat Berperingkat</p>
+                    <h3 id="statDinilai">0</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-blue"><i class="fas fa-star-half-alt"></i></div>
+                <div class="stat-data">
+                    <p>Rata-rata Ranking Score</p>
+                    <h3 id="statRataRata">0.0</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-pink"><i class="fas fa-trophy"></i></div>
+                <div class="stat-data">
+                    <p>Ranking Score Tertinggi</p>
+                    <h3 id="statTertinggi">0.0</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="data-section glass-panel">
+            <div class="table-header">
+                <div class="table-title">
+                    <h3>Leaderboard Seleksi</h3>
+                </div>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchSkoring" placeholder="Cari Nama Peserta...">
+                    </div>
+                    <select id="skoringPageSizeSelect" class="cyber-select page-size-select" aria-label="Jumlah kandidat per halaman">
+                        <option value="10">10 data</option>
+                        <option value="25" selected>25 data</option>
+                        <option value="50">50 data</option>
+                        <option value="100">100 data</option>
+                    </select>
+                    <button id="btnSyncSkor" class="btn-cyber"><i class="fas fa-sync-alt"></i> Sync Data</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="cyber-table skoring-table">
+                    <thead>
+                        <tr>
+                            <th class="col-rank">Rank</th>
+                            <th class="col-candidate">Kandidat</th>
+                            <th class="col-score">AI</th>
+                            <th class="col-score">Reviewer</th>
+                            <th class="col-rubric">Rubrik</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-actions">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="skoringTableBody">
+                        <tr class="loading-row">
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary-pink);"></i>
+                                <p style="margin-top: 15px; color: var(--text-muted);">Menghitung kalkulasi skor...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-pagination" id="skoringTablePagination">
+                <p id="skoringPageInfo">Menampilkan 0 data</p>
+                <div class="pagination-actions">
+                    <button type="button" class="btn-page" id="btnPrevSkoringPage"><i class="fas fa-chevron-left"></i> Prev</button>
+                    <span id="skoringPageIndicator">1 / 1</span>
+                    <button type="button" class="btn-page" id="btnNextSkoringPage">Next <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="skoringModal">
+    <div class="modal-content glass-panel" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2>Edit Nilai Reviewer</h2>
+            <button class="btn-close" id="btnCloseSkoring"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--gray-border);">
+                <div>
+                    <h3 id="kandidatNama" style="color:var(--dark-purple); font-size: 1.4rem; margin:0 0 5px 0;">Nama Peserta</h3>
+                    <p id="kandidatUniv" style="color:var(--text-muted); font-size: 0.9rem; margin:0;">Asal Instansi</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin:0 0 5px 0; text-transform:uppercase; font-weight:700;">Skor Rata-Rata</p>
+                    <h2 id="liveAvgScore" style="color:var(--primary-pink); font-size: 2.2rem; margin:0; font-family:'Space Grotesk', sans-serif;">0.0</h2>
+                </div>
+            </div>
+
+            <form id="skoringForm">
+                <input type="hidden" id="skoringRowId">
+
+                <div style="margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <label style="font-weight: 700; color: var(--dark-purple);">Logika Berpikir & Problem Solving</label>
+                        <span id="valLogika" style="font-weight: 800; color: var(--primary-pink);">0</span>
+                    </div>
+                    <input type="range" id="skorLogika" min="0" max="10" step="1" value="0" style="width: 100%; accent-color: var(--primary-pink);">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <label style="font-weight: 700; color: var(--dark-purple);">Motivasi Belajar & Komitmen</label>
+                        <span id="valMotivasi" style="font-weight: 800; color: var(--primary-pink);">0</span>
+                    </div>
+                    <input type="range" id="skorMotivasi" min="0" max="10" step="1" value="0" style="width: 100%; accent-color: var(--primary-pink);">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <label style="font-weight: 700; color: var(--dark-purple);">Kesiapan Teknis Dasar</label>
+                        <span id="valTeknis" style="font-weight: 800; color: var(--primary-pink);">0</span>
+                    </div>
+                    <input type="range" id="skorTeknis" min="0" max="10" step="1" value="0" style="width: 100%; accent-color: var(--primary-pink);">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <label style="font-weight: 700; color: var(--dark-purple);">Kesesuaian Latar Belakang / Afirmasi</label>
+                        <span id="valLatarBelakang" style="font-weight: 800; color: var(--primary-pink);">0</span>
+                    </div>
+                    <input type="range" id="skorLatarBelakang" min="0" max="10" step="1" value="0" style="width: 100%; accent-color: var(--primary-pink);">
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer" style="justify-content: space-between; align-items: center; background: #f8fafc;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;"><i class="fas fa-info-circle"></i> AI Score menjadi baseline. Nilai reviewer adalah override sementara.</p>
+            <div class="skoring-decision-actions">
+                <button type="button" class="btn-reject" id="btnRejectSkoring"><i class="fas fa-times"></i> Gugur</button>
+                <button type="button" class="btn-accept" id="btnAcceptSkoring"><i class="fas fa-check"></i> Lolos Tahap 1</button>
+                <button id="btnSaveSkor" class="btn-cyber" style="background: var(--dark-purple);"><i class="fas fa-save"></i> Simpan Penilaian</button>
+            </div>
+        </div>
+    </div>
+</div>

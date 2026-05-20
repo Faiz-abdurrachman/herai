@@ -1,0 +1,229 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">AI Pre-Screening System</h1>
+                <p class="page-subtitle">Automated essay summarization & skill extraction via Sorcerer-LLM</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p>Super Admin Access</p>
+                    </div>
+                    <div class="admin-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-blue"><i class="fas fa-microchip"></i></div>
+                <div class="stat-data">
+                    <p>Engine Status</p>
+                    <h3 style="color: var(--success);"><i class="fas fa-circle" style="font-size: 0.8rem; margin-right: 5px;"></i> Online</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-purple"><i class="fas fa-file-signature"></i></div>
+                <div class="stat-data">
+                    <p>Esai Dianalisis</p>
+                    <h3 id="statAiAnalyzed">0 / 100</h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon neon-pink"><i class="fas fa-bolt"></i></div>
+                <div class="stat-data">
+                    <p>Rata-rata Waktu Proses</p>
+                    <h3 id="statAiTime">0.0s</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="ai-workspace" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start;">
+            
+            <div class="candidate-queue glass-panel" style="padding: 25px; height: 600px; display: flex; flex-direction: column;">
+                <h3 style="font-family: 'Space Grotesk', sans-serif; color: var(--dark-purple); margin-bottom: 15px; font-weight: 800;">Queue List</h3>
+                
+                <div class="search-box" style="margin-bottom: 20px;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--text-muted); padding-top: 10px;"></i>
+                    <input type="text" id="searchAiQueue" placeholder="Cari kandidat..." style="width: 100%; background: #f8fafc; border: 1px solid var(--gray-border); color: var(--text-dark); padding: 10px 15px 10px 40px; border-radius: 10px; outline: none;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 14px;">
+                    <select id="filterAiQueue" class="cyber-select" style="width: 100%;">
+                        <option value="all">Semua kandidat</option>
+                        <option value="unscanned" selected>Belum discan</option>
+                        <option value="scanned">Sudah discan</option>
+                    </select>
+                    <button type="button" id="btnRefreshAiQueue" class="btn-action" title="Refresh data kandidat">
+                        <i class="fas fa-rotate"></i>
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+                    <button type="button" id="btnSelectNextAi" class="btn-cyber" style="width: 100%; justify-content: center; background: var(--icon-blue);">
+                        <i class="fas fa-forward-step"></i> Pilih Berikutnya
+                    </button>
+                </div>
+
+                <p id="aiRateStatus" style="margin: 0 0 14px; color: var(--text-muted); font-size: 0.82rem; line-height: 1.5;">Mode aman GAS aktif: jeda minimal 8 detik per analisis.</p>
+
+                <div id="aiCandidateList" style="overflow-y: auto; flex-grow: 1; padding-right: 10px;">
+                    <div style="text-align: center; padding: 40px 0;">
+                        <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--icon-blue);"></i>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">Memuat data pendaftar...</p>
+                    </div>
+                    </div>
+            </div>
+
+            <div class="ai-analysis-board glass-panel" style="padding: 30px; min-height: 600px; display: flex; flex-direction: column;">
+                
+                <div id="aiEmptyState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-muted);">
+                    <i class="fas fa-robot" style="font-size: 4rem; color: var(--gray-border); margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--dark-purple); font-family: 'Space Grotesk', sans-serif;">Sorcerer Intelligence Ready</h3>
+                    <p style="max-width: 300px; margin-top: 10px;">Pilih kandidat dari antrean di sebelah kiri untuk memulai analisis esai otomatis.</p>
+                </div>
+
+                <div id="aiResultState" style="display: none; flex-direction: column; height: 100%;">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-border);">
+                        <div>
+                            <h2 id="aiTargetName" style="font-family: 'Space Grotesk', sans-serif; color: var(--dark-purple); margin: 0 0 5px 0; font-weight: 800;">Nama Kandidat</h2>
+                            <p id="aiTargetBackground" style="color: var(--text-muted); margin: 0; font-weight: 500;">Latar Belakang / Instansi</p>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div id="aiScoreWidget" style="display: none; text-align: right; background: rgba(255, 20, 147, 0.05); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255, 20, 147, 0.1);">
+                                <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">AI Match Score</p>
+                                <h2 style="margin: 0; color: var(--primary-pink); font-size: 2rem; font-family: 'Space Grotesk', sans-serif; line-height: 1;">
+                                    <span id="aiScoreValue">0</span><span style="font-size: 1rem; color: var(--text-muted);">/100</span>
+                                </h2>
+                            </div>
+                            <div id="aiRubricWidget" style="display: none; min-width: 240px; background: #fff; border: 1px solid var(--gray-border); border-radius: 12px; padding: 10px 12px;">
+                                <p style="margin: 0 0 8px; font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">AI Rubric Baseline</p>
+                                <div id="aiRubricGrid" class="ai-rubric-grid"></div>
+                            </div>
+                    
+                            <button id="btnRunAi" class="btn-cyber" style="background: var(--dark-purple); border-color: var(--dark-purple);">
+                                <i class="fas fa-wand-magic-sparkles"></i> Generate Insight
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="aiOutputBox" style="flex-grow: 1; display: flex; flex-direction: column; gap: 20px; position: relative;">
+                        
+                        <div id="aiScanningOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 10; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px;">
+                            <i class="fas fa-brain fa-beat" style="font-size: 3rem; color: var(--primary-pink); margin-bottom: 15px;"></i>
+                            <p style="color: var(--dark-purple); font-weight: 700; letter-spacing: 1px;">MENGANALISIS 5 ESAI KANDIDAT...</p>
+                            <div style="width: 200px; height: 4px; background: var(--gray-border); border-radius: 10px; margin-top: 10px; overflow: hidden;">
+                                <div style="height: 100%; width: 50%; background: var(--primary-pink); animation: scanLine 1s infinite linear;"></div>
+                            </div>
+                        </div>
+
+                        <div style="background: #f8fafc; border: 1px solid var(--gray-border); border-left: 4px solid var(--primary-pink); border-radius: 10px; padding: 20px;">
+                            <h4 style="color: var(--dark-purple); margin: 0 0 10px 0; font-size: 0.9rem; text-transform: uppercase;"><i class="fas fa-align-left" style="color: var(--primary-pink); margin-right: 5px;"></i> Executive Summary (3 Points)</h4>
+                            <ul id="aiSummaryList" style="margin: 0; padding-left: 20px; color: var(--text-dark); line-height: 1.6; font-size: 0.95rem;">
+                                <li style="color: var(--text-muted); list-style: none;">Belum ada data analisis.</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: #f8fafc; border: 1px solid var(--gray-border); border-left: 4px solid var(--icon-blue); border-radius: 10px; padding: 20px;">
+                            <h4 style="color: var(--dark-purple); margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase;"><i class="fas fa-code" style="color: var(--icon-blue); margin-right: 5px;"></i> Extracted Technical Skills</h4>
+                            <div id="aiSkillsTags" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <span style="color: var(--text-muted); font-size: 0.95rem;">Belum ada data analisis.</span>
+                            </div>
+                        </div>
+
+                        <div style="background: #f8fafc; border: 1px solid var(--gray-border); border-left: 4px solid var(--icon-purple); border-radius: 10px; padding: 20px;">
+                            <h4 style="color: var(--dark-purple); margin: 0 0 10px 0; font-size: 0.9rem; text-transform: uppercase;"><i class="fas fa-heartbeat" style="color: var(--icon-purple); margin-right: 5px;"></i> Motivation & Goal Alignment</h4>
+                            <p id="aiMotivationText" style="margin: 0; color: var(--text-dark); font-size: 0.95rem; line-height: 1.6;">
+                                <span style="color: var(--text-muted);">Belum ada data analisis.</span>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<style>
+    /* Tambahan style khusus AI workspace agar tidak ngotorin dashboard.css */
+    .queue-item:hover {
+        background: var(--light-pink);
+        border-color: var(--primary-pink);
+    }
+    .queue-item.active {
+        background: var(--light-pink);
+        border-color: var(--primary-pink);
+        border-left: 4px solid var(--primary-pink);
+    }
+    @keyframes scanLine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(200%); }
+    }
+    .skill-tag {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--icon-blue);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .ai-rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .ai-rubric-grid span {
+        background: #f8fafc;
+        border: 1px solid var(--gray-border);
+        border-radius: 8px;
+        color: var(--dark-purple);
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 7px 6px;
+        text-align: center;
+    }
+    .ai-rubric-grid small {
+        color: var(--text-muted);
+        display: block;
+        font-size: 0.62rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+    }
+    .ai-workspace {
+        grid-template-columns: minmax(320px, 0.9fr) minmax(0, 2.1fr) !important;
+    }
+    .queue-item h4,
+    #aiTargetName,
+    #aiTargetBackground {
+        overflow-wrap: anywhere;
+    }
+    #aiOutputBox {
+        min-width: 0;
+    }
+    #aiSummaryList {
+        padding-left: 0 !important;
+        list-style: none;
+    }
+    @media (max-width: 1080px) {
+        .ai-workspace {
+            grid-template-columns: 1fr !important;
+        }
+        .candidate-queue {
+            height: 420px !important;
+        }
+    }
+</style>

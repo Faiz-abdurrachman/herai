@@ -1,0 +1,263 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Role-Based Access Control</h1>
+                <p class="page-subtitle">Manajemen otorisasi, peran tim, dan akses keamanan sistem</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile" style="border-color: var(--primary-pink);">
+                    <div class="admin-info">
+                        <h4>System Admin</h4>
+                        <p style="color: var(--primary-pink);">Root Access</p>
+                    </div>
+                    <div class="admin-avatar" style="background: var(--dark-purple); color: var(--primary-pink);">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--icon-blue); background: rgba(59, 130, 246, 0.1);"><i class="fas fa-users-cog"></i></div>
+                <div class="stat-data">
+                    <p>Total Admin Terdaftar</p>
+                    <h3 id="statTotalAdmins">4 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">User</span></h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--primary-pink); background: var(--light-pink);"><i class="fas fa-crown"></i></div>
+                <div class="stat-data">
+                    <p>Super Admin</p>
+                    <h3 id="statSuperAdmins">1 <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">User</span></h3>
+                </div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color: var(--success); background: rgba(5, 205, 153, 0.1);"><i class="fas fa-user-check"></i></div>
+                <div class="stat-data">
+                    <p>Status Keamanan</p>
+                    <h3 style="color: var(--success);">Optimal</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="data-section glass-panel">
+            <div class="table-header" style="border-bottom: 1px solid var(--gray-border); padding-bottom: 20px; margin-bottom: 20px;">
+                <div class="table-title">
+                    <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-purple);">
+                        <i class="fas fa-id-card-alt" style="color: var(--primary-pink);"></i> Daftar Akses Tim
+                    </h3>
+                </div>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchAdmin" placeholder="Cari nama atau ID...">
+                    </div>
+                    <button id="btnAddAdmin" class="btn-cyber" style="background: var(--dark-purple);">
+                        <i class="fas fa-user-plus"></i> Tambah Admin Baru
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>NAMA & ID AKSES</th>
+                            <th>ROLE / PERAN</th>
+                            <th>MODUL DIAKSES</th>
+                            <th>LAST LOGIN</th>
+                            <th>STATUS</th>
+                            <th>TINDAKAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple);">Marchel Andrian</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">ID: ROOT-CHEN</div>
+                            </td>
+                            <td><span class="role-badge role-super"><i class="fas fa-crown"></i> Super Admin</span></td>
+                            <td style="font-size: 0.85rem; color: var(--text-muted);">ALL MODULES (Root)</td>
+                            <td style="font-size: 0.85rem; color: var(--text-dark);">Baru saja</td>
+                            <td><span class="badge" style="background: rgba(5, 205, 153, 0.1); color: var(--success); border: 1px solid rgba(5, 205, 153, 0.3);">Active</span></td>
+                            <td>
+                                <button class="btn-action" style="opacity: 0.5; cursor: not-allowed;" title="Root access tidak dapat diedit"><i class="fas fa-lock"></i> Locked</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple);">Fendy Hendriyanto</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">ID: REV-FENDY</div>
+                            </td>
+                            <td><span class="role-badge role-reviewer"><i class="fas fa-star-half-alt"></i> AI Reviewer</span></td>
+                            <td style="font-size: 0.85rem; color: var(--text-muted);">Skoring, AI Pre-Screening</td>
+                            <td style="font-size: 0.85rem; color: var(--text-dark);">28 Apr 2026, 13:00</td>
+                            <td><span class="badge" style="background: rgba(5, 205, 153, 0.1); color: var(--success); border: 1px solid rgba(5, 205, 153, 0.3);">Active</span></td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action" title="Edit Akses"><i class="fas fa-pen"></i></button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);" title="Cabut Akses"><i class="fas fa-user-slash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--dark-purple);">Ditha Adinda</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">ID: KUR-DITHA</div>
+                            </td>
+                            <td><span class="role-badge role-kurator"><i class="fas fa-clipboard-check"></i> Kurator Data</span></td>
+                            <td style="font-size: 0.85rem; color: var(--text-muted);">Seleksi Tahap 1, Anti-Fraud</td>
+                            <td style="font-size: 0.85rem; color: var(--text-dark);">27 Apr 2026, 09:15</td>
+                            <td><span class="badge" style="background: rgba(5, 205, 153, 0.1); color: var(--success); border: 1px solid rgba(5, 205, 153, 0.3);">Active</span></td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-action" title="Edit Akses"><i class="fas fa-pen"></i></button>
+                                    <button class="btn-action" style="color: var(--danger); border-color: rgba(230,57,70,0.3);" title="Cabut Akses"><i class="fas fa-user-slash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div class="modal-overlay" id="adminModal">
+    <div class="modal-content glass-panel" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2 id="adminModalTitle" style="color: var(--dark-purple);">Registrasi Akses Tim Baru</h2>
+            <button class="btn-close" id="btnCloseAdmin"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="modal-body" style="padding: 25px;">
+            <form id="adminForm" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Nama Lengkap</label>
+                        <input type="text" id="adminName" placeholder="Nama anggota tim" required style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">ID Login (Username)</label>
+                        <input type="text" id="adminUsername" placeholder="Contoh: KUR-NAMA" required style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif; background: #f8fafc;">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Temporary Password</label>
+                    <input type="text" id="adminPass" placeholder="Password untuk login pertama kali" required style="width: 100%; padding: 12px 15px; border: 1px solid var(--gray-border); border-radius: 8px; outline: none; font-family: 'Inter', sans-serif;">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Assign Role (Tingkat Akses)</label>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        
+                        <label class="role-selector">
+                            <input type="radio" name="role" value="reviewer" checked>
+                            <div class="role-card">
+                                <div class="role-icon" style="color: #3b82f6; background: #eff6ff;"><i class="fas fa-star-half-alt"></i></div>
+                                <div>
+                                    <h4 style="margin: 0 0 3px 0; color: var(--dark-purple);">Reviewer</h4>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Akses ke Sistem Skoring dan AI Pre-Screening. Tidak bisa edit data induk.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="role-selector">
+                            <input type="radio" name="role" value="kurator">
+                            <div class="role-card">
+                                <div class="role-icon" style="color: #16a34a; background: #dcfce7;"><i class="fas fa-clipboard-check"></i></div>
+                                <div>
+                                    <h4 style="margin: 0 0 3px 0; color: var(--dark-purple);">Kurator Data</h4>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Akses ke Seleksi Tahap 1 dan Anti-Fraud. Dapat meloloskan/menggugurkan pendaftar.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="role-selector">
+                            <input type="radio" name="role" value="superadmin">
+                            <div class="role-card" style="border-color: rgba(255, 20, 147, 0.2);">
+                                <div class="role-icon" style="color: var(--primary-pink); background: var(--light-pink);"><i class="fas fa-crown"></i></div>
+                                <div>
+                                    <h4 style="margin: 0 0 3px 0; color: var(--primary-pink);">Super Admin</h4>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Kontrol penuh (Global Settings, Audit Trail, Comm Engine, Manajemen RBAC).</p>
+                                </div>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        
+        <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid var(--gray-border);">
+            <button class="btn-cyber" id="btnCancelAdmin" style="background: var(--gray-border); color: var(--text-muted); box-shadow: none;">Batal</button>
+            <button class="btn-cyber" id="btnSaveAdmin" style="background: var(--dark-purple);">
+                <i class="fas fa-key"></i> Generate Access
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling khusus RBAC Page */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    .role-super { background: var(--light-pink); color: var(--primary-pink); border: 1px solid rgba(255, 20, 147, 0.2); }
+    .role-reviewer { background: rgba(59, 130, 246, 0.1); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .role-kurator { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.2); }
+
+    /* Custom Role Selector UI */
+    .role-selector {
+        cursor: pointer;
+    }
+    .role-selector input {
+        display: none;
+    }
+    .role-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 15px;
+        border: 2px solid var(--gray-border);
+        border-radius: 10px;
+        background: #fff;
+        transition: 0.2s;
+    }
+    .role-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .role-selector input:checked + .role-card {
+        border-color: var(--primary-pink);
+        background: #fffafb;
+        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.05);
+    }
+</style>

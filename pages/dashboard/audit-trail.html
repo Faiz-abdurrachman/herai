@@ -1,0 +1,159 @@
+<div class="dashboard-layout">
+    
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Admin Activity & Audit Trail</h1>
+                <p class="page-subtitle">Pemantauan aktivitas real-time tim dan riwayat sistem</p>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4 id="display-admin-name">Marchel Andrian</h4>
+                        <p id="display-admin-id">Super Admin Access</p>
+                    </div>
+                    <div class="admin-avatar avatar-pink">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="audit-grid-layout">
+
+            <section class="glass-panel audit-session-panel">
+                <div class="panel-header panel-header-border">
+                    <h3 class="panel-title">
+                        <i class="fas fa-users icon-blue"></i> Active Sessions
+                    </h3>
+                    <span class="live-indicator"><i class="fas fa-circle fa-beat"></i> LIVE</span>
+                </div>
+
+                <div id="active-users-container" class="active-users-list">
+                    
+                    <div class="active-user-card">
+                        <div class="user-avatar avatar-pink">MA</div>
+                        <div class="user-info">
+                            <h4 class="user-name">Marchel Andrian (You)</h4>
+                            <p class="user-role">Super Admin &bull; 103.24.XX.XX (Mertoyudan, ID)</p>
+                            
+                            <div class="current-action" style="padding-top: 5px; margin-top: 5px; border-top: none;">
+                                <i class="fas fa-laptop icon-blue"></i> <span style="font-size: 0.8rem; color: var(--text-muted);">Windows &bull; Google Chrome</span>
+                            </div>
+
+                            <div class="current-action">
+                                <i class="fas fa-desktop icon-purple"></i> Sedang melihat halaman <strong>Audit Trail</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="active-user-card">
+                        <div class="user-avatar avatar-blue">FH</div>
+                        <div class="user-info">
+                            <h4 class="user-name">Fendy Hendriyanto</h4>
+                            <p class="user-role">Reviewer &bull; 114.125.XX.XX (Jakarta, ID)</p>
+
+                            <div class="current-action" style="padding-top: 5px; margin-top: 5px; border-top: none;">
+                                <i class="fas fa-mobile-alt icon-blue"></i> <span style="font-size: 0.8rem; color: var(--text-muted);">Mac OS &bull; Safari</span>
+                            </div>
+
+                            <div class="current-action">
+                                <i class="fas fa-edit icon-success"></i> Sedang memberi skor pada <strong>Sistem Skoring</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="glass-panel audit-log-panel">
+                <div class="table-header panel-header-border">
+                    <div class="table-title">
+                        <h3 class="panel-title">
+                            <i class="fas fa-history icon-purple"></i> Jejak Tindakan & Perubahan
+                        </h3>
+                    </div>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchLog" placeholder="Cari aktivitas atau admin...">
+                        </div>
+                        <button type="button" id="btnRefreshAudit" class="btn-cyber btn-outline">
+                            <i class="fas fa-sync-alt"></i> Segarkan
+                        </button>
+                        <button type="button" id="btnExportLog" class="btn-cyber btn-outline">
+                            <i class="fas fa-file-download"></i> CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <div id="loadingAudit" class="audit-loading hidden">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Mengambil jejak aktivitas server...</p>
+                    </div>
+
+                    <table class="cyber-table" id="auditTable">
+                        <thead>
+                            <tr>
+                                <th>WAKTU (WIB)</th>
+                                <th>AKTOR</th>
+                                <th>TINDAKAN</th>
+                                <th>LOKASI & IP</th>
+                                <th>PERANGKAT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            
+                            <tr>
+                                <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
+                                    Hari ini<br><span style="color: var(--dark-purple); font-weight: 600;">13:52:10</span>
+                                </td>
+                                <td style="font-weight: 700; color: var(--dark-purple); font-size: 0.9rem;">
+                                    Fendy Hendriyanto<br>
+                                    <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">fendy-DS-2026</span>
+                                </td>
+                                <td>
+                                    <span class="log-badge log-update" style="margin-bottom: 5px;">SKORING</span>
+                                    <div style="font-size: 0.85rem; color: var(--text-dark); white-space: normal; line-height: 1.4;">Menyimpan nilai akhir <strong style="color: var(--primary-pink);">8.5</strong> untuk peserta <strong>Alya Putri</strong></div>
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--icon-blue); margin-right: 5px;"></i>114.125.XX.XX<br>Jakarta, ID
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                    <i class="fab fa-apple" style="margin-right: 5px; font-size: 1rem;"></i>Mac OS<br>Safari
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
+                                    Hari ini<br><span style="color: var(--dark-purple); font-weight: 600;">10:15:05</span>
+                                </td>
+                                <td style="font-weight: 700; color: var(--dark-purple); font-size: 0.9rem;">
+                                    Marchel Andrian<br>
+                                    <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">chen-DS-2026</span>
+                                </td>
+                                <td>
+                                    <span class="log-badge log-settings" style="margin-bottom: 5px;">SETTINGS</span>
+                                    <div style="font-size: 0.85rem; color: var(--text-dark); white-space: normal; line-height: 1.4;">Mengaktifkan saklar <strong style="color: var(--danger);">Penutupan Pendaftaran</strong> di halaman Global Settings</div>
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--icon-blue); margin-right: 5px;"></i>103.24.XX.XX<br>Mertoyudan, ID
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                    <i class="fab fa-windows" style="margin-right: 5px; color: #0078D4; font-size: 1rem;"></i>Windows<br>Chrome
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+</div>

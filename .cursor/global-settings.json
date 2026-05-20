@@ -1,0 +1,14 @@
+{
+  "registrationOpen": true,
+  "afirmasiOpen": true,
+  "announcementLive": false,
+  "announcementLaunchAt": "2026-05-25T19:00",
+  "participantPortalOpen": false,
+  "competencyTestOpen": false,
+  "maintenanceMode": false,
+  "registrationClosedMessage": "Pendaftaran HerAI Fellowship Batch 1 (2026) telah resmi ditutup.",
+  "twibbonUrl": "#/twibbon",
+  "passedInfoMessage": "Harap periksa email Anda untuk undangan grup Telegram.",
+  "announcementStage1LaunchAt": "2026-05-25T19:00:00+07:00",
+  "announcementFinalLaunchAt": "2026-05-31T19:00:00+07:00"
+}

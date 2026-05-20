@@ -1,0 +1,251 @@
+<div class="dashboard-layout">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Video Conference</h1>
+                <p class="page-subtitle">WebRTC conference dengan signaling server Gorilla WebSocket</p>
+            </div>
+            <div class="topbar-right">
+                <div class="conference-action-row">
+                    <button id="btnGenerateSignalRoom" class="btn-cyber" style="background: var(--dark-purple);"><i class="fas fa-wand-magic-sparkles"></i> Generate Room</button>
+                    <button id="btnStartManualMedia" class="btn-cyber"><i class="fas fa-video"></i> Aktifkan Kamera</button>
+                    <button id="btnHangupManualCall" class="btn-cyber" style="background: var(--danger);" title="End Call"><i class="fas fa-phone-slash"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card glass-panel"><div class="stat-icon neon-blue"><i class="fas fa-signal"></i></div><div class="stat-data"><p>Status</p><h3 id="manualConferenceStatus">Idle</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-green"><i class="fas fa-users"></i></div><div class="stat-data"><p>Peers</p><h3 id="manualPeerCount">0</h3></div></div>
+            <div class="stat-card glass-panel"><div class="stat-icon neon-pink"><i class="fas fa-server"></i></div><div class="stat-data"><p>Signaling</p><h3 id="manualSignalStatus">Offline</h3></div></div>
+        </section>
+
+        <section class="glass-panel ops-panel">
+            <div class="ops-panel-header">
+                <h3>Room Control</h3>
+            </div>
+
+            <div class="conference-control-grid">
+                <div>
+                    <label class="conference-label" for="signalRoomTitle">Judul Room</label>
+                    <input id="signalRoomTitle" class="conference-input" type="text" value="HerAI Briefing">
+                </div>
+                <div class="conference-generated-room">
+                    <label class="conference-label" for="signalRoomId">Room ID</label>
+                    <input id="signalRoomId" class="conference-input" type="text" value="ABCD-EFGH-JKLM" readonly>
+                    <small>Dibuat otomatis saat klik Generate Room.</small>
+                </div>
+                <div>
+                    <label class="conference-label" for="signalServerUrl">Signaling WebSocket URL</label>
+                    <input id="signalServerUrl" class="conference-input" type="text" value="ws://127.0.0.1:8080/ws">
+                </div>
+            </div>
+
+            <div class="conference-url-box">
+                <span id="signalInviteLink">#/meeting?room=herai-briefing-2026</span>
+                <button id="btnCopyRoomLink" class="btn-action"><i class="far fa-copy"></i> Copy Link</button>
+            </div>
+
+            <div class="manual-video-grid">
+                <div class="manual-video-tile">
+                    <video id="manualLocalVideo" autoplay muted playsinline></video>
+                    <span>Local Preview</span>
+                </div>
+                <div class="manual-remote-grid" id="manualRemoteGrid">
+                    <div class="manual-empty-remote">Remote stream akan muncul setelah peer bergabung.</div>
+                </div>
+            </div>
+
+            <div class="manual-note">
+                Klik <strong>Generate Room</strong>, lalu salin link atau kode room untuk peserta.
+                Admin cukup mengisi judul room; Room ID dibuat otomatis 12 karakter dan bisa diketik peserta dengan atau tanpa tanda hubung.
+                Video/audio tetap peer-to-peer lewat WebRTC; server Gorilla WebSocket hanya meneruskan sinyal room, offer, answer, dan ICE candidate.
+            </div>
+        </section>
+
+        <section class="glass-panel ops-panel meeting-monitor-panel">
+            <div class="ops-panel-header">
+                <h3>Meeting Server Monitor</h3>
+                <button id="btnRefreshMeetingRooms" class="btn-action"><i class="fas fa-rotate"></i> Refresh</button>
+            </div>
+            <div id="meetingRoomList" class="meeting-room-list">
+                <div class="manual-note">Belum ada room tersimpan.</div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    .conference-control-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .conference-label {
+        color: var(--text-muted);
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        margin-bottom: 7px;
+        text-transform: uppercase;
+    }
+    .conference-input {
+        border: 1px solid var(--gray-border);
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        padding: 12px 14px;
+        width: 100%;
+    }
+    .conference-generated-room small {
+        color: var(--text-muted);
+        display: block;
+        font-size: 0.78rem;
+        margin-top: 7px;
+    }
+    .conference-generated-room input[readonly] {
+        background: #f8fafc;
+        color: var(--dark-purple);
+        font-family: monospace;
+        font-weight: 800;
+    }
+    .conference-url-box {
+        align-items: center;
+        background: #f8fafc;
+        border: 1px dashed var(--gray-border);
+        border-radius: 8px;
+        color: var(--icon-blue);
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        font-family: monospace;
+        margin-bottom: 18px;
+        overflow: hidden;
+        padding: 12px 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .conference-url-box span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .conference-action-row {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .meeting-room-list {
+        display: grid;
+        gap: 10px;
+    }
+    .meeting-monitor-panel {
+        margin-top: 26px;
+    }
+    .meeting-room-card {
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid var(--gray-border);
+        border-radius: 8px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr auto;
+        padding: 14px;
+        transition: border 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+    .meeting-room-card:hover {
+        transform: translateY(-1px);
+    }
+    .meeting-room-card.is-online {
+        border-color: rgba(16, 185, 129, 0.45);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.12);
+    }
+    .meeting-room-card strong {
+        color: var(--dark-purple);
+        display: block;
+        margin-bottom: 4px;
+    }
+    .meeting-room-card small {
+        color: var(--text-muted);
+        font-family: monospace;
+    }
+    .manual-video-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 380px) 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+    .manual-video-tile,
+    .manual-remote-tile,
+    .manual-remote-grid {
+        background: #111827;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+    .manual-video-tile {
+        aspect-ratio: 16 / 9;
+    }
+    .manual-video-tile video,
+    .manual-remote-tile video {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+    }
+    .manual-video-tile span,
+    .manual-remote-tile span {
+        background: rgba(17, 24, 39, 0.72);
+        border-radius: 999px;
+        bottom: 10px;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 800;
+        left: 10px;
+        padding: 5px 10px;
+        position: absolute;
+    }
+    .manual-remote-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        min-height: 214px;
+        padding: 12px;
+    }
+    .manual-remote-tile {
+        aspect-ratio: 16 / 9;
+    }
+    .manual-empty-remote {
+        align-items: center;
+        color: rgba(255,255,255,0.72);
+        display: flex;
+        font-weight: 700;
+        justify-content: center;
+        min-height: 190px;
+        text-align: center;
+    }
+    .manual-note {
+        background: #f8fafc;
+        border: 1px solid var(--gray-border);
+        border-radius: 8px;
+        color: var(--text-muted);
+        font-size: 0.86rem;
+        line-height: 1.6;
+        margin-top: 18px;
+        padding: 14px;
+    }
+    .manual-note code {
+        background: #fff;
+        border: 1px solid var(--gray-border);
+        border-radius: 6px;
+        color: var(--dark-purple);
+        padding: 2px 6px;
+    }
+    @media (max-width: 920px) {
+        .manual-video-grid,
+        .conference-control-grid { grid-template-columns: 1fr; }
+    }
+</style>

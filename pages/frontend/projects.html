@@ -1,0 +1,99 @@
+<main class="projects-page">
+    <section class="projects-hero">
+        <div class="container projects-hero-grid">
+            <div>
+                <p class="tagline">FINAL PROJECT HUB</p>
+                <h1>HerAI Project Showcase</h1>
+                <p class="lead-text">Ruang publik untuk menampilkan final project setiap tim, lengkap dengan track, deck, demo, dan profil anggota.</p>
+            </div>
+            <div class="projects-hero-panel">
+                <strong>Submission Window</strong>
+                <span>Siap digunakan untuk pengumpulan project akhir fellowship.</span>
+                <a href="#projectSubmissionForm" class="btn btn-primary">Submit Project</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects-submission-section">
+        <div class="container projects-layout">
+            <aside class="projects-guideline">
+                <span class="profile-badge">Devpost-style Submission</span>
+                <h2>Data yang Ditampung</h2>
+                <p>Setiap tim dapat mengirim detail project, anggota, asal kampus atau instansi, track, overview, link deck PDF, demo, repository, dan kebutuhan follow-up mentoring.</p>
+                <div class="project-filters" id="projectTrackFilters">
+                    <button class="filter-btn active" data-track="all">All Tracks</button>
+                    <button class="filter-btn" data-track="AI Product">AI Product</button>
+                    <button class="filter-btn" data-track="Data & Analytics">Data & Analytics</button>
+                    <button class="filter-btn" data-track="Automation">Automation</button>
+                    <button class="filter-btn" data-track="Social Impact">Social Impact</button>
+                </div>
+            </aside>
+
+            <form class="project-submit-card" id="projectSubmissionForm">
+                <div class="project-form-head">
+                    <div>
+                        <p class="tagline">PROJECT INTAKE</p>
+                        <h2>Submit Final Project</h2>
+                    </div>
+                    <span class="monitor-pill ok">Draft Local</span>
+                </div>
+
+                <div class="project-form-grid">
+                    <label>Nama Tim
+                        <input type="text" id="projectTeamName" placeholder="Team Aurora" required>
+                    </label>
+                    <label>Judul Project
+                        <input type="text" id="projectTitle" placeholder="AI Mentor Matching System" required>
+                    </label>
+                    <label>Nama Anggota
+                        <textarea id="projectMembers" rows="3" placeholder="Nama anggota dipisahkan baris baru" required></textarea>
+                    </label>
+                    <label>Asal Kampus/Instansi
+                        <textarea id="projectInstitution" rows="3" placeholder="Universitas / perusahaan / komunitas" required></textarea>
+                    </label>
+                    <label>Track
+                        <select id="projectTrack" required>
+                            <option value="">Pilih track</option>
+                            <option>AI Product</option>
+                            <option>Data & Analytics</option>
+                            <option>Automation</option>
+                            <option>Social Impact</option>
+                            <option>Multimodal AI</option>
+                        </select>
+                    </label>
+                    <label>Link PDF Slide Deck
+                        <input type="url" id="projectDeckUrl" placeholder="https://drive.google.com/..." required>
+                    </label>
+                    <label>Link Demo
+                        <input type="url" id="projectDemoUrl" placeholder="https://...">
+                    </label>
+                    <label>Repository / Assets
+                        <input type="url" id="projectRepoUrl" placeholder="https://github.com/...">
+                    </label>
+                    <label class="project-wide">Overview
+                        <textarea id="projectOverview" rows="4" placeholder="Ringkasan masalah, solusi, dan dampak project" required></textarea>
+                    </label>
+                    <label class="project-wide">Detail Project
+                        <textarea id="projectDetails" rows="6" placeholder="Metode, dataset, model, evaluasi, limitasi, rencana pengembangan" required></textarea>
+                    </label>
+                </div>
+
+                <div class="project-form-actions">
+                    <p id="projectSubmitMessage" class="profile-message"></p>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Simpan Submission</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="projects-grid-section">
+        <div class="container">
+            <div class="section-title">
+                <p class="tagline">SHOWCASE</p>
+                <h2>Project Gallery</h2>
+                <p class="lead-text">Preview submission peserta akan muncul di sini dan siap diintegrasikan ke database final project.</p>
+            </div>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </div>
+    </section>
+</main>
