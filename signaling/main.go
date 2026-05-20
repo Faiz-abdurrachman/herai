@@ -139,7 +139,7 @@ func serveWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		room: r.URL.Query().Get("room"),
 		hub:  hub,
 		conn: conn,
-		send: make(chan SignalMessage, 1024),
+		send: make(chan SignalMessage, 4096),
 	}
 	if client.id == "" || client.room == "" {
 		_ = conn.WriteJSON(SignalMessage{Type: "error", Payload: mustRaw(`{"message":"clientId and room are required"}`)})
@@ -174,16 +174,16 @@ func (h *Hub) join(client *Client) {
 	}
 	room.clients[client.id] = client
 
-	client.send <- SignalMessage{Type: "joined", Room: client.room, From: "server", Payload: mustJSON(map[string]any{
+	enqueueSignal(client, SignalMessage{Type: "joined", Room: client.room, From: "server", Payload: mustJSON(map[string]any{
 		"clientId": client.id,
 		"peers":    peers,
-	})}
+	})})
 
 	for id, peer := range room.clients {
 		if id == client.id {
 			continue
 		}
-		peer.send <- SignalMessage{Type: "peer-joined", Room: client.room, From: client.id}
+		enqueueSignal(peer, SignalMessage{Type: "peer-joined", Room: client.room, From: client.id})
 	}
 }
 
@@ -204,7 +204,7 @@ func (h *Hub) leave(client *Client) {
 	close(client.send)
 
 	for _, peer := range room.clients {
-		peer.send <- SignalMessage{Type: "peer-left", Room: client.room, From: client.id}
+		enqueueSignal(peer, SignalMessage{Type: "peer-left", Room: client.room, From: client.id})
 	}
 
 	if len(room.clients) == 0 {
@@ -223,7 +223,7 @@ func (h *Hub) forward(message SignalMessage) {
 
 	if message.To != "" {
 		if target := room.clients[message.To]; target != nil {
-			target.send <- message
+			enqueueSignal(target, message)
 		}
 		return
 	}
@@ -232,7 +232,7 @@ func (h *Hub) forward(message SignalMessage) {
 		if id == message.From {
 			continue
 		}
-		client.send <- message
+		enqueueSignal(client, message)
 	}
 }
 
@@ -280,7 +280,40 @@ func (c *Client) readPump() {
 			message.Room = c.room
 		}
 		message.From = c.id
+		if message.Type == "peer-list-request" {
+			c.hub.sendPeerList(c)
+			continue
+		}
 		c.hub.forward(message)
+	}
+}
+
+func (h *Hub) sendPeerList(client *Client) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	room := h.rooms[client.room]
+	if room == nil {
+		return
+	}
+
+	peers := make([]string, 0, len(room.clients))
+	for id := range room.clients {
+		if id != client.id {
+			peers = append(peers, id)
+		}
+	}
+
+	enqueueSignal(client, SignalMessage{Type: "peer-list", Room: client.room, From: "server", Payload: mustJSON(map[string]any{
+		"peers": peers,
+	})})
+}
+
+func enqueueSignal(client *Client, message SignalMessage) {
+	select {
+	case client.send <- message:
+	default:
+		log.Printf("dropping signal type=%s room=%s client=%s: send queue full", message.Type, client.room, client.id)
 	}
 }
 

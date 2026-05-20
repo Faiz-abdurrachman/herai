@@ -53,6 +53,7 @@ window.initMeetingRoom = function() {
     let pendingExitAction = null;
     let activeScreenOwner = null;
     let clockTimer = null;
+    let meshAuditTimer = null;
     let iceServers = [...DEFAULT_ICE_SERVERS];
     let audioContext = null;
     let localAudioMonitor = null;
@@ -178,6 +179,7 @@ window.initMeetingRoom = function() {
         renderPeopleList();
         renderEmptyRemoteIfNeeded();
     };
+    const shouldOfferToPeer = (peerId) => clientId > peerId;
     const createPeer = (peerId) => {
         if (peers.has(peerId)) return peers.get(peerId);
         negotiationState.set(peerId, { makingOffer: false, ignoreOffer: false });
@@ -247,7 +249,8 @@ window.initMeetingRoom = function() {
             const safeId = String(peerId || '').replace(/[^a-zA-Z0-9_-]/g, '');
             const tile = document.getElementById(`meeting-remote-${safeId}`);
             const pc = peers.get(peerId);
-            if (!pc || pc.connectionState === 'closed' || tile) return;
+            const hasMedia = tile && !tile.classList.contains('is-connecting') && tile.querySelector('video')?.srcObject;
+            if (!pc || pc.connectionState === 'closed' || hasMedia) return;
             setStatus(`${peerDisplayName(peerId)} sedang disambungkan ulang`);
             sendSignal('media-reconnect', peerId, { name: displayName() });
             retryPeerConnection(peerId);
@@ -315,6 +318,43 @@ window.initMeetingRoom = function() {
             console.warn('Gagal restart koneksi meeting', peerDisplayName(peerId), error);
         }
     };
+    const ensurePeerReady = async (peerId, options = {}) => {
+        if (!peerId || peerId === clientId) return;
+        const knownName = peerDisplayName(peerId);
+        ensureParticipantTile(peerId, knownName, peerPresence.get(peerId) || { id: peerId, name: knownName, mic: true, camera: true });
+        const pc = createPeer(peerId);
+        if (!options.quiet) {
+            sendSignal('peer-info', peerId, { name: displayName() });
+            publishPresence(peerId);
+        }
+        const needsOffer = options.forceOffer || (!pc.currentLocalDescription && !pc.currentRemoteDescription && shouldOfferToPeer(peerId));
+        if (needsOffer && pc.signalingState === 'stable') {
+            const delay = options.delay ?? Math.floor(Math.random() * 700);
+            setTimeout(() => {
+                if (peers.get(peerId)?.signalingState === 'stable') createOffer(peerId).catch(error => {
+                    console.warn('Gagal membuat offer audit mesh', peerDisplayName(peerId), error);
+                });
+            }, delay);
+        }
+    };
+    const auditMesh = async (peerIds = []) => {
+        const ids = peerIds.length ? peerIds : [...peerPresence.keys()];
+        for (const peerId of ids) {
+            await ensurePeerReady(peerId);
+        }
+    };
+    const startMeshAudit = () => {
+        stopMeshAudit();
+        meshAuditTimer = setInterval(() => {
+            sendSignal('peer-list-request', '', { name: displayName() });
+            publishPresence('');
+            auditMesh().catch(error => console.warn('Audit mesh meeting gagal', error));
+        }, 5000);
+    };
+    const stopMeshAudit = () => {
+        if (meshAuditTimer) clearInterval(meshAuditTimer);
+        meshAuditTimer = null;
+    };
     const loadMeetingConfig = async () => {
         try {
             const response = await fetch('/meeting-config', { cache: 'no-store' });
@@ -333,7 +373,7 @@ window.initMeetingRoom = function() {
         if (type === 'peer-joined') {
             pendingJoinAnnouncements.add(from);
             setStatus('Peserta baru sedang bergabung...');
-            createPeer(from);
+            await ensurePeerReady(from, { forceOffer: shouldOfferToPeer(from), quiet: true });
             sendSignal('peer-info', from, { name: displayName() });
             publishPresence(from);
             return;
@@ -373,6 +413,7 @@ window.initMeetingRoom = function() {
                 });
             }
             ensureParticipantTile(from, name, peerPresence.get(from));
+            await ensurePeerReady(from, { quiet: true });
             if (pendingJoinAnnouncements.has(from)) announcePeerJoined(from, name);
             renderPeopleList();
             return;
@@ -389,10 +430,16 @@ window.initMeetingRoom = function() {
             peerNames.set(from, nextPresence.name);
             peerPresence.set(from, nextPresence);
             ensureParticipantTile(from, nextPresence.name, nextPresence);
+            await ensurePeerReady(from, { quiet: true });
             if (pendingJoinAnnouncements.has(from)) announcePeerJoined(from, nextPresence.name);
             updateMeetingRemoteLabel(from);
             updateMeetingTilePresence(from, nextPresence);
             renderPeopleList();
+            return;
+        }
+        if (type === 'peer-list') {
+            const peerIds = Array.isArray(payload?.peers) ? payload.peers : [];
+            await auditMesh(peerIds);
             return;
         }
         if (type === 'media-reconnect') {
@@ -478,6 +525,7 @@ window.initMeetingRoom = function() {
             roomPanel?.classList.remove('hidden');
             meetingPage?.classList.add('in-call');
             startMeetingClock();
+            startMeshAudit();
             syncRoomDeviceButtons();
             publishPresence();
             socket = new WebSocket(signalUrl());
@@ -487,7 +535,7 @@ window.initMeetingRoom = function() {
                 const message = JSON.parse(event.data);
                 if (message.type === 'joined') {
                     const existingPeers = message.payload?.peers || [];
-                    for (const peerId of existingPeers) await createOffer(peerId);
+                    for (const peerId of existingPeers) await ensurePeerReady(peerId, { forceOffer: true, delay: Math.floor(Math.random() * 900) });
                     sendSignal('peer-info', '', { name: displayName() });
                     publishPresence('');
                     setStatus('Berhasil masuk room');
@@ -629,6 +677,7 @@ window.initMeetingRoom = function() {
     function leaveMeeting() {
         if (socket) socket.close();
         stopMeetingClock();
+        stopMeshAudit();
         socket = null;
         peers.forEach(pc => pc.close());
         peers.clear();
