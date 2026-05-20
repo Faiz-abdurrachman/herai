@@ -58,6 +58,14 @@ func main() {
 
 	hub := &Hub{rooms: make(map[string]*Room)}
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"ok":true,"service":"herai-signaling","endpoints":{"health":"/healthz","rooms":"/rooms","websocket":"/ws"}}`))
+	})
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"ok":true,"service":"herai-signaling"}`))
