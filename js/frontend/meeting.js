@@ -3,7 +3,7 @@
    ========================================================================== */
 
 window.initMeetingRoom = function() {
-    const USE_SFU_TRANSPORT = true;
+    const USE_SFU_TRANSPORT = false;
     const DEFAULT_SIGNAL_URL = 'wss://herai-signaling.onrender.com/ws';
     const DEFAULT_ICE_SERVERS = [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -55,6 +55,11 @@ window.initMeetingRoom = function() {
     let activeScreenOwner = null;
     let clockTimer = null;
     let meshAuditTimer = null;
+    let meetingTransport = USE_SFU_TRANSPORT ? 'sfu' : 'p2p';
+    let liveKitConfig = null;
+    let liveKitRoom = null;
+    let liveKitClientLoader = null;
+    const liveKitRemoteStreams = new Map();
     let iceServers = [...DEFAULT_ICE_SERVERS];
     let audioContext = null;
     let localAudioMonitor = null;
@@ -113,6 +118,14 @@ window.initMeetingRoom = function() {
         url.searchParams.set('clientId', clientId);
         return url.toString();
     };
+    const meetingApiBase = () => {
+        const url = new URL(signalFromLink);
+        url.protocol = url.protocol === 'wss:' ? 'https:' : 'http:';
+        url.pathname = '';
+        url.search = '';
+        url.hash = '';
+        return url.toString().replace(/\/$/, '');
+    };
     const sendSignal = (type, to, payload) => {
         if (!socket || socket.readyState !== WebSocket.OPEN) return;
         socket.send(JSON.stringify({ type, room: roomId(), to, payload }));
@@ -129,6 +142,10 @@ window.initMeetingRoom = function() {
         const presence = buildLocalPresence();
         updateMeetingTilePresence(clientId, presence);
         renderPeopleList();
+        if (meetingTransport === 'livekit') {
+            updateLiveKitMetadata();
+            return;
+        }
         sendSignal('presence', to, presence);
     };
     const ensureMedia = async () => {
@@ -338,7 +355,7 @@ window.initMeetingRoom = function() {
         if (!peerId || peerId === clientId) return;
         const knownName = peerDisplayName(peerId);
         ensureParticipantTile(peerId, knownName, peerPresence.get(peerId) || { id: peerId, name: knownName, mic: true, camera: true });
-        if (USE_SFU_TRANSPORT) return;
+        if (meetingTransport === 'livekit' || USE_SFU_TRANSPORT) return;
         const pc = createPeer(peerId);
         if (!options.quiet) {
             sendSignal('peer-info', peerId, { name: displayName() });
@@ -362,7 +379,7 @@ window.initMeetingRoom = function() {
     };
     const startMeshAudit = () => {
         stopMeshAudit();
-        if (USE_SFU_TRANSPORT) return;
+        if (meetingTransport === 'livekit' || USE_SFU_TRANSPORT) return;
         meshAuditTimer = setInterval(() => {
             sendSignal('peer-list-request', '', { name: displayName() });
             publishPresence('');
@@ -375,11 +392,18 @@ window.initMeetingRoom = function() {
     };
     const loadMeetingConfig = async () => {
         try {
-            const response = await fetch('/meeting-config', { cache: 'no-store' });
+            const response = await fetch(`${meetingApiBase()}/meeting-config`, { cache: 'no-store' });
             if (!response.ok) return;
             const config = await response.json();
             if (Array.isArray(config.iceServers) && config.iceServers.length > 0) {
                 iceServers = config.iceServers;
+            }
+            if (config?.transport === 'livekit' && config?.livekit?.enabled && config?.livekit?.url) {
+                meetingTransport = 'livekit';
+                liveKitConfig = config.livekit;
+            } else {
+                meetingTransport = USE_SFU_TRANSPORT ? 'sfu' : 'p2p';
+                liveKitConfig = null;
             }
         } catch (error) {
             console.warn('Memakai ICE server default.', error);
@@ -456,6 +480,141 @@ window.initMeetingRoom = function() {
         } finally {
             sfuNegotiationInFlight = false;
         }
+    };
+    const loadLiveKitClient = () => {
+        if (window.LivekitClient) return Promise.resolve(window.LivekitClient);
+        if (liveKitClientLoader) return liveKitClientLoader;
+        liveKitClientLoader = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js';
+            script.async = true;
+            script.onload = () => window.LivekitClient ? resolve(window.LivekitClient) : reject(new Error('LiveKit client tidak tersedia'));
+            script.onerror = () => reject(new Error('Gagal memuat LiveKit client'));
+            document.head.appendChild(script);
+        });
+        return liveKitClientLoader;
+    };
+    const updateLiveKitMetadata = () => {
+        if (!liveKitRoom?.localParticipant?.setMetadata) return;
+        liveKitRoom.localParticipant.setMetadata(JSON.stringify(buildLocalPresence())).catch(() => {});
+    };
+    const parseLiveKitPresence = (participant) => {
+        try {
+            const parsed = participant?.metadata ? JSON.parse(participant.metadata) : {};
+            return {
+                id: participant.identity,
+                name: parsed.name || participant.name || participant.identity,
+                mic: parsed.mic !== false,
+                camera: parsed.camera !== false,
+                hand: parsed.hand === true,
+                screen: parsed.screen === true
+            };
+        } catch {
+            return {
+                id: participant.identity,
+                name: participant.name || participant.identity,
+                mic: true,
+                camera: true,
+                hand: false,
+                screen: false
+            };
+        }
+    };
+    const applyLiveKitPresence = (participant) => {
+        if (!participant?.identity || participant.identity === clientId) return;
+        const presence = parseLiveKitPresence(participant);
+        peerNames.set(participant.identity, presence.name);
+        peerPresence.set(participant.identity, presence);
+        ensureParticipantTile(participant.identity, presence.name, presence);
+        updateMeetingTilePresence(participant.identity, presence);
+        renderPeopleList();
+    };
+    const renderLiveKitTrack = (track, publication, participant) => {
+        if (!track?.mediaStreamTrack || !participant?.identity || participant.identity === clientId) return;
+        const isScreen = publication?.source === 'screen_share' || publication?.source === 'screen_share_audio';
+        const streamKey = `${participant.identity}:${isScreen ? 'screen' : 'camera'}`;
+        let stream = liveKitRemoteStreams.get(streamKey);
+        if (!stream) {
+            stream = new MediaStream();
+            liveKitRemoteStreams.set(streamKey, stream);
+        }
+        const mediaTrack = track.mediaStreamTrack;
+        if (!stream.getTracks().some(item => item.id === mediaTrack.id)) stream.addTrack(mediaTrack);
+        const presence = peerPresence.get(participant.identity) || parseLiveKitPresence(participant);
+        ensureParticipantTile(participant.identity, presence.name, presence);
+        renderMeetingRemote(participant.identity, stream, isScreen ? 'screen' : 'camera', presence.name);
+        if (!isScreen && mediaTrack.kind === 'audio') startRemoteAudioMonitor(participant.identity, stream);
+    };
+    const removeLiveKitTrack = (track, publication, participant) => {
+        if (!participant?.identity) return;
+        const isScreen = publication?.source === 'screen_share' || publication?.source === 'screen_share_audio';
+        const streamKey = `${participant.identity}:${isScreen ? 'screen' : 'camera'}`;
+        const stream = liveKitRemoteStreams.get(streamKey);
+        if (stream && track?.mediaStreamTrack) stream.removeTrack(track.mediaStreamTrack);
+        if (isScreen) {
+            liveKitRemoteStreams.delete(streamKey);
+            removeMeetingRemote(`${participant.identity}-screen`);
+        }
+    };
+    const connectLiveKit = async () => {
+        const LK = await loadLiveKitClient();
+        const tokenResponse = await fetch(`${meetingApiBase()}/livekit-token?room=${encodeURIComponent(roomId())}&identity=${encodeURIComponent(clientId)}&name=${encodeURIComponent(displayName())}`, { cache: 'no-store' });
+        const tokenData = await tokenResponse.json();
+        if (!tokenResponse.ok || !tokenData?.token || !tokenData?.url) {
+            throw new Error(tokenData?.message || 'Token LiveKit tidak tersedia');
+        }
+        liveKitRoom = new LK.Room({
+            adaptiveStream: true,
+            dynacast: true,
+            publishDefaults: {
+                videoEncoding: { maxBitrate: 450_000, maxFramerate: 15 },
+                screenShareEncoding: { maxBitrate: 1_200_000, maxFramerate: 15 }
+            }
+        });
+        const RoomEvent = LK.RoomEvent;
+        liveKitRoom
+            .on(RoomEvent.ParticipantConnected, participant => {
+                applyLiveKitPresence(participant);
+                setStatus(`${participant.name || participant.identity} telah bergabung`);
+            })
+            .on(RoomEvent.ParticipantDisconnected, participant => {
+                setStatus(`${peerDisplayName(participant.identity)} telah keluar`);
+                closePeer(participant.identity);
+            })
+            .on(RoomEvent.ParticipantMetadataChanged, (_metadata, participant) => applyLiveKitPresence(participant))
+            .on(RoomEvent.TrackSubscribed, (track, publication, participant) => renderLiveKitTrack(track, publication, participant))
+            .on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => removeLiveKitTrack(track, publication, participant))
+            .on(RoomEvent.DataReceived, (payload, participant) => {
+                try {
+                    const message = JSON.parse(new TextDecoder().decode(payload));
+                    if (message.type === 'chat') appendChatMessage(message.name || participant?.name || 'Peserta', message.text || '', message.at, false);
+                    if (message.type === 'emoji') showFloatingEmoji(message.emoji || '👍');
+                } catch (error) {
+                    console.warn('Data meeting tidak bisa dibaca', error);
+                }
+            })
+            .on(RoomEvent.Disconnected, () => setStatus('Koneksi meeting terputus'));
+        await liveKitRoom.connect(tokenData.url, tokenData.token, { autoSubscribe: true });
+        await liveKitRoom.localParticipant.setName(displayName()).catch(() => {});
+        updateLiveKitMetadata();
+        for (const track of localStream?.getTracks?.() || []) {
+            const source = track.kind === 'video' ? LK.Track.Source.Camera : LK.Track.Source.Microphone;
+            await liveKitRoom.localParticipant.publishTrack(track, { source }).catch(error => console.warn('Gagal publish track LiveKit', error));
+        }
+        liveKitRoom.remoteParticipants?.forEach(participant => {
+            applyLiveKitPresence(participant);
+            participant.trackPublications?.forEach(publication => {
+                if (publication.track) renderLiveKitTrack(publication.track, publication, participant);
+            });
+        });
+        setStatus('Meeting server terhubung');
+    };
+    const disconnectLiveKit = () => {
+        liveKitRemoteStreams.clear();
+        if (liveKitRoom) {
+            try { liveKitRoom.disconnect(); } catch {}
+        }
+        liveKitRoom = null;
     };
     const restartSFU = async (options = {}) => {
         clearTimeout(sfuRestartTimer);
@@ -700,24 +859,29 @@ window.initMeetingRoom = function() {
             startMeshAudit();
             syncRoomDeviceButtons();
             publishPresence();
-            socket = new WebSocket(signalUrl());
-            setStatus('Menghubungkan ke room...');
-            socket.onopen = () => setStatus('Terhubung ke signaling server');
-            socket.onmessage = async event => {
-                const message = JSON.parse(event.data);
-                if (message.type === 'joined') {
-                    const existingPeers = message.payload?.peers || [];
-                    for (const peerId of existingPeers) await ensurePeerReady(peerId, { forceOffer: !USE_SFU_TRANSPORT, delay: Math.floor(Math.random() * 900) });
-                    sendSignal('peer-info', '', { name: displayName() });
-                    publishPresence('');
-                    if (USE_SFU_TRANSPORT) await negotiateSFU();
-                    setStatus('Berhasil masuk room');
-                    return;
-                }
-                await handleSignal(message);
-            };
-            socket.onclose = () => setStatus('Signaling server offline atau koneksi room terputus');
-            socket.onerror = () => setStatus('Signaling server belum aktif atau tidak bisa dijangkau');
+            if (meetingTransport === 'livekit') {
+                setStatus('Menghubungkan ke meeting server...');
+                await connectLiveKit();
+            } else {
+                socket = new WebSocket(signalUrl());
+                setStatus('Menghubungkan ke room...');
+                socket.onopen = () => setStatus('Terhubung ke signaling server');
+                socket.onmessage = async event => {
+                    const message = JSON.parse(event.data);
+                    if (message.type === 'joined') {
+                        const existingPeers = message.payload?.peers || [];
+                        for (const peerId of existingPeers) await ensurePeerReady(peerId, { forceOffer: !USE_SFU_TRANSPORT, delay: Math.floor(Math.random() * 900) });
+                        sendSignal('peer-info', '', { name: displayName() });
+                        publishPresence('');
+                        if (USE_SFU_TRANSPORT) await negotiateSFU();
+                        setStatus('Berhasil masuk room');
+                        return;
+                    }
+                    await handleSignal(message);
+                };
+                socket.onclose = () => setStatus('Signaling server offline atau koneksi room terputus');
+                socket.onerror = () => setStatus('Signaling server belum aktif atau tidak bisa dijangkau');
+            }
         } catch (error) {
             console.error(error);
             showMediaHelp(error);
@@ -786,7 +950,10 @@ window.initMeetingRoom = function() {
             sendSignal('screen-start', '', { name: displayName(), streamId: screenStream.id });
             publishPresence();
             renderLocalScreenTile(screenStream);
-            if (USE_SFU_TRANSPORT) {
+            if (meetingTransport === 'livekit') {
+                const LK = await loadLiveKitClient();
+                await liveKitRoom?.localParticipant?.publishTrack(screenTrack, { source: LK.Track.Source.ScreenShare }).catch(error => console.warn('Gagal publish screen LiveKit', error));
+            } else if (USE_SFU_TRANSPORT) {
                 configureSender(createSFUPeer().addTrack(screenTrack, screenStream), screenTrack);
                 await negotiateSFU();
             } else {
@@ -826,7 +993,11 @@ window.initMeetingRoom = function() {
     document.querySelectorAll('.meeting-emoji').forEach(button => {
         button.addEventListener('click', () => {
             const emoji = button.dataset.emoji || '👍';
-            sendSignal('emoji', '', { emoji, name: displayName() });
+            if (meetingTransport === 'livekit' && liveKitRoom) {
+                liveKitRoom.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ type: 'emoji', emoji, name: displayName() })), { reliable: true }).catch(() => {});
+            } else {
+                sendSignal('emoji', '', { emoji, name: displayName() });
+            }
             showFloatingEmoji(emoji);
         });
     });
@@ -849,6 +1020,7 @@ window.initMeetingRoom = function() {
 
     function leaveMeeting() {
         if (socket) socket.close();
+        disconnectLiveKit();
         stopMeetingClock();
         stopMeshAudit();
         socket = null;
@@ -1143,7 +1315,9 @@ window.initMeetingRoom = function() {
     async function stopScreenShare() {
         if (!screenStream && !screenTrack) return;
         if (screenTrack) {
-            if (USE_SFU_TRANSPORT && sfuPc) {
+            if (meetingTransport === 'livekit' && liveKitRoom) {
+                await liveKitRoom.localParticipant.unpublishTrack(screenTrack).catch(() => {});
+            } else if (USE_SFU_TRANSPORT && sfuPc) {
                 const sender = sfuPc.getSenders().find(item => item.track === screenTrack);
                 if (sender) sfuPc.removeTrack(sender);
             } else {
@@ -1162,7 +1336,8 @@ window.initMeetingRoom = function() {
         localPresence.screen = false;
         setShareButtonState(false);
         publishPresence();
-        if (USE_SFU_TRANSPORT) await negotiateSFU();
+        if (meetingTransport === 'livekit') updateLiveKitMetadata();
+        else if (USE_SFU_TRANSPORT) await negotiateSFU();
         else await renegotiateAllPeers();
         updateTileLayout();
     }
@@ -1172,7 +1347,11 @@ window.initMeetingRoom = function() {
         if (!text) return;
         const payload = { name: displayName(), text, at: new Date().toISOString() };
         appendChatMessage(payload.name, payload.text, payload.at, true);
-        sendSignal('chat', '', payload);
+        if (meetingTransport === 'livekit' && liveKitRoom) {
+            liveKitRoom.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ type: 'chat', ...payload })), { reliable: true }).catch(() => {});
+        } else {
+            sendSignal('chat', '', payload);
+        }
         chatInput.value = '';
     }
 

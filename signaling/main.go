@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"flag"
@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	inlivesfu "github.com/inlivedev/sfu"
 	"github.com/pion/webrtc/v4"
 )
 
@@ -40,8 +39,6 @@ type Client struct {
 	pc             *webrtc.PeerConnection
 	senders        map[string]*webrtc.RTPSender
 	pendingICE     []webrtc.ICECandidateInit
-	sfuClient      *inlivesfu.Client
-	sfuAnswerChan  chan webrtc.SessionDescription
 	stateMu        sync.RWMutex
 	screenActive   bool
 	screenStreamID string
@@ -52,7 +49,6 @@ type Client struct {
 
 type Room struct {
 	clients map[string]*Client
-	sfuRoom *inlivesfu.Room
 	tracks  map[string]*PublishedTrack
 }
 
@@ -70,10 +66,8 @@ type RoomInfo struct {
 }
 
 type Hub struct {
-	mu      sync.RWMutex
-	ctx     context.Context
-	manager *inlivesfu.Manager
-	rooms   map[string]*Room
+	mu    sync.RWMutex
+	rooms map[string]*Room
 }
 
 var upgrader = websocket.Upgrader{
@@ -89,14 +83,7 @@ func main() {
 	addr := flag.String("addr", ":"+defaultPort, "HTTP listen address")
 	flag.Parse()
 
-	ctx := context.Background()
-	sfuOptions := inlivesfu.DefaultOptions()
-	sfuOptions.IceServers = pionICEServers()
-	hub := &Hub{
-		ctx:     ctx,
-		manager: inlivesfu.NewManager(ctx, "herai-signaling", sfuOptions),
-		rooms:   make(map[string]*Room),
-	}
+	hub := &Hub{rooms: make(map[string]*Room)}
 
 	http.HandleFunc("/__app-auth", handleAppAuth)
 	http.HandleFunc("/__app-logout", handleAppLogout)
@@ -121,6 +108,7 @@ func main() {
 		})
 	})
 	http.HandleFunc("/meeting-config", handleMeetingConfig)
+	http.HandleFunc("/livekit-token", handleLiveKitToken)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWS(hub, w, r)
 	})
@@ -134,10 +122,17 @@ func handleMeetingConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Content-Type", "application/json")
 
+	liveKitURL := strings.TrimSpace(getenv("LIVEKIT_URL", ""))
+	liveKitReady := liveKitURL != "" && strings.TrimSpace(getenv("LIVEKIT_API_KEY", "")) != "" && strings.TrimSpace(getenv("LIVEKIT_API_SECRET", "")) != ""
 	raw := strings.TrimSpace(getenv("HERAI_ICE_SERVERS", ""))
 	if raw == "" {
 		_ = json.NewEncoder(w).Encode(map[string]any{
-			"ok": true,
+			"ok":        true,
+			"transport": map[bool]string{true: "livekit", false: "p2p"}[liveKitReady],
+			"livekit": map[string]any{
+				"enabled": liveKitReady,
+				"url":     liveKitURL,
+			},
 			"iceServers": []map[string]any{
 				{"urls": "stun:stun.l.google.com:19302"},
 				{"urls": "stun:stun1.l.google.com:19302"},
@@ -155,9 +150,111 @@ func handleMeetingConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"ok":         true,
+		"ok":        true,
+		"transport": map[bool]string{true: "livekit", false: "p2p"}[liveKitReady],
+		"livekit": map[string]any{
+			"enabled": liveKitReady,
+			"url":     liveKitURL,
+		},
 		"iceServers": iceServers,
 	})
+}
+
+func handleLiveKitToken(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	liveKitURL := strings.TrimSpace(getenv("LIVEKIT_URL", ""))
+	apiKey := strings.TrimSpace(getenv("LIVEKIT_API_KEY", ""))
+	apiSecret := strings.TrimSpace(getenv("LIVEKIT_API_SECRET", ""))
+	if liveKitURL == "" || apiKey == "" || apiSecret == "" {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_ = json.NewEncoder(w).Encode(map[string]any{"ok": false, "message": "LiveKit belum dikonfigurasi"})
+		return
+	}
+
+	room := strings.TrimSpace(r.URL.Query().Get("room"))
+	identity := strings.TrimSpace(r.URL.Query().Get("identity"))
+	name := strings.TrimSpace(r.URL.Query().Get("name"))
+	if r.Method == http.MethodPost {
+		var body struct {
+			Room     string `json:"room"`
+			Identity string `json:"identity"`
+			Name     string `json:"name"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err == nil {
+			if body.Room != "" {
+				room = body.Room
+			}
+			if body.Identity != "" {
+				identity = body.Identity
+			}
+			if body.Name != "" {
+				name = body.Name
+			}
+		}
+	}
+	room = strings.ToUpper(strings.ReplaceAll(room, "-", ""))
+	if len(room) > 12 {
+		room = room[:12]
+	}
+	if room == "" || identity == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]any{"ok": false, "message": "room dan identity wajib diisi"})
+		return
+	}
+	token, err := buildLiveKitToken(apiKey, apiSecret, room, identity, name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(map[string]any{"ok": false, "message": err.Error()})
+		return
+	}
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"ok":    true,
+		"url":   liveKitURL,
+		"token": token,
+	})
+}
+
+func buildLiveKitToken(apiKey, apiSecret, room, identity, name string) (string, error) {
+	now := time.Now()
+	header := map[string]string{"alg": "HS256", "typ": "JWT"}
+	claims := map[string]any{
+		"iss":  apiKey,
+		"sub":  identity,
+		"name": name,
+		"nbf":  now.Unix() - 5,
+		"iat":  now.Unix(),
+		"exp":  now.Add(3 * time.Hour).Unix(),
+		"video": map[string]any{
+			"room":                 room,
+			"roomJoin":             true,
+			"canPublish":           true,
+			"canSubscribe":         true,
+			"canPublishData":       true,
+			"canUpdateOwnMetadata": true,
+		},
+	}
+	headerJSON, err := json.Marshal(header)
+	if err != nil {
+		return "", err
+	}
+	claimsJSON, err := json.Marshal(claims)
+	if err != nil {
+		return "", err
+	}
+	unsigned := base64.RawURLEncoding.EncodeToString(headerJSON) + "." + base64.RawURLEncoding.EncodeToString(claimsJSON)
+	mac := hmac.New(sha256.New, []byte(apiSecret))
+	_, _ = mac.Write([]byte(unsigned))
+	return unsigned + "." + base64.RawURLEncoding.EncodeToString(mac.Sum(nil)), nil
 }
 
 func serveWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
@@ -168,13 +265,12 @@ func serveWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &Client{
-		id:            r.URL.Query().Get("clientId"),
-		room:          r.URL.Query().Get("room"),
-		hub:           hub,
-		conn:          conn,
-		send:          make(chan SignalMessage, 4096),
-		senders:       make(map[string]*webrtc.RTPSender),
-		sfuAnswerChan: make(chan webrtc.SessionDescription, 8),
+		id:      r.URL.Query().Get("clientId"),
+		room:    r.URL.Query().Get("room"),
+		hub:     hub,
+		conn:    conn,
+		send:    make(chan SignalMessage, 4096),
+		senders: make(map[string]*webrtc.RTPSender),
 	}
 	if client.id == "" || client.room == "" {
 		_ = conn.WriteJSON(SignalMessage{Type: "error", Payload: mustRaw(`{"message":"clientId and room are required"}`)})
@@ -193,18 +289,7 @@ func (h *Hub) join(client *Client) {
 
 	room := h.rooms[client.room]
 	if room == nil {
-		roomOptions := inlivesfu.DefaultRoomOptions()
-		roomOptions.Bitrates.InitialBandwidth = 900_000
-		sfuRoom, err := h.manager.NewRoom(client.room, client.room, inlivesfu.RoomTypeLocal, roomOptions)
-		if err != nil {
-			log.Printf("failed to create inlive sfu room=%s: %v", client.room, err)
-			return
-		}
-		room = &Room{
-			clients: make(map[string]*Client),
-			sfuRoom: sfuRoom,
-			tracks:  make(map[string]*PublishedTrack),
-		}
+		room = &Room{clients: make(map[string]*Client), tracks: make(map[string]*PublishedTrack)}
 		h.rooms[client.room] = room
 	}
 
@@ -247,11 +332,6 @@ func (h *Hub) leave(client *Client) {
 	}
 
 	client.markClosed()
-	if room.sfuRoom != nil {
-		if err := room.sfuRoom.StopClient(client.id); err != nil {
-			log.Printf("failed to stop inlive sfu client=%s room=%s: %v", client.id, client.room, err)
-		}
-	}
 	delete(room.clients, client.id)
 	for trackID, track := range room.tracks {
 		if track.owner == client.id {
@@ -416,122 +496,38 @@ func (h *Hub) handleSFUOffer(client *Client, payload json.RawMessage) {
 		return
 	}
 
-	sfuClient, err := h.ensureInliveSFUClient(client)
+	pc, err := h.ensurePeerConnection(client)
 	if err != nil {
-		log.Printf("failed to prepare inlive sfu client=%s room=%s: %v", client.id, client.room, err)
+		log.Printf("failed to create sfu pc for %s: %v", client.id, err)
 		return
 	}
 
-	answer, err := sfuClient.Negotiate(offer)
+	client.pcMu.Lock()
+	defer client.pcMu.Unlock()
+
+	if pc.SignalingState() != webrtc.SignalingStateStable {
+		if err := pc.SetLocalDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeRollback}); err != nil {
+			log.Printf("failed to rollback sfu state for %s before remote offer: %v", client.id, err)
+			return
+		}
+	}
+	if err := pc.SetRemoteDescription(offer); err != nil {
+		log.Printf("failed to set remote offer for %s: %v", client.id, err)
+		return
+	}
+	client.flushPendingICE(pc)
+
+	answer, err := pc.CreateAnswer(nil)
 	if err != nil {
-		log.Printf("failed to negotiate inlive sfu offer for %s: %v", client.id, err)
+		log.Printf("failed to create sfu answer for %s: %v", client.id, err)
+		return
+	}
+	if err := pc.SetLocalDescription(answer); err != nil {
+		log.Printf("failed to set local answer for %s: %v", client.id, err)
 		return
 	}
 
-	enqueueSignal(client, SignalMessage{Type: "sfu-answer", Room: client.room, From: "server", Payload: mustJSON(answer)})
-}
-
-func (h *Hub) ensureInliveSFUClient(client *Client) (*inlivesfu.Client, error) {
-	client.pcMu.Lock()
-	if client.sfuClient != nil {
-		sfuClient := client.sfuClient
-		client.pcMu.Unlock()
-		return sfuClient, nil
-	}
-	client.pcMu.Unlock()
-
-	h.mu.RLock()
-	room := h.rooms[client.room]
-	h.mu.RUnlock()
-	if room == nil || room.sfuRoom == nil {
-		return nil, inlivesfu.ErrRoomNotFound
-	}
-
-	options := inlivesfu.DefaultClientOptions()
-	options.PacerType = inlivesfu.PacerTypeLeakyBucket
-	options.EnableVoiceDetection = true
-	options.EnableOpusDTX = true
-	options.EnableOpusInbandFEC = true
-	options.ReorderPackets = true
-	options.MinPlayoutDelay = 120
-	options.MaxPlayoutDelay = 320
-
-	sfuClient, err := room.sfuRoom.AddClient(client.id, client.id, options)
-	if err != nil {
-		return nil, err
-	}
-
-	client.pcMu.Lock()
-	client.sfuClient = sfuClient
-	client.flushPendingICE(sfuClient)
-	client.pcMu.Unlock()
-
-	sfuClient.OnIceCandidate(func(ctx context.Context, candidate *webrtc.ICECandidate) {
-		if candidate == nil {
-			return
-		}
-		enqueueSignal(client, SignalMessage{Type: "sfu-ice", Room: client.room, From: "server", Payload: mustJSON(candidate.ToJSON())})
-	})
-
-	sfuClient.OnRenegotiation(func(ctx context.Context, offer webrtc.SessionDescription) (webrtc.SessionDescription, error) {
-		enqueueSignal(client, SignalMessage{Type: "sfu-offer", Room: client.room, From: "server", Payload: mustJSON(&offer)})
-		select {
-		case answer := <-client.sfuAnswerChan:
-			return answer, nil
-		case <-ctx.Done():
-			return webrtc.SessionDescription{}, ctx.Err()
-		case <-time.After(20 * time.Second):
-			return webrtc.SessionDescription{}, context.DeadlineExceeded
-		}
-	})
-
-	sfuClient.OnTracksAdded(func(tracks []inlivesfu.ITrack) {
-		trackTypes := make(map[string]inlivesfu.TrackType, len(tracks))
-		for _, track := range tracks {
-			trackType := inlivesfu.TrackType(inlivesfu.TrackTypeMedia)
-			if track.Kind() == webrtc.RTPCodecTypeVideo && client.isScreenShareTrack(track.StreamID()) {
-				trackType = inlivesfu.TrackType(inlivesfu.TrackTypeScreen)
-			}
-			trackTypes[track.ID()] = trackType
-		}
-		sfuClient.SetTracksSourceType(trackTypes)
-	})
-
-	sfuClient.OnTracksAvailable(func(tracks []inlivesfu.ITrack) {
-		subscriptions := make([]inlivesfu.SubscribeTrackRequest, 0, len(tracks))
-		trackMeta := make([]map[string]string, 0, len(tracks))
-		for _, track := range tracks {
-			if track.ClientID() == client.id {
-				continue
-			}
-			trackMeta = append(trackMeta, map[string]string{
-				"trackId":  track.ID(),
-				"streamId": track.StreamID(),
-				"clientId": track.ClientID(),
-				"source":   track.SourceType().String(),
-				"kind":     track.Kind().String(),
-			})
-			subscriptions = append(subscriptions, inlivesfu.SubscribeTrackRequest{
-				ClientID: track.ClientID(),
-				TrackID:  track.ID(),
-			})
-		}
-		if len(subscriptions) == 0 {
-			return
-		}
-		enqueueSignal(client, SignalMessage{Type: "sfu-tracks-available", Room: client.room, From: "server", Payload: mustJSON(map[string]any{
-			"tracks": trackMeta,
-		})})
-		if err := sfuClient.SubscribeTracks(subscriptions); err != nil {
-			log.Printf("failed to subscribe inlive sfu tracks client=%s room=%s: %v", client.id, client.room, err)
-		}
-	})
-
-	sfuClient.OnConnectionStateChanged(func(state webrtc.PeerConnectionState) {
-		log.Printf("inlive sfu state client=%s room=%s state=%s", client.id, client.room, state.String())
-	})
-
-	return sfuClient, nil
+	enqueueSignal(client, SignalMessage{Type: "sfu-answer", Room: client.room, From: "server", Payload: mustJSON(pc.LocalDescription())})
 }
 
 func (h *Hub) ensurePeerConnection(client *Client) (*webrtc.PeerConnection, error) {
@@ -744,13 +740,16 @@ func (c *Client) handleSFUAnswer(payload json.RawMessage) {
 		return
 	}
 	c.pcMu.Lock()
-	answerChan := c.sfuAnswerChan
-	c.pcMu.Unlock()
-
-	select {
-	case answerChan <- answer:
-	default:
-		log.Printf("dropping sfu answer for %s: answer queue full", c.id)
+	defer c.pcMu.Unlock()
+	if c.pc == nil {
+		return
+	}
+	if c.pc.SignalingState() != webrtc.SignalingStateHaveLocalOffer {
+		log.Printf("ignoring out-of-state sfu answer for %s: state=%s", c.id, c.pc.SignalingState().String())
+		return
+	}
+	if err := c.pc.SetRemoteDescription(answer); err != nil {
+		log.Printf("failed to set sfu answer for %s: %v", c.id, err)
 	}
 }
 
@@ -761,27 +760,29 @@ func (c *Client) handleSFUIce(payload json.RawMessage) {
 		return
 	}
 	c.pcMu.Lock()
-	sfuClient := c.sfuClient
-	if sfuClient == nil {
+	defer c.pcMu.Unlock()
+	if c.pc == nil {
 		c.pendingICE = append(c.pendingICE, candidate)
-		c.pcMu.Unlock()
 		return
 	}
-	c.pcMu.Unlock()
-	if err := sfuClient.AddICECandidate(candidate); err != nil {
-		log.Printf("failed to add inlive sfu ice for %s: %v", c.id, err)
+	if c.pc.RemoteDescription() == nil {
+		c.pendingICE = append(c.pendingICE, candidate)
+		return
+	}
+	if err := c.pc.AddICECandidate(candidate); err != nil {
+		log.Printf("failed to add sfu ice for %s: %v", c.id, err)
 	}
 }
 
-func (c *Client) flushPendingICE(sfuClient *inlivesfu.Client) {
+func (c *Client) flushPendingICE(pc *webrtc.PeerConnection) {
 	if len(c.pendingICE) == 0 {
 		return
 	}
 	pending := c.pendingICE
 	c.pendingICE = nil
 	for _, candidate := range pending {
-		if err := sfuClient.AddICECandidate(candidate); err != nil {
-			log.Printf("failed to flush pending inlive sfu ice for %s: %v", c.id, err)
+		if err := pc.AddICECandidate(candidate); err != nil {
+			log.Printf("failed to flush pending sfu ice for %s: %v", c.id, err)
 		}
 	}
 }
@@ -793,7 +794,6 @@ func (c *Client) closePeerConnection() {
 		_ = c.pc.Close()
 		c.pc = nil
 	}
-	c.sfuClient = nil
 	c.senders = make(map[string]*webrtc.RTPSender)
 	c.pendingICE = nil
 }
