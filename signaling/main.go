@@ -37,9 +37,13 @@ type Client struct {
 	pcMu           sync.Mutex
 	pc             *webrtc.PeerConnection
 	senders        map[string]*webrtc.RTPSender
+	pendingICE     []webrtc.ICECandidateInit
 	stateMu        sync.RWMutex
 	screenActive   bool
 	screenStreamID string
+	negotiationMu  sync.Mutex
+	negotiateTimer *time.Timer
+	closed         bool
 }
 
 type Room struct {
@@ -216,12 +220,15 @@ func (h *Hub) leave(client *Client) {
 		return
 	}
 
+	client.markClosed()
 	delete(room.clients, client.id)
 	for trackID, track := range room.tracks {
 		if track.owner == client.id {
 			delete(room.tracks, trackID)
 			for _, peer := range room.clients {
-				peer.removeSender(trackID)
+				if peer.removeSender(trackID) {
+					peer.scheduleSFUNegotiation(180 * time.Millisecond)
+				}
 			}
 		}
 	}
@@ -345,6 +352,14 @@ func (h *Hub) sendPeerList(client *Client) {
 }
 
 func enqueueSignal(client *Client, message SignalMessage) {
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			log.Printf("dropping signal type=%s room=%s client=%s: client channel closed", message.Type, client.room, client.id)
+		}
+	}()
+	if client.isClosed() {
+		return
+	}
 	select {
 	case client.send <- message:
 	default:
@@ -379,10 +394,17 @@ func (h *Hub) handleSFUOffer(client *Client, payload json.RawMessage) {
 	client.pcMu.Lock()
 	defer client.pcMu.Unlock()
 
+	if pc.SignalingState() != webrtc.SignalingStateStable {
+		if err := pc.SetLocalDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeRollback}); err != nil {
+			log.Printf("failed to rollback sfu state for %s before remote offer: %v", client.id, err)
+			return
+		}
+	}
 	if err := pc.SetRemoteDescription(offer); err != nil {
 		log.Printf("failed to set remote offer for %s: %v", client.id, err)
 		return
 	}
+	client.flushPendingICE(pc)
 
 	answer, err := pc.CreateAnswer(nil)
 	if err != nil {
@@ -468,6 +490,7 @@ func (h *Hub) publishRemoteTrack(client *Client, remoteTrack *webrtc.TrackRemote
 	}
 
 	trackID := client.id + ":" + kind + ":" + remoteTrack.ID()
+	h.removePublishedTrack(client, trackID)
 	published := &PublishedTrack{
 		id:    trackID,
 		owner: client.id,
@@ -497,7 +520,7 @@ func (h *Hub) publishRemoteTrack(client *Client, remoteTrack *webrtc.TrackRemote
 
 	for _, peer := range peers {
 		if peer.addPublishedTrack(published) {
-			go peer.negotiateSFU()
+			peer.scheduleSFUNegotiation(180 * time.Millisecond)
 		}
 	}
 
@@ -533,7 +556,7 @@ func (h *Hub) removePublishedTrack(owner *Client, trackID string) {
 
 	for _, peer := range peers {
 		if peer.removeSender(trackID) {
-			go peer.negotiateSFU()
+			peer.scheduleSFUNegotiation(180 * time.Millisecond)
 		}
 	}
 }
@@ -580,7 +603,11 @@ func (c *Client) removeSender(trackID string) bool {
 func (c *Client) negotiateSFU() {
 	c.pcMu.Lock()
 	defer c.pcMu.Unlock()
-	if c.pc == nil || c.pc.SignalingState() != webrtc.SignalingStateStable {
+	if c.pc == nil {
+		return
+	}
+	if c.pc.SignalingState() != webrtc.SignalingStateStable {
+		c.scheduleSFUNegotiation(260 * time.Millisecond)
 		return
 	}
 	offer, err := c.pc.CreateOffer(nil)
@@ -606,6 +633,10 @@ func (c *Client) handleSFUAnswer(payload json.RawMessage) {
 	if c.pc == nil {
 		return
 	}
+	if c.pc.SignalingState() != webrtc.SignalingStateHaveLocalOffer {
+		log.Printf("ignoring out-of-state sfu answer for %s: state=%s", c.id, c.pc.SignalingState().String())
+		return
+	}
 	if err := c.pc.SetRemoteDescription(answer); err != nil {
 		log.Printf("failed to set sfu answer for %s: %v", c.id, err)
 	}
@@ -620,10 +651,28 @@ func (c *Client) handleSFUIce(payload json.RawMessage) {
 	c.pcMu.Lock()
 	defer c.pcMu.Unlock()
 	if c.pc == nil {
+		c.pendingICE = append(c.pendingICE, candidate)
+		return
+	}
+	if c.pc.RemoteDescription() == nil {
+		c.pendingICE = append(c.pendingICE, candidate)
 		return
 	}
 	if err := c.pc.AddICECandidate(candidate); err != nil {
 		log.Printf("failed to add sfu ice for %s: %v", c.id, err)
+	}
+}
+
+func (c *Client) flushPendingICE(pc *webrtc.PeerConnection) {
+	if len(c.pendingICE) == 0 {
+		return
+	}
+	pending := c.pendingICE
+	c.pendingICE = nil
+	for _, candidate := range pending {
+		if err := pc.AddICECandidate(candidate); err != nil {
+			log.Printf("failed to flush pending sfu ice for %s: %v", c.id, err)
+		}
 	}
 }
 
@@ -635,6 +684,45 @@ func (c *Client) closePeerConnection() {
 		c.pc = nil
 	}
 	c.senders = make(map[string]*webrtc.RTPSender)
+	c.pendingICE = nil
+}
+
+func (c *Client) scheduleSFUNegotiation(delay time.Duration) {
+	c.negotiationMu.Lock()
+	defer c.negotiationMu.Unlock()
+	if c.closed {
+		return
+	}
+	if c.negotiateTimer != nil {
+		c.negotiateTimer.Reset(delay)
+		return
+	}
+	c.negotiateTimer = time.AfterFunc(delay, func() {
+		c.negotiationMu.Lock()
+		c.negotiateTimer = nil
+		closed := c.closed
+		c.negotiationMu.Unlock()
+		if closed {
+			return
+		}
+		c.negotiateSFU()
+	})
+}
+
+func (c *Client) markClosed() {
+	c.negotiationMu.Lock()
+	c.closed = true
+	if c.negotiateTimer != nil {
+		c.negotiateTimer.Stop()
+		c.negotiateTimer = nil
+	}
+	c.negotiationMu.Unlock()
+}
+
+func (c *Client) isClosed() bool {
+	c.negotiationMu.Lock()
+	defer c.negotiationMu.Unlock()
+	return c.closed
 }
 
 func (c *Client) setScreenShareState(active bool, payload json.RawMessage) {

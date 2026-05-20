@@ -77,8 +77,12 @@ window.initMeetingRoom = function() {
         mic: true,
         camera: true,
         hand: false,
-        screen: false
+        screen: false,
+        videoBg: 'none'
     };
+    let sfuNegotiationInFlight = false;
+    let sfuNegotiationQueued = false;
+    let sfuRestartTimer = null;
 
     const params = new URLSearchParams((location.hash.split('?')[1] || ''));
     const roomFromLink = params.get('room');
@@ -118,6 +122,7 @@ window.initMeetingRoom = function() {
         localPresence.mic = localStream?.getAudioTracks()[0]?.enabled !== false;
         localPresence.camera = localStream?.getVideoTracks()[0]?.enabled !== false;
         localPresence.screen = Boolean(screenStream);
+        localPresence.videoBg = localStorage.getItem('herai_meeting_video_background') || 'none';
         return { ...localPresence };
     };
     const publishPresence = (to = '') => {
@@ -382,16 +387,21 @@ window.initMeetingRoom = function() {
             iceCandidatePoolSize: 4
         });
         if (localStream) localStream.getTracks().forEach(track => configureSender(sfuPc.addTrack(track, localStream), track));
+        if (screenStream) screenStream.getTracks().forEach(track => configureSender(sfuPc.addTrack(track, screenStream), track));
         if (!localStream?.getAudioTracks().length) sfuPc.addTransceiver('audio', { direction: 'recvonly' });
         if (!localStream?.getVideoTracks().length) sfuPc.addTransceiver('video', { direction: 'recvonly' });
         sfuPc.onicecandidate = event => {
             if (event.candidate) sendSFU('sfu-ice', event.candidate.toJSON());
+        };
+        sfuPc.onnegotiationneeded = () => {
+            negotiateSFU().catch(error => console.warn('Gagal menjalankan negosiasi SFU', error));
         };
         sfuPc.ontrack = event => {
             const stream = event.streams[0] || new MediaStream([event.track]);
             const isScreen = stream.id?.endsWith(':screen');
             const ownerId = isScreen ? stream.id.replace(/:screen$/, '') : (stream.id && stream.id !== '-' ? stream.id : `sfu-${event.track.id}`);
             if (ownerId === clientId) return;
+            ensureParticipantTile(ownerId, peerDisplayName(ownerId), peerPresence.get(ownerId) || { id: ownerId, name: peerDisplayName(ownerId), mic: true, camera: true });
             const shareMeta = remoteScreenShares.get(ownerId);
             renderMeetingRemote(ownerId, stream, isScreen ? 'screen' : 'camera', shareMeta?.name);
             if (!isScreen) {
@@ -402,26 +412,58 @@ window.initMeetingRoom = function() {
         };
         sfuPc.onconnectionstatechange = () => {
             if (sfuPc.connectionState === 'connected') setStatus('SFU terhubung');
-            if (['failed', 'disconnected'].includes(sfuPc.connectionState)) {
-                setStatus('Koneksi SFU mencoba tersambung ulang');
-                restartSFU().catch(error => console.warn('Gagal restart SFU', error));
+            if (sfuPc.connectionState === 'failed') {
+                setStatus('Koneksi SFU gagal, mencoba ulang');
+                restartSFU({ recreate: true }).catch(error => console.warn('Gagal restart SFU', error));
+            }
+            if (sfuPc.connectionState === 'disconnected') {
+                setStatus('Koneksi SFU sedang dipulihkan');
+                clearTimeout(sfuRestartTimer);
+                sfuRestartTimer = setTimeout(() => {
+                    restartSFU().catch(error => console.warn('Gagal restart SFU', error));
+                }, 2200);
             }
         };
         return sfuPc;
     };
     const negotiateSFU = async (options = {}) => {
         const pc = createSFUPeer();
-        if (pc.signalingState !== 'stable') return;
-        const offer = await pc.createOffer({
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: true,
-            iceRestart: options.iceRestart === true
-        });
-        await pc.setLocalDescription(offer);
-        sendSFU('sfu-offer', pc.localDescription);
+        if (sfuNegotiationInFlight) {
+            sfuNegotiationQueued = true;
+            return;
+        }
+        if (pc.signalingState !== 'stable') {
+            sfuNegotiationQueued = true;
+            setTimeout(() => negotiateSFU().catch(error => console.warn('Retry negosiasi SFU gagal', error)), 260);
+            return;
+        }
+        sfuNegotiationInFlight = true;
+        try {
+            const offer = await pc.createOffer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true,
+                iceRestart: options.iceRestart === true
+            });
+            await pc.setLocalDescription(offer);
+            sendSFU('sfu-offer', pc.localDescription);
+        } finally {
+            sfuNegotiationInFlight = false;
+        }
     };
-    const restartSFU = async () => {
-        if (!sfuPc || sfuPc.signalingState !== 'stable') return;
+    const restartSFU = async (options = {}) => {
+        clearTimeout(sfuRestartTimer);
+        if (options.recreate && sfuPc) {
+            try { sfuPc.close(); } catch {}
+            sfuPc = null;
+            pendingSfuIceCandidates.length = 0;
+            sfuNegotiationInFlight = false;
+            sfuNegotiationQueued = false;
+        }
+        if (!sfuPc) createSFUPeer();
+        if (sfuPc.signalingState !== 'stable') {
+            sfuNegotiationQueued = true;
+            return;
+        }
         sfuPc.restartIce?.();
         await negotiateSFU({ iceRestart: true });
     };
@@ -494,7 +536,8 @@ window.initMeetingRoom = function() {
                 mic: payload?.mic !== false,
                 camera: payload?.camera !== false,
                 hand: payload?.hand === true,
-                screen: payload?.screen === true
+                screen: payload?.screen === true,
+                videoBg: payload?.videoBg || 'none'
             };
             peerNames.set(from, nextPresence.name);
             peerPresence.set(from, nextPresence);
@@ -516,6 +559,10 @@ window.initMeetingRoom = function() {
             if (pc.signalingState === 'have-local-offer') {
                 await pc.setRemoteDescription(new RTCSessionDescription(payload));
                 await flushSFUIceCandidates();
+                if (sfuNegotiationQueued) {
+                    sfuNegotiationQueued = false;
+                    setTimeout(() => negotiateSFU().catch(error => console.warn('Negosiasi SFU tertunda gagal', error)), 80);
+                }
             }
             return;
         }
@@ -529,6 +576,10 @@ window.initMeetingRoom = function() {
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             sendSFU('sfu-answer', pc.localDescription);
+            if (sfuNegotiationQueued) {
+                sfuNegotiationQueued = false;
+                setTimeout(() => negotiateSFU().catch(error => console.warn('Negosiasi SFU tertunda gagal', error)), 80);
+            }
             return;
         }
         if (type === 'sfu-ice') {
@@ -694,11 +745,12 @@ window.initMeetingRoom = function() {
     });
 
     backgroundSelect?.addEventListener('change', () => {
-        applyMeetingBackground(backgroundSelect.value);
+        applyVideoBackground(backgroundSelect.value);
+        publishPresence();
     });
-    const savedBackground = localStorage.getItem('herai_meeting_background') || 'aurora';
+    const savedBackground = localStorage.getItem('herai_meeting_video_background') || 'none';
     if (backgroundSelect) backgroundSelect.value = savedBackground;
-    applyMeetingBackground(savedBackground);
+    applyVideoBackground(savedBackground);
 
     document.getElementById('btnRaiseMeetingHand')?.addEventListener('click', event => {
         localPresence.hand = !localPresence.hand;
@@ -792,6 +844,10 @@ window.initMeetingRoom = function() {
         socket = null;
         if (sfuPc) sfuPc.close();
         sfuPc = null;
+        clearTimeout(sfuRestartTimer);
+        sfuRestartTimer = null;
+        sfuNegotiationInFlight = false;
+        sfuNegotiationQueued = false;
         pendingSfuIceCandidates.length = 0;
         peers.forEach(pc => pc.close());
         peers.clear();
@@ -909,11 +965,11 @@ window.initMeetingRoom = function() {
         }
     }
 
-    function applyMeetingBackground(value = 'aurora') {
-        if (!meetingPage) return;
-        meetingPage.classList.remove('bg-midnight', 'bg-studio', 'bg-rose');
-        if (value && value !== 'aurora') meetingPage.classList.add(`bg-${value}`);
-        localStorage.setItem('herai_meeting_background', value || 'aurora');
+    function applyVideoBackground(value = 'none') {
+        const safeValue = value || 'none';
+        localPresence.videoBg = safeValue;
+        localStorage.setItem('herai_meeting_video_background', safeValue);
+        updateMeetingTilePresence(clientId, buildLocalPresence());
     }
 
     function toggleTrack(kind) {
@@ -1325,6 +1381,7 @@ function updateMeetingTilePresence(peerId, presence = {}) {
 
     tile.classList.toggle('is-hand-raised', presence.hand === true);
     tile.classList.toggle('is-camera-off', presence.camera === false);
+    applyMeetingVideoBackground(tile, presence.videoBg || 'none');
 
     const name = presence.name || getMeetingPeerName(peerId);
     let initial = tile.querySelector('.meeting-video-initial');
@@ -1352,6 +1409,13 @@ function updateMeetingTilePresence(peerId, presence = {}) {
     }
     mic.innerHTML = '<i class="fas fa-microphone-slash"></i>';
     mic.style.display = presence.mic === false ? 'inline-flex' : 'none';
+}
+
+function applyMeetingVideoBackground(tile, value = 'none') {
+    if (!tile) return;
+    const safeValue = String(value || 'none').replace(/[^a-z0-9_-]/gi, '').toLowerCase() || 'none';
+    tile.classList.remove('meeting-video-bg-blush', 'meeting-video-bg-deep', 'meeting-video-bg-grid', 'meeting-video-bg-blur');
+    if (safeValue !== 'none') tile.classList.add(`meeting-video-bg-${safeValue}`);
 }
 
 function renderMeetingRemoteShareLabel(peerId, displayName = '') {
