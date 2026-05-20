@@ -2,6 +2,9 @@ package main
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"io"
@@ -62,6 +65,8 @@ func main() {
 
 	hub := &Hub{rooms: make(map[string]*Room)}
 
+	http.HandleFunc("/__app-auth", handleAppAuth)
+	http.HandleFunc("/__app-logout", handleAppLogout)
 	http.HandleFunc("/__gas", proxyGAS)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if serveStaticApp(w, r) {
@@ -288,6 +293,10 @@ func serveStaticApp(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		return false
 	}
+	if !hasAppAccess(r) {
+		serveAccessGate(w, r)
+		return true
+	}
 
 	staticRoot := getenv("HERAI_STATIC_ROOT", "./public")
 	cleanPath := filepath.Clean(strings.TrimPrefix(r.URL.Path, "/"))
@@ -327,10 +336,136 @@ func serveStaticFile(w http.ResponseWriter, r *http.Request, path string) {
 	http.ServeFile(w, r, path)
 }
 
+func handleAppAuth(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		serveAccessGate(w, r)
+		return
+	}
+
+	password := ""
+	contentType := strings.ToLower(r.Header.Get("Content-Type"))
+	if strings.Contains(contentType, "application/json") {
+		var payload struct {
+			Password string `json:"password"`
+		}
+		_ = json.NewDecoder(r.Body).Decode(&payload)
+		password = payload.Password
+	} else {
+		_ = r.ParseForm()
+		password = r.FormValue("password")
+	}
+
+	expected := getenv("APP_ACCESS_PASSWORD", "")
+	if expected == "" || !hmac.Equal([]byte(password), []byte(expected)) {
+		serveAccessGateWithError(w, r, "Password akses salah.")
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "herai_app_access",
+		Value:    appAccessToken(),
+		Path:     "/",
+		MaxAge:   12 * 60 * 60,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https"),
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func handleAppLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "herai_app_access",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https"),
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func hasAppAccess(r *http.Request) bool {
+	if getenv("APP_ACCESS_PASSWORD", "") == "" {
+		return true
+	}
+	cookie, err := r.Cookie("herai_app_access")
+	if err != nil {
+		return false
+	}
+	return hmac.Equal([]byte(cookie.Value), []byte(appAccessToken()))
+}
+
+func appAccessToken() string {
+	secret := getenv("APP_ACCESS_PASSWORD", "")
+	mac := hmac.New(sha256.New, []byte(secret))
+	_, _ = mac.Write([]byte("herai-superapp-access-v1"))
+	return hex.EncodeToString(mac.Sum(nil))
+}
+
+func serveAccessGate(w http.ResponseWriter, r *http.Request) {
+	serveAccessGateWithError(w, r, "")
+}
+
+func serveAccessGateWithError(w http.ResponseWriter, r *http.Request, message string) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(http.StatusUnauthorized)
+	errorBlock := ""
+	if message != "" {
+		errorBlock = `<p class="error">` + htmlEscape(message) + `</p>`
+	}
+	_, _ = w.Write([]byte(`<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HerAI Secure Access</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { align-items: center; background: #101828; display: flex; justify-content: center; margin: 0; min-height: 100vh; padding: 24px; }
+    main { background: #fff; border: 1px solid #f2f4f7; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,.28); max-width: 420px; padding: 28px; width: 100%; }
+    h1 { color: #101828; font-size: 1.35rem; line-height: 1.2; margin: 0 0 8px; }
+    p { color: #667085; font-size: .92rem; line-height: 1.55; margin: 0 0 18px; }
+    label { color: #344054; display: block; font-size: .82rem; font-weight: 800; margin-bottom: 8px; }
+    input { border: 1px solid #d0d5dd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; margin-bottom: 14px; padding: 12px 13px; width: 100%; }
+    button { background: #ff1493; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 900; padding: 12px 14px; width: 100%; }
+    .error { background: #fee4e2; border-radius: 8px; color: #b42318; font-weight: 800; padding: 10px 12px; }
+    small { color: #98a2b3; display: block; font-size: .74rem; margin-top: 12px; text-align: center; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>HerAI Secure Access</h1>
+    <p>Masukkan password akses untuk membuka aplikasi dan asset internal.</p>
+    ` + errorBlock + `
+    <form method="post" action="/__app-auth">
+      <label for="password">Access Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" autofocus required>
+      <button type="submit">Masuk</button>
+    </form>
+    <small>Protected application gateway</small>
+  </main>
+</body>
+</html>`))
+}
+
+func htmlEscape(value string) string {
+	replacer := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#039;")
+	return replacer.Replace(value)
+}
+
 func proxyGAS(w http.ResponseWriter, r *http.Request) {
 	setJSONHeaders(w)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	if !hasAppAccess(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "error", "message": "App access required"})
 		return
 	}
 	if r.Method != http.MethodPost {

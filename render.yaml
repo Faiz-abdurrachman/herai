@@ -12,3 +12,5 @@ services:
         value: ./public
       - key: GAS_WEB_APP_URL
         sync: false
+      - key: APP_ACCESS_PASSWORD
+        sync: false
