@@ -65,6 +65,7 @@ window.initMeetingRoom = function() {
     const negotiationState = new Map();
     const peerRetryCounts = new Map();
     const peerAudioMonitors = new Map();
+    const peerMediaWatchdogs = new Map();
     const clientId = getMeetingClientId();
     const localPresence = {
         id: clientId,
@@ -123,17 +124,34 @@ window.initMeetingRoom = function() {
     const ensureMedia = async () => {
         if (localStream) return localStream;
         assertMediaSupport();
+        const audioConstraints = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+        const videoConstraints = {
+            width: { ideal: 640, max: 960 },
+            height: { ideal: 360, max: 540 },
+            frameRate: { ideal: 15, max: 20 },
+            facingMode: 'user'
+        };
+        const tracks = [];
         try {
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-                audio: { echoCancellation: true, noiseSuppression: true }
-            });
+            const fullStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: audioConstraints });
+            localStream = fullStream;
         } catch (error) {
-            if (error?.name === 'OverconstrainedError' || error?.name === 'ConstraintNotSatisfiedError') {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            } else {
+            try {
+                const audioOnly = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false });
+                tracks.push(...audioOnly.getAudioTracks());
+            } catch (audioError) {
+                console.warn('Mic tidak tersedia, lanjut tanpa audio lokal.', audioError);
+            }
+            try {
+                const videoOnly = await navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: false });
+                tracks.push(...videoOnly.getVideoTracks());
+            } catch (videoError) {
+                console.warn('Kamera tidak tersedia, lanjut tanpa video lokal.', videoError);
+            }
+            if (tracks.length === 0) {
                 throw error;
             }
+            localStream = new MediaStream(tracks);
         }
         cameraStream = localStream;
         if (localVideo) localVideo.srcObject = localStream;
@@ -147,6 +165,8 @@ window.initMeetingRoom = function() {
         peers.delete(peerId);
         stopAudioMonitor(peerAudioMonitors.get(peerId));
         peerAudioMonitors.delete(peerId);
+        clearTimeout(peerMediaWatchdogs.get(peerId));
+        peerMediaWatchdogs.delete(peerId);
         pendingIceCandidates.delete(peerId);
         negotiationState.delete(peerId);
         peerRetryCounts.delete(peerId);
@@ -166,13 +186,19 @@ window.initMeetingRoom = function() {
             bundlePolicy: 'max-bundle',
             iceCandidatePoolSize: 4
         });
-        if (localStream) localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-        if (screenStream) screenStream.getTracks().forEach(track => pc.addTrack(track, screenStream));
+        if (localStream) localStream.getTracks().forEach(track => configureSender(pc.addTrack(track, localStream), track));
+        if (!localStream?.getAudioTracks().length) pc.addTransceiver('audio', { direction: 'recvonly' });
+        if (!localStream?.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
+        if (screenStream) screenStream.getTracks().forEach(track => configureSender(pc.addTrack(track, screenStream), track));
         pc.ontrack = event => {
             const stream = event.streams[0];
             const shareMeta = remoteScreenShares.get(peerId);
             const isScreen = shareMeta?.streamId && shareMeta.streamId === stream?.id;
             renderMeetingRemote(peerId, stream, isScreen ? 'screen' : 'camera', shareMeta?.name);
+            if (!isScreen) {
+                clearTimeout(peerMediaWatchdogs.get(peerId));
+                peerMediaWatchdogs.delete(peerId);
+            }
             if (!isScreen) startRemoteAudioMonitor(peerId, stream);
         };
         pc.onicecandidate = event => {
@@ -199,8 +225,34 @@ window.initMeetingRoom = function() {
             if (pc.iceConnectionState === 'failed') retryPeerConnection(peerId);
         };
         peers.set(peerId, pc);
+        scheduleMediaWatchdog(peerId);
         updateTileLayout();
         return pc;
+    };
+    const configureSender = (sender, track) => {
+        if (!sender?.getParameters || !sender?.setParameters || track?.kind !== 'video') return;
+        try {
+            const params = sender.getParameters();
+            params.encodings = params.encodings?.length ? params.encodings : [{}];
+            params.encodings[0].maxBitrate = 320000;
+            params.encodings[0].maxFramerate = 15;
+            sender.setParameters(params).catch(() => {});
+        } catch (error) {
+            console.warn('Tidak bisa mengatur bitrate video.', error);
+        }
+    };
+    const scheduleMediaWatchdog = (peerId) => {
+        clearTimeout(peerMediaWatchdogs.get(peerId));
+        const timeoutId = setTimeout(() => {
+            const safeId = String(peerId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+            const tile = document.getElementById(`meeting-remote-${safeId}`);
+            const pc = peers.get(peerId);
+            if (!pc || pc.connectionState === 'closed' || tile) return;
+            setStatus(`${peerDisplayName(peerId)} sedang disambungkan ulang`);
+            sendSignal('media-reconnect', peerId, { name: displayName() });
+            retryPeerConnection(peerId);
+        }, 8500);
+        peerMediaWatchdogs.set(peerId, timeoutId);
     };
     const createOffer = async (peerId, options = {}) => {
         const pc = createPeer(peerId);
@@ -320,6 +372,7 @@ window.initMeetingRoom = function() {
                     screen: false
                 });
             }
+            ensureParticipantTile(from, name, peerPresence.get(from));
             if (pendingJoinAnnouncements.has(from)) announcePeerJoined(from, name);
             renderPeopleList();
             return;
@@ -335,10 +388,16 @@ window.initMeetingRoom = function() {
             };
             peerNames.set(from, nextPresence.name);
             peerPresence.set(from, nextPresence);
+            ensureParticipantTile(from, nextPresence.name, nextPresence);
             if (pendingJoinAnnouncements.has(from)) announcePeerJoined(from, nextPresence.name);
             updateMeetingRemoteLabel(from);
             updateMeetingTilePresence(from, nextPresence);
             renderPeopleList();
+            return;
+        }
+        if (type === 'media-reconnect') {
+            setStatus(`${peerDisplayName(from)} meminta sinkron ulang media`);
+            await createOffer(from, { iceRestart: true });
             return;
         }
         if (type === 'offer') {
@@ -825,6 +884,26 @@ window.initMeetingRoom = function() {
         }).join('');
     }
 
+    function ensureParticipantTile(peerId, name = 'Peserta', presence = {}) {
+        if (!remoteGrid) return;
+        const safeId = String(peerId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+        const tileId = `meeting-remote-${safeId}`;
+        if (document.getElementById(tileId)) return;
+        const tile = document.createElement('div');
+        tile.id = tileId;
+        tile.className = 'meeting-remote-tile is-connecting is-camera-off';
+        tile.innerHTML = `
+            <video autoplay playsinline></video>
+            <div class="meeting-video-initial">${escapeMeetingHtml(getMeetingInitials(name).slice(0, 1))}</div>
+            <span>${escapeMeetingHtml(name)} sedang menghubungkan</span>
+            <button class="meeting-pin-btn" data-pin-tile="${tileId}" title="Pin"><i class="fas fa-thumbtack"></i></button>
+        `;
+        remoteGrid.appendChild(tile);
+        updateMeetingTilePresence(peerId, { ...presence, name, camera: presence.camera === true });
+        bindPinButtons();
+        updateTileLayout();
+    }
+
     function openExitConfirm(title, message, action) {
         pendingExitAction = action;
         if (exitTitle) exitTitle.textContent = title;
@@ -1035,6 +1114,7 @@ function renderMeetingRemote(peerId, stream, type = 'camera', displayName = '') 
         remoteGrid.appendChild(tile);
     }
     if (type !== 'screen') {
+        tile.classList.remove('is-connecting', 'is-camera-off');
         const label = tile.querySelector('span');
         const name = getMeetingPeerName(peerId);
         if (label) label.textContent = name;
