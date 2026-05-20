@@ -955,13 +955,20 @@ window.initMeetingRoom = function() {
             screenTrack = screenStream.getVideoTracks()[0];
             activeScreenOwner = clientId;
             localPresence.screen = true;
+            renderLocalScreenTile(screenStream);
+            setShareButtonState(true);
             if (meetingTransport === 'livekit') {
                 const LK = await loadLiveKitClient();
-                await liveKitRoom?.localParticipant?.publishTrack(screenTrack, {
-                    source: LK.Track.Source.ScreenShare,
-                    simulcast: true,
-                    videoEncoding: { maxBitrate: 1_200_000, maxFramerate: 15 }
-                });
+                try {
+                    await liveKitRoom?.localParticipant?.publishTrack(screenTrack, {
+                        source: LK.Track.Source.ScreenShare
+                    });
+                } catch (publishError) {
+                    console.warn('LiveKit screen publish fallback', publishError);
+                    await liveKitRoom?.localParticipant?.publishTrack(screenTrack).catch(error => {
+                        throw error;
+                    });
+                }
             } else if (USE_SFU_TRANSPORT) {
                 configureSender(createSFUPeer().addTrack(screenTrack, screenStream), screenTrack);
                 await negotiateSFU();
@@ -971,21 +978,24 @@ window.initMeetingRoom = function() {
             }
             sendSignal('screen-start', '', { name: displayName(), streamId: screenStream.id });
             publishPresence();
-            renderLocalScreenTile(screenStream);
             screenTrack.onended = async () => {
                 await stopScreenShare();
             };
-            setShareButtonState(true);
         } catch (error) {
             console.warn('Screen share cancelled', error);
+            const cancelledByUser = ['AbortError', 'NotAllowedError', 'PermissionDeniedError'].includes(error?.name);
             if (screenStream) screenStream.getTracks().forEach(track => track.stop());
             screenStream = null;
             screenTrack = null;
+            document.getElementById('meeting-local-screen')?.remove();
             activeScreenOwner = null;
             localPresence.screen = false;
             setShareButtonState(false);
             publishPresence();
-            alert('Share screen gagal dimulai. Coba pilih window/tab, atau ulangi share entire screen setelah izin layar diberikan.');
+            updateTileLayout();
+            if (!cancelledByUser) {
+                alert('Share screen gagal dipublish ke meeting server. Coba lagi atau pilih window/tab.');
+            }
         }
     });
 
@@ -1382,7 +1392,7 @@ window.initMeetingRoom = function() {
         item.innerHTML = `
             <div class="meeting-chat-bubble">
                 <strong>${escapeMeetingHtml(isOwn ? 'Kamu' : name)}</strong>
-                <span>${escapeMeetingHtml(text)}</span>
+                <span>${linkifyMeetingText(text)}</span>
             </div>
             <span class="meeting-chat-meta">${formatMeetingTime(at)}</span>
         `;
@@ -1473,7 +1483,7 @@ window.initMeetingRoom = function() {
         if (hasScreenShare) {
             const screenTiles = tiles.filter(tile => tile.classList.contains('is-screen'));
             const cameraTiles = tiles.filter(tile => !tile.classList.contains('is-screen'));
-            const maxRailTiles = window.matchMedia('(max-width: 860px)').matches ? 4 : 5;
+            const maxRailTiles = 5;
             cameraTiles.forEach((tile, index) => {
                 tile.style.display = index < maxRailTiles ? '' : 'none';
             });
@@ -1688,4 +1698,13 @@ function escapeMeetingHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
     }[char]));
+}
+
+function linkifyMeetingText(value) {
+    const escaped = escapeMeetingHtml(value);
+    const urlPattern = /\b((?:https?:\/\/|www\.)[^\s<]+[^\s<.,;:!?")\]])/gi;
+    return escaped.replace(urlPattern, match => {
+        const href = match.toLowerCase().startsWith('http') ? match : `https://${match}`;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+    });
 }
