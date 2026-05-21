@@ -569,11 +569,11 @@ window.initMeetingRoom = function() {
             throw new Error(tokenData?.message || 'Token LiveKit tidak tersedia');
         }
         liveKitRoom = new LK.Room({
-            adaptiveStream: true,
+            adaptiveStream: false,
             dynacast: true,
             publishDefaults: {
-                videoEncoding: { maxBitrate: 450_000, maxFramerate: 15 },
-                screenShareEncoding: { maxBitrate: 1_200_000, maxFramerate: 15 }
+                videoEncoding: { maxBitrate: 900_000, maxFramerate: 24 },
+                screenShareEncoding: { maxBitrate: 3_500_000, maxFramerate: 30 }
             }
         });
         const RoomEvent = LK.RoomEvent;
@@ -1429,7 +1429,10 @@ window.initMeetingRoom = function() {
             remoteGrid.appendChild(tile);
         }
         const video = tile.querySelector('video');
-        if (video) video.srcObject = stream;
+        if (video) {
+            video.srcObject = stream;
+            setMeetingScreenAspect(tile, stream);
+        }
         bindPinButtons();
         updateTileLayout();
     }
@@ -1487,7 +1490,7 @@ window.initMeetingRoom = function() {
         if (hasScreenShare) {
             const screenTiles = tiles.filter(tile => tile.classList.contains('is-screen'));
             const cameraTiles = tiles.filter(tile => !tile.classList.contains('is-screen'));
-            const maxRailTiles = 5;
+            const maxRailTiles = isCompactViewport ? 5 : 6;
             cameraTiles.forEach((tile, index) => {
                 tile.style.display = index < maxRailTiles ? '' : 'none';
             });
@@ -1505,12 +1508,18 @@ window.initMeetingRoom = function() {
             }
             visibleCount = screenTiles.length + Math.min(cameraTiles.length, maxRailTiles) + (hiddenCount > 0 ? 1 : 0);
             const railCount = Math.min(cameraTiles.length, maxRailTiles) + (hiddenCount > 0 ? 1 : 0);
-            remoteGrid?.style.setProperty('--meeting-rail-rows', String(Math.max(1, railCount)));
+            const railCols = !isCompactViewport && railCount > 3 ? 2 : 1;
+            remoteGrid?.style.setProperty('--meeting-rail-rows', String(Math.max(1, Math.ceil(railCount / railCols))));
+            if (remoteGrid) remoteGrid.dataset.railCols = String(railCols);
         } else {
             tiles.forEach((tile, index) => {
                 tile.style.display = index >= start && index < end ? '' : 'none';
             });
             remoteGrid?.style.removeProperty('--meeting-rail-rows');
+            if (remoteGrid) {
+                delete remoteGrid.dataset.railCols;
+                delete remoteGrid.dataset.screenTall;
+            }
         }
         if (remoteGrid) {
             remoteGrid.classList.toggle('has-screen-share', hasScreenShare);
@@ -1520,7 +1529,7 @@ window.initMeetingRoom = function() {
             const effectiveCols = isCompactViewport && !hasScreenShare ? Math.min(cols, 2) : cols;
             const rowCount = hasScreenShare
                 ? Math.max(1, Math.ceil(Math.max(1, visibleCount - 1) / (isCompactViewport ? 2 : 1)))
-                : Math.max(1, Math.ceil(visibleCount / Math.max(1, effectiveCols)));
+                : (isCompactViewport ? Math.max(1, Math.ceil(visibleCount / Math.max(1, effectiveCols))) : getMeetingRowCount(visibleCount, effectiveCols));
             remoteGrid.style.setProperty('--meeting-cols', String(cols));
             remoteGrid.style.setProperty('--meeting-rows', String(rowCount));
         }
@@ -1544,11 +1553,19 @@ window.initMeetingRoom = function() {
 
     function getMeetingColumnCount(count) {
         if (count <= 1) return 1;
+        if (count === 3) return 4;
+        if (count === 5 || count === 7) return 6;
         if (count <= 4) return 2;
         if (count <= 9) return 3;
         if (count <= 12) return 4;
         if (count <= 15) return 5;
         return 6;
+    }
+
+    function getMeetingRowCount(count, cols) {
+        if (count === 3 || count === 5) return 2;
+        if (count === 7) return 3;
+        return Math.max(1, Math.ceil(count / Math.max(1, cols)));
     }
 };
 
@@ -1568,6 +1585,24 @@ function formatMeetingRoomCode(value) {
         .toUpperCase()
         .slice(0, 12);
     return compact.match(/.{1,4}/g)?.join('-') || '';
+}
+
+function setMeetingScreenAspect(tile, stream) {
+    if (!tile || !stream) return;
+    const grid = document.getElementById('meetingRemoteGrid');
+    const track = stream.getVideoTracks?.()[0];
+    const settings = track?.getSettings?.() || {};
+    const video = tile.querySelector('video');
+    const applyAspect = () => {
+        const width = Number(video?.videoWidth || settings.width || 16);
+        const height = Number(video?.videoHeight || settings.height || 9);
+        if (!width || !height) return;
+        tile.style.setProperty('--meeting-screen-aspect', `${width} / ${height}`);
+        grid?.style.setProperty('--meeting-screen-aspect', `${width} / ${height}`);
+        if (grid) grid.dataset.screenTall = String(height > width);
+    };
+    applyAspect();
+    if (video) video.onloadedmetadata = applyAspect;
 }
 
 function renderMeetingRemote(peerId, stream, type = 'camera', displayName = '') {
@@ -1606,7 +1641,10 @@ function renderMeetingRemote(peerId, stream, type = 'camera', displayName = '') 
         if (label) label.textContent = `${displayName || peerId.slice(0, 8)} sedang share screen`;
     }
     const video = tile.querySelector('video');
-    if (video) video.srcObject = stream;
+    if (video) {
+        video.srcObject = stream;
+        if (type === 'screen') setMeetingScreenAspect(tile, stream);
+    }
     const presence = window.__HERAI_MEETING_PEER_PRESENCE__?.get(peerId);
     if (presence) updateMeetingTilePresence(peerId, presence);
     bindMeetingPinButtons();

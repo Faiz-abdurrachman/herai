@@ -132,19 +132,19 @@
 </section>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
     .meeting-page {
         align-items: center;
         background: #f7f9fc;
         display: flex;
+        font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         min-height: calc(100vh - 74px);
         padding: 96px 20px 40px;
     }
     .meeting-page.in-call {
         align-items: stretch;
-        background:
-            radial-gradient(circle at 18% 18%, rgba(255, 20, 147, 0.26), transparent 28%),
-            radial-gradient(circle at 84% 10%, rgba(124, 58, 237, 0.24), transparent 30%),
-            linear-gradient(135deg, #101828 0%, #182230 48%, #0b1020 100%);
+        background: #000;
         min-height: 100vh;
         padding: 0;
     }
@@ -193,7 +193,7 @@
     .meeting-join-panel h1,
     .meeting-room-header h2 {
         color: #1a0b2e;
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
         margin: 0 0 8px;
     }
     .meeting-room-panel h2 {
@@ -353,15 +353,16 @@
     }
     .meeting-room-stats span {
         align-items: center;
-        background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(255,255,255,0.16);
+        background: rgba(255,255,255,0.10);
+        border: 1px solid rgba(255,255,255,0.20);
         border-radius: 999px;
         color: #fff;
         display: inline-flex;
-        font-size: 0.84rem;
+        font-size: 0.8rem;
         font-weight: 900;
         gap: 8px;
-        padding: 8px 12px;
+        line-height: 1;
+        padding: 9px 13px;
     }
     .meeting-actions {
         display: flex;
@@ -486,7 +487,7 @@
     }
     .meeting-video-initial {
         align-items: center;
-        background: linear-gradient(135deg, #ff1493, #7c3aed);
+        background: #ff1493;
         border-radius: 999px;
         color: #fff;
         display: none;
@@ -507,20 +508,27 @@
     }
     .meeting-video-tile span,
     .meeting-remote-tile span {
-        background: rgba(17, 24, 39, 0.72);
+        backdrop-filter: blur(10px);
+        background: rgba(17, 24, 39, 0.68);
+        border: 1px solid rgba(255,255,255,0.12);
         border-radius: 999px;
         bottom: 10px;
         color: #fff;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 800;
         left: 10px;
-        padding: 5px 10px;
+        max-width: calc(100% - 56px);
+        overflow: hidden;
+        padding: 6px 10px;
         position: absolute;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         z-index: 3;
     }
     .meeting-hand-badge {
         align-items: center;
         background: #ff1493;
+        border: 1px solid rgba(255,255,255,0.16);
         border-radius: 999px;
         color: #fff;
         display: inline-flex;
@@ -528,7 +536,7 @@
         font-weight: 900;
         gap: 6px;
         left: 10px;
-        padding: 7px 10px;
+        padding: 7px 11px;
         position: absolute;
         top: 10px;
         z-index: 3;
@@ -536,6 +544,7 @@
     .meeting-mic-badge {
         align-items: center;
         background: #ef4444;
+        border: 1px solid rgba(255,255,255,0.18);
         border-radius: 999px;
         color: #fff;
         display: inline-flex;
@@ -550,8 +559,9 @@
     }
     .meeting-pin-btn {
         align-items: center;
-        background: rgba(17, 24, 39, 0.72);
-        border: 0;
+        backdrop-filter: blur(10px);
+        background: rgba(17, 24, 39, 0.62);
+        border: 1px solid rgba(255,255,255,0.12);
         border-radius: 999px;
         color: #fff;
         cursor: pointer;
@@ -592,16 +602,41 @@
         display: grid;
         gap: 8px;
         grid-auto-flow: row;
-        grid-template-columns: minmax(0, 1fr) clamp(150px, 16vw, 230px) !important;
+        grid-template-columns: minmax(0, 1fr) clamp(220px, 26vw, 430px) !important;
         grid-template-rows: repeat(var(--meeting-rail-rows, 6), minmax(0, 1fr));
         justify-items: stretch;
         overflow: hidden;
         padding-bottom: 0;
     }
+    .meeting-remote-grid.has-screen-share[data-rail-cols="2"] {
+        grid-template-columns: minmax(0, 1fr) repeat(2, minmax(150px, clamp(150px, 16vw, 250px))) !important;
+    }
+    .meeting-remote-grid.has-screen-share .meeting-video-tile.is-screen,
+    .meeting-remote-grid.has-screen-share .meeting-remote-tile.is-screen {
+        align-self: center;
+        aspect-ratio: var(--meeting-screen-aspect, 16 / 9);
+        height: auto;
+        max-height: 100%;
+        width: 100%;
+    }
+    .meeting-remote-grid.has-screen-share[data-screen-tall="true"] .meeting-video-tile.is-screen,
+    .meeting-remote-grid.has-screen-share[data-screen-tall="true"] .meeting-remote-tile.is-screen {
+        height: 100%;
+        justify-self: center;
+        width: auto;
+    }
+    .meeting-remote-grid.has-screen-share[data-rail-cols="2"] .meeting-video-tile:not(.is-screen),
+    .meeting-remote-grid.has-screen-share[data-rail-cols="2"] .meeting-remote-tile:not(.is-screen),
+    .meeting-remote-grid.has-screen-share[data-rail-cols="2"] .meeting-overflow-tile {
+        grid-column: auto;
+    }
+    .meeting-remote-grid.has-screen-share[data-rail-cols="2"] {
+        grid-template-rows: repeat(var(--meeting-rail-rows, 3), minmax(0, 1fr));
+    }
     .meeting-overflow-tile {
         align-items: center;
         aspect-ratio: auto;
-        background: linear-gradient(135deg, rgba(255, 20, 147, 0.92), rgba(124, 58, 237, 0.92));
+        background: #1f2937;
         border: 1px solid rgba(255,255,255,0.18);
         border-radius: 8px;
         color: #fff;
@@ -641,6 +676,36 @@
     .meeting-remote-grid[data-count="14"],
     .meeting-remote-grid[data-count="15"],
     .meeting-remote-grid[data-count="16"] { --meeting-cols: 4; }
+    @media (min-width: 861px) {
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-video-tile:nth-child(1),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-remote-tile:nth-child(1),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-video-tile:nth-child(2),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-remote-tile:nth-child(2) {
+            grid-column: span 2;
+        }
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-video-tile:nth-child(3),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="3"] .meeting-remote-tile:nth-child(3) {
+            grid-column: 2 / span 2;
+        }
+        .meeting-remote-grid:not(.has-screen-share)[data-count="5"] .meeting-video-tile:nth-child(-n+2),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="5"] .meeting-remote-tile:nth-child(-n+2) {
+            grid-column: span 3;
+        }
+        .meeting-remote-grid:not(.has-screen-share)[data-count="5"] .meeting-video-tile:nth-child(n+3),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="5"] .meeting-remote-tile:nth-child(n+3) {
+            grid-column: span 2;
+        }
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-video-tile:nth-child(-n+2),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-remote-tile:nth-child(-n+2),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-video-tile:nth-child(n+6),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-remote-tile:nth-child(n+6) {
+            grid-column: span 3;
+        }
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-video-tile:nth-child(n+3):nth-child(-n+5),
+        .meeting-remote-grid:not(.has-screen-share)[data-count="7"] .meeting-remote-tile:nth-child(n+3):nth-child(-n+5) {
+            grid-column: span 2;
+        }
+    }
     .meeting-empty-remote {
         align-items: center;
         background: rgba(17, 24, 39, 0.72);
@@ -680,6 +745,14 @@
         font-size: 0.86rem;
         font-weight: 800;
         gap: 10px;
+    }
+    .meeting-room-code span {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 999px;
+        color: #fff;
+        line-height: 1;
+        padding: 8px 10px;
     }
     .meeting-room-code:last-child {
         text-align: right;
@@ -1033,11 +1106,14 @@
         .meeting-remote-grid.has-screen-share {
             align-content: flex-start;
             display: grid;
-            gap: 6px;
+            gap: 5px;
             grid-auto-flow: row;
             grid-template-rows: auto repeat(var(--meeting-rows, 1), minmax(0, 1fr));
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             overflow: hidden;
+        }
+        .meeting-remote-grid.has-screen-share[data-rail-cols="2"] {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         }
         .meeting-remote-grid.has-screen-share .meeting-video-tile:not(.is-screen),
         .meeting-remote-grid.has-screen-share .meeting-remote-tile:not(.is-screen),
@@ -1065,11 +1141,18 @@
         .meeting-remote-grid.has-screen-share .meeting-remote-tile.is-pinned,
         .meeting-remote-grid.has-pinned-tile:not(.has-screen-share) .meeting-video-tile.is-pinned,
         .meeting-remote-grid.has-pinned-tile:not(.has-screen-share) .meeting-remote-tile.is-pinned {
-            aspect-ratio: 16 / 9;
+            aspect-ratio: var(--meeting-screen-aspect, 16 / 9);
             grid-column: 1 / -1;
             grid-row: auto;
             height: auto;
+            max-height: 42dvh;
             min-height: 0;
+            width: 100%;
+        }
+        .meeting-remote-grid.has-screen-share[data-screen-tall="true"] .meeting-video-tile.is-screen,
+        .meeting-remote-grid.has-screen-share[data-screen-tall="true"] .meeting-remote-tile.is-screen {
+            height: auto;
+            width: 100%;
         }
         .meeting-room-header { align-items: flex-start; flex-direction: column; }
         .meeting-room-stats { width: 100%; }
