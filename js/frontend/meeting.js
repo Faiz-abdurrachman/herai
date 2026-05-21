@@ -583,11 +583,11 @@ window.initMeetingRoom = function() {
             throw new Error(tokenData?.message || 'Token LiveKit tidak tersedia');
         }
         liveKitRoom = new LK.Room({
-            adaptiveStream: false,
+            adaptiveStream: true,
             dynacast: true,
             publishDefaults: {
-                videoEncoding: { maxBitrate: 900_000, maxFramerate: 24 },
-                screenShareEncoding: { maxBitrate: 3_500_000, maxFramerate: 30 }
+                videoEncoding: { maxBitrate: 280_000, maxFramerate: 15 },
+                screenShareEncoding: { maxBitrate: 1_800_000, maxFramerate: 18 }
             }
         });
         const RoomEvent = LK.RoomEvent;
@@ -637,6 +637,8 @@ window.initMeetingRoom = function() {
         }
         syncPublishedDeviceState('audio', desiredMicEnabled);
         syncPublishedDeviceState('video', desiredCameraEnabled);
+        await liveKitRoom.localParticipant.setMicrophoneEnabled?.(desiredMicEnabled).catch(() => {});
+        await liveKitRoom.localParticipant.setCameraEnabled?.(desiredCameraEnabled).catch(() => {});
         liveKitRoom.remoteParticipants?.forEach(participant => {
             applyLiveKitPresence(participant);
             participant.trackPublications?.forEach(publication => {
@@ -1254,6 +1256,8 @@ window.initMeetingRoom = function() {
 
     function syncPublishedDeviceState(kind, enabled) {
         if (meetingTransport === 'livekit' && liveKitRoom?.localParticipant) {
+            if (kind === 'audio') liveKitRoom.localParticipant.setMicrophoneEnabled?.(enabled).catch(() => {});
+            if (kind === 'video') liveKitRoom.localParticipant.setCameraEnabled?.(enabled).catch(() => {});
             const publications = [
                 ...Array.from(liveKitRoom.localParticipant.audioTrackPublications?.values?.() || []),
                 ...Array.from(liveKitRoom.localParticipant.videoTrackPublications?.values?.() || [])
@@ -1525,11 +1529,24 @@ window.initMeetingRoom = function() {
         }
         const video = tile.querySelector('video');
         if (video) {
+            protectMeetingVideo(video);
             video.srcObject = stream;
             setMeetingScreenAspect(tile, stream);
         }
         bindPinButtons();
         updateTileLayout();
+    }
+
+    function protectMeetingVideo(video) {
+        if (!video || video.dataset.protected === 'true') return;
+        video.dataset.protected = 'true';
+        video.controls = false;
+        video.disablePictureInPicture = true;
+        video.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
+        video.addEventListener('pause', () => {
+            if (video.srcObject && !video.ended) video.play?.().catch(() => {});
+        });
+        video.addEventListener('contextmenu', event => event.preventDefault());
     }
 
     async function renegotiateAllPeers() {
@@ -1581,6 +1598,7 @@ window.initMeetingRoom = function() {
         const start = (currentPage - 1) * pageSize;
         const end = start + pageSize;
         const hasScreenShare = Boolean(remoteGrid?.querySelector('.is-screen'));
+        const pinnedTile = remoteGrid?.querySelector('.is-pinned:not(.is-screen)');
         let visibleCount = Math.min(pageSize, Math.max(1, tiles.length - start));
         if (hasScreenShare) {
             const screenTiles = tiles.filter(tile => tile.classList.contains('is-screen'));
@@ -1611,6 +1629,30 @@ window.initMeetingRoom = function() {
             visibleCount = screenTiles.length + railCount;
             remoteGrid?.style.setProperty('--meeting-rail-rows', String(Math.max(1, Math.ceil(railCount / railCols))));
             if (remoteGrid) remoteGrid.dataset.railCols = String(railCols);
+        } else if (pinnedTile) {
+            const railTiles = tiles.filter(tile => tile !== pinnedTile);
+            const maxRailTiles = isCompactViewport ? 8 : 6;
+            const railCountBeforeOverflow = Math.min(railTiles.length, maxRailTiles);
+            const hiddenCount = Math.max(0, railTiles.length - maxRailTiles);
+            const railCount = railCountBeforeOverflow + (hiddenCount > 0 ? 1 : 0);
+            const railCols = !isCompactViewport && railCount > 3 ? 2 : 1;
+            pinnedTile.style.display = '';
+            pinnedTile.dataset.railCol = '';
+            railTiles.forEach((tile, index) => {
+                tile.style.display = index < maxRailTiles ? '' : 'none';
+                tile.dataset.railCol = String((index % railCols) + 1);
+            });
+            if (hiddenCount > 0 && remoteGrid) {
+                const summaryTile = document.createElement('div');
+                summaryTile.id = 'meeting-overflow-tile';
+                summaryTile.className = 'meeting-overflow-tile';
+                summaryTile.dataset.railCol = String(((railCount - 1) % railCols) + 1);
+                summaryTile.innerHTML = `<strong>+${hiddenCount}</strong><span>peserta lainnya</span>`;
+                remoteGrid.appendChild(summaryTile);
+            }
+            visibleCount = 1 + railCount;
+            remoteGrid?.style.setProperty('--meeting-rail-rows', String(Math.max(1, Math.ceil(railCount / railCols))));
+            if (remoteGrid) remoteGrid.dataset.railCols = String(railCols);
         } else {
             tiles.forEach((tile, index) => {
                 tile.style.display = index >= start && index < end ? '' : 'none';
@@ -1624,12 +1666,15 @@ window.initMeetingRoom = function() {
         }
         if (remoteGrid) {
             remoteGrid.classList.toggle('has-screen-share', hasScreenShare);
-            remoteGrid.classList.toggle('has-pinned-tile', Boolean(remoteGrid.querySelector('.is-pinned:not(.is-screen)')));
+            const hasPinnedTile = !hasScreenShare && Boolean(pinnedTile);
+            remoteGrid.classList.toggle('has-pinned-tile', hasPinnedTile);
             remoteGrid.dataset.count = String(Math.min(visibleCount, 50));
             remoteGrid.dataset.density = visibleCount > 20 ? 'dense' : visibleCount > 8 ? 'medium' : 'roomy';
             const cols = getMeetingColumnCount(visibleCount, isCompactViewport);
             const effectiveCols = cols;
-            const rowCount = hasScreenShare
+            const rowCount = hasPinnedTile
+                ? Math.max(1, Math.ceil(Math.max(1, visibleCount - 1) / (isCompactViewport ? 2 : 1)))
+                : hasScreenShare
                 ? Math.max(1, Math.ceil(Math.max(1, visibleCount - 1) / (isCompactViewport ? 2 : 1)))
                 : getMeetingRowCount(visibleCount, effectiveCols, isCompactViewport);
             remoteGrid.style.setProperty('--meeting-cols', String(cols));
@@ -1655,12 +1700,11 @@ window.initMeetingRoom = function() {
 
     function getMeetingColumnCount(count, isCompact = false) {
         if (isCompact) {
-            if (count <= 2) return 1;
-            if (count <= 4) return 2;
-            if (count <= 9) return 3;
-            if (count <= 16) return 4;
-            if (count <= 25) return 5;
-            if (count <= 36) return 6;
+            if (count <= 1) return 1;
+            if (count === 2) return 1;
+            if (count <= 18) return count % 2 === 0 ? 2 : 3;
+            if (count <= 30) return 5;
+            if (count <= 42) return 6;
             return 7;
         }
         if (count <= 1) return 1;
@@ -1713,6 +1757,18 @@ function setMeetingScreenAspect(tile, stream) {
     if (video) video.onloadedmetadata = applyAspect;
 }
 
+function protectMeetingVideo(video) {
+    if (!video || video.dataset.protected === 'true') return;
+    video.dataset.protected = 'true';
+    video.controls = false;
+    video.disablePictureInPicture = true;
+    video.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
+    video.addEventListener('pause', () => {
+        if (video.srcObject && !video.ended) video.play?.().catch(() => {});
+    });
+    video.addEventListener('contextmenu', event => event.preventDefault());
+}
+
 function renderMeetingRemote(peerId, stream, type = 'camera', displayName = '') {
     const remoteGrid = document.getElementById('meetingRemoteGrid');
     if (!remoteGrid) return;
@@ -1750,6 +1806,7 @@ function renderMeetingRemote(peerId, stream, type = 'camera', displayName = '') 
     }
     const video = tile.querySelector('video');
     if (video) {
+        if (typeof protectMeetingVideo === 'function') protectMeetingVideo(video);
         video.srcObject = stream;
         if (type === 'screen') setMeetingScreenAspect(tile, stream);
     }
