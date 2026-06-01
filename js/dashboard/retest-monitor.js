@@ -7,6 +7,7 @@ let retestAccessRows = [];
 let retestSessions = [];
 let retestRows = [];
 let retestLoadInFlight = false;
+let activeReTestTab = 'access';
 
 window.initReTestMonitor = async function() {
     if (typeof window.loadSidebar === 'function') await window.loadSidebar();
@@ -15,11 +16,17 @@ window.initReTestMonitor = async function() {
     if (typeof window.logAdminActivity === 'function') window.logAdminActivity('Sedang memantau Re-Test Seleksi Tahap 2');
 
     document.getElementById('btnSyncReTest')?.addEventListener('click', loadReTestMonitorData);
+    document.querySelector('.retest-page-tabs')?.addEventListener('click', event => {
+        const button = event.target.closest('[data-retest-tab]');
+        if (!button) return;
+        switchReTestTab(button.dataset.retestTab);
+    });
     document.getElementById('retestAccessForm')?.addEventListener('submit', generateReTestAccess);
     document.getElementById('retestSearch')?.addEventListener('input', renderReTestSessions);
     document.getElementById('retestStatusFilter')?.addEventListener('change', renderReTestSessions);
     document.getElementById('retestAccessBody')?.addEventListener('click', handleReTestAccessAction);
     await loadReTestMonitorData();
+    switchReTestTab(activeReTestTab);
 };
 
 async function loadReTestMonitorData() {
@@ -174,6 +181,17 @@ function updateReTestStats() {
     setReTestText('retestLiveCount', retestRows.filter(row => row.status === 'started').length);
     setReTestText('retestSubmittedCount', retestRows.filter(row => row.status === 'submitted').length);
     setReTestText('retestMediaCount', retestRows.filter(row => row.camera_status === 'granted' && row.mic_status === 'granted').length);
+}
+
+function switchReTestTab(tabName) {
+    if (!['access', 'live'].includes(tabName)) return;
+    activeReTestTab = tabName;
+    document.querySelectorAll('[data-retest-tab]').forEach(button => {
+        button.classList.toggle('active', button.dataset.retestTab === tabName);
+    });
+    document.querySelectorAll('[data-retest-panel]').forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.retestPanel === tabName);
+    });
 }
 
 async function postReTestMonitor(payload) {

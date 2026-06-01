@@ -8,7 +8,7 @@
                 <p class="page-subtitle">Generate akses khusus dan pantau sesi tes ulang tanpa mengubah hasil tes utama</p>
             </div>
             <div class="topbar-right">
-                <button type="button" id="btnSyncReTest" class="btn-cyber"><i class="fas fa-sync-alt"></i> Sync Re-Test</button>
+                <button type="button" id="btnSyncReTest" class="btn-cyber"><i class="fas fa-sync-alt"></i> Refresh Data</button>
             </div>
         </header>
 
@@ -19,6 +19,18 @@
             <div class="competency-summary-card"><span>Media Aktif</span><strong id="retestMediaCount">0</strong></div>
         </section>
 
+        <nav class="retest-page-tabs" aria-label="Navigasi monitor Re-Test">
+            <button type="button" class="retest-page-tab active" data-retest-tab="access">
+                <i class="fas fa-key"></i>
+                <span>Daftar Akses</span>
+            </button>
+            <button type="button" class="retest-page-tab" data-retest-tab="live">
+                <i class="fas fa-tower-broadcast"></i>
+                <span>Live Re-Test</span>
+            </button>
+        </nav>
+
+        <div class="retest-tab-panel active" data-retest-panel="access">
         <section class="data-section glass-panel">
             <div class="table-header">
                 <div class="table-title">
@@ -48,7 +60,9 @@
                 </table>
             </div>
         </section>
+        </div>
 
+        <div class="retest-tab-panel" data-retest-panel="live">
         <section class="data-section glass-panel">
             <div class="table-header">
                 <div class="table-title"><h3>Live Re-Test Monitor</h3></div>
@@ -72,5 +86,6 @@
                 </table>
             </div>
         </section>
+        </div>
     </main>
 </div>
