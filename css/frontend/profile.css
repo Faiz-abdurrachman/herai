@@ -96,6 +96,40 @@
     gap: 24px;
 }
 
+.participant-profile-content {
+    display: grid;
+    gap: 24px;
+}
+
+.participant-profile-content[hidden],
+.profile-hold-card[hidden] {
+    display: none !important;
+}
+
+.profile-hold-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 18px 40px rgba(26, 11, 46, 0.06);
+    margin: 0 auto;
+    max-width: 760px;
+    padding: 42px;
+    text-align: center;
+}
+
+.profile-hold-card h1 {
+    color: var(--dark-purple);
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0 0 12px;
+}
+
+.profile-hold-card p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 0 auto 22px;
+    max-width: 620px;
+}
+
 .profile-hero-card {
     align-items: center;
     display: flex;

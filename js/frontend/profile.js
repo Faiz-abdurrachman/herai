@@ -5,6 +5,7 @@
 const PARTICIPANT_PROFILE_API = '/__gas';
 const PARTICIPANT_SESSION_KEY = 'heraiParticipantSession';
 const PARTICIPANT_LOCAL_KEY = 'heraiParticipantProfiles';
+const PARTICIPANT_PROFILE_DETAILS_VISIBLE = false;
 
 window.initParticipantProfile = function() {
     const authView = document.getElementById('participantAuthView');
@@ -65,10 +66,12 @@ function bindParticipantEvents() {
         }
     });
 
-    document.getElementById('btnLogoutParticipant')?.addEventListener('click', () => {
+    const logoutParticipant = () => {
         sessionStorage.removeItem(PARTICIPANT_SESSION_KEY);
         showAuthView();
-    });
+    };
+    document.getElementById('btnLogoutParticipant')?.addEventListener('click', logoutParticipant);
+    document.getElementById('btnLogoutParticipantHold')?.addEventListener('click', logoutParticipant);
 
     document.getElementById('participantProfileForm')?.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -116,6 +119,10 @@ function showParticipantDashboard(profile) {
     window.__CURRENT_PARTICIPANT_PROFILE__ = profile;
     document.getElementById('participantAuthView').style.display = 'none';
     document.getElementById('participantDashboardView').style.display = 'grid';
+    document.getElementById('participantProfileHoldView').hidden = PARTICIPANT_PROFILE_DETAILS_VISIBLE;
+    document.getElementById('participantProfileContent').hidden = !PARTICIPANT_PROFILE_DETAILS_VISIBLE;
+
+    if (!PARTICIPANT_PROFILE_DETAILS_VISIBLE) return;
 
     document.getElementById('profileName').textContent = profile.nama_lengkap || 'Peserta HerAI';
     document.getElementById('profileStage').textContent = `${profile.participant_stage || 'registered'} • ${profile.status_seleksi || 'pending'}`;
