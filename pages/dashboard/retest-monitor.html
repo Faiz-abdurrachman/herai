@@ -20,7 +20,11 @@
         </section>
 
         <nav class="retest-page-tabs" aria-label="Navigasi monitor Re-Test">
-            <button type="button" class="retest-page-tab active" data-retest-tab="access">
+            <button type="button" class="retest-page-tab active" data-retest-tab="generate">
+                <i class="fas fa-plus"></i>
+                <span>Generate Kode</span>
+            </button>
+            <button type="button" class="retest-page-tab" data-retest-tab="access">
                 <i class="fas fa-key"></i>
                 <span>Daftar Akses</span>
             </button>
@@ -30,26 +34,43 @@
             </button>
         </nav>
 
-        <div class="retest-tab-panel active" data-retest-panel="access">
-        <section class="data-section glass-panel">
-            <div class="table-header">
-                <div class="table-title">
-                    <h3>Generate Kode Akses</h3>
-                    <p>Kode baru menggantikan kode lama untuk NIK yang sama.</p>
+        <div class="retest-tab-panel active" data-retest-panel="generate">
+        <section class="retest-generator-panel glass-panel">
+            <div class="retest-generator-intro">
+                <span class="retest-section-kicker">Akses Terbatas</span>
+                <h2>Generate Kode Re-Test</h2>
+                <p>Terbitkan kredensial sekali pakai untuk peserta yang mendapat kesempatan tes ulang. NIK menjadi anchor data peserta dan kode lama otomatis digantikan saat melakukan regenerate.</p>
+                <div class="retest-generator-note">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>Bagikan kode hanya kepada peserta terkait. Aktivitas login dan sesi tes akan tercatat pada Live Re-Test.</span>
                 </div>
             </div>
             <form id="retestAccessForm" class="retest-access-form">
-                <input type="text" id="retestAccessNik" maxlength="16" inputmode="numeric" placeholder="16 digit NIK" required>
-                <input type="text" id="retestAccessName" placeholder="Nama peserta" required>
-                <input type="text" id="retestAccessNotes" placeholder="Catatan opsional">
-                <button type="submit" id="btnGenerateReTestCode" class="btn-cyber"><i class="fas fa-key"></i> Generate Kode</button>
+                <div class="retest-form-field">
+                    <label for="retestAccessNik">NIK Peserta</label>
+                    <input type="text" id="retestAccessNik" maxlength="16" inputmode="numeric" placeholder="Masukkan 16 digit NIK" required>
+                </div>
+                <div class="retest-form-field">
+                    <label for="retestAccessName">Nama Lengkap</label>
+                    <input type="text" id="retestAccessName" placeholder="Nama sesuai database peserta" required>
+                </div>
+                <div class="retest-form-field retest-form-field-wide">
+                    <label for="retestAccessNotes">Catatan Panitia <span>Opsional</span></label>
+                    <input type="text" id="retestAccessNotes" placeholder="Contoh: kendala jaringan pada tes sebelumnya">
+                </div>
+                <button type="submit" id="btnGenerateReTestCode" class="btn-cyber retest-generate-button"><i class="fas fa-key"></i> Generate Kode Akses</button>
+                <div id="retestGeneratedMessage" class="retest-generated-message" aria-live="polite"></div>
             </form>
-            <p id="retestGeneratedMessage" class="profile-message"></p>
         </section>
+        </div>
 
+        <div class="retest-tab-panel" data-retest-panel="access">
         <section class="data-section glass-panel">
             <div class="table-header">
-                <div class="table-title"><h3>Daftar Akses Re-Test</h3></div>
+                <div class="table-title">
+                    <h3>Daftar Akses Re-Test</h3>
+                    <p>Kelola kode aktif dan salin kredensial peserta saat diperlukan.</p>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="cyber-table">

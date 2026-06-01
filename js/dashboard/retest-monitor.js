@@ -7,7 +7,7 @@ let retestAccessRows = [];
 let retestSessions = [];
 let retestRows = [];
 let retestLoadInFlight = false;
-let activeReTestTab = 'access';
+let activeReTestTab = 'generate';
 
 window.initReTestMonitor = async function() {
     if (typeof window.loadSidebar === 'function') await window.loadSidebar();
@@ -269,7 +269,7 @@ function parseReTestJson(value, fallback) {
 }
 
 function switchReTestTab(tabName) {
-    if (!['access', 'live'].includes(tabName)) return;
+    if (!['generate', 'access', 'live'].includes(tabName)) return;
     activeReTestTab = tabName;
     document.querySelectorAll('[data-retest-tab]').forEach(button => {
         button.classList.toggle('active', button.dataset.retestTab === tabName);
@@ -328,7 +328,8 @@ function setReTestMessage(message, isError = false) {
     const el = document.getElementById('retestGeneratedMessage');
     if (!el) return;
     el.textContent = message;
-    el.style.color = isError ? 'var(--danger)' : 'var(--success)';
+    el.classList.toggle('error', isError);
+    el.classList.toggle('success', !!message && !isError);
 }
 
 function escapeReTestHtml(value) {
