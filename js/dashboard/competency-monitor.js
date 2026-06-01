@@ -110,7 +110,6 @@ function renderCompetencyMonitor() {
     body.innerHTML = filtered.map(session => {
         const answered = Number(session.answered_count || 0);
         const total = Number(session.total_questions || 0);
-        const score = session.status === 'submitted' ? `${session.score || 0}/${total || '-'}` : '-';
         const mediaOk = session.camera_status === 'granted' && session.mic_status === 'granted';
         const focusFlags = Number(session.focus_flags || 0);
         const stage2Status = normalizeStageTwoDecision(session.status_tahap_2 || session.competency_status || 'pending');
@@ -123,8 +122,8 @@ function renderCompetencyMonitor() {
                     <span class="monitor-pill ${mediaOk ? 'ok' : 'bad'}">Cam: ${escapeMonitorHtml(session.camera_status || '-')}</span>
                     <span class="monitor-pill ${mediaOk ? 'ok' : 'bad'}">Mic: ${escapeMonitorHtml(session.mic_status || '-')}</span>
                 </td>
-                <td>${answered}/${total || '-'} soal</td>
-                <td><strong>${score}</strong></td>
+                <td>${renderCompetencyAnswerProgress(answered, total)}</td>
+                <td>${renderCompetencyScoreVisual(session)}</td>
                 <td>
                     <span class="monitor-pill ${focusFlags ? 'warn' : 'ok'}">${focusFlags} focus flag</span>
                     <span class="monitor-pill ${session.page_visible === false || session.page_visible === 'false' ? 'warn' : 'ok'}">${session.page_visible === false || session.page_visible === 'false' ? 'Hidden' : 'Visible'}</span>
@@ -150,6 +149,42 @@ function updateCompetencyStats(data) {
     setText('competencySubmittedCount', submitted);
     setText('competencyMediaCount', media);
     setText('competencyFlagCount', flags);
+}
+
+function renderCompetencyAnswerProgress(answered, total) {
+    const safeTotal = Number(total || 0);
+    const percent = safeTotal ? Math.min(100, Math.round((Number(answered || 0) / safeTotal) * 100)) : 0;
+    return `
+        <div class="test-progress-visual">
+            <div class="test-progress-label"><strong>${Number(answered || 0)}</strong><span>/${safeTotal || '-'} jawaban</span></div>
+            <div class="test-progress-track"><span style="width:${percent}%"></span></div>
+            <small>${percent}% terisi</small>
+        </div>
+    `;
+}
+
+function renderCompetencyScoreVisual(session) {
+    if (session.status !== 'submitted') return '<span class="monitor-pill warn">Belum submit</span>';
+    return `
+        <div class="test-score-visual">
+            <span><small>Raw</small><strong>${escapeMonitorHtml(session.score || 0)}</strong></span>
+            <span><small>Bobot</small><strong>${escapeMonitorHtml(session.weighted_score || 0)}</strong></span>
+        </div>
+    `;
+}
+
+function renderCompetencySectionScores(sectionScores) {
+    const labels = { math: 'Math', logic: 'Logic', psychology: 'Psikologi' };
+    return Object.keys(labels).map(section => {
+        const value = Number(sectionScores[section] || 0);
+        const width = Math.min(100, Math.max(0, Math.round((Math.max(0, value) / 50) * 100)));
+        return `
+            <div class="test-section-score">
+                <div><strong>${labels[section]}</strong><span>${value.toFixed(2)}</span></div>
+                <div class="test-progress-track"><span style="width:${width}%"></span></div>
+            </div>
+        `;
+    }).join('');
 }
 
 function renderMonitorPill(status) {
@@ -225,6 +260,8 @@ function openCompetencyDetail(session) {
     const answers = parseJsonSafe(session.answers, {});
     const sectionScores = parseJsonSafe(session.section_scores, {});
     const history = parseJsonSafe(session.history_events, []);
+    const answered = Number(session.answered_count || Object.keys(answers).length || 0);
+    const total = Number(session.total_questions || 115);
     const stage2Status = session.status_tahap_2 || session.competency_status || 'pending';
     body.innerHTML = `
         <div class="competency-detail-grid">
@@ -236,6 +273,10 @@ function openCompetencyDetail(session) {
             <div><strong>Section Aktif</strong><span>${escapeMonitorHtml(session.active_section || '-')}</span></div>
             <div><strong>Focus Flag</strong><span>${escapeMonitorHtml(session.focus_flags || 0)}</span></div>
         </div>
+        <h3 class="competency-detail-title">Progress Jawaban</h3>
+        ${renderCompetencyAnswerProgress(answered, total)}
+        <h3 class="competency-detail-title">Hasil Pembobotan Section</h3>
+        <div class="test-section-score-list">${renderCompetencySectionScores(sectionScores)}</div>
         <div class="competency-decision-actions">
             <button type="button" class="btn btn-outline" data-competency-decision="pending" data-nik="${escapeMonitorHtml(session.nik || '')}">Kembalikan Pending</button>
             <button type="button" class="btn-reject" data-competency-decision="gugur" data-nik="${escapeMonitorHtml(session.nik || '')}"><i class="fas fa-times"></i> Gugur Tahap 2</button>

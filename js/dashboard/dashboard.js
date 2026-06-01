@@ -21,6 +21,7 @@
        if (typeof window.loadSidebar === 'function') {
            await window.loadSidebar('nav-overview');
        }
+       if (typeof window.applyAdminDashboardAccess === 'function') window.applyAdminDashboardAccess();
 
        if (!['#/dashboard', '#/dashboard/seleksi'].includes(window.location.hash)) return;
        
@@ -315,7 +316,10 @@
                if (result.status === 'success') {
                    sessionStorage.setItem('isAdminLoggedIn', 'true');
                    localStorage.setItem('adminId', payload.id_admin);
+                   localStorage.setItem('heraiAdminProfile', JSON.stringify(result.admin || { id_admin: payload.id_admin, role: 'reviewer' }));
                    overlay.remove();
+                   if (typeof window.applyAdminSidebarAccess === 'function') window.applyAdminSidebarAccess();
+                   if (typeof window.applyAdminDashboardAccess === 'function') window.applyAdminDashboardAccess();
                    fetchData();
                } else {
                    throw new Error(result.message);

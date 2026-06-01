@@ -25,6 +25,15 @@ window.initReTestMonitor = async function() {
     document.getElementById('retestSearch')?.addEventListener('input', renderReTestSessions);
     document.getElementById('retestStatusFilter')?.addEventListener('change', renderReTestSessions);
     document.getElementById('retestAccessBody')?.addEventListener('click', handleReTestAccessAction);
+    document.getElementById('retestMonitorBody')?.addEventListener('click', event => {
+        const button = event.target.closest('[data-open-retest-detail]');
+        if (!button) return;
+        const row = retestRows.find(item => normalizeReTestNik(item.nik) === normalizeReTestNik(button.dataset.openRetestDetail));
+        if (row) openReTestDetail(row);
+    });
+    document.getElementById('btnCloseReTestDetail')?.addEventListener('click', () => {
+        document.getElementById('retestDetailModal')?.classList.remove('active');
+    });
     await loadReTestMonitorData();
     switchReTestTab(activeReTestTab);
 };
@@ -145,11 +154,11 @@ function renderReTestSessions() {
                 <td>${renderReTestPill(row.status)}</td>
                 <td>${renderReTestSnapshot(row)}</td>
                 <td><span class="monitor-pill ${mediaOk ? 'ok' : 'bad'}">Cam: ${escapeReTestHtml(row.camera_status || '-')}</span> <span class="monitor-pill ${mediaOk ? 'ok' : 'bad'}">Mic: ${escapeReTestHtml(row.mic_status || '-')}</span></td>
-                <td>${Number(row.answered_count || 0)}/${Number(row.total_questions || 0) || '-'} soal</td>
-                <td>${row.status === 'submitted' ? escapeReTestHtml(row.score || 0) : '-'}</td>
-                <td>${row.status === 'submitted' ? escapeReTestHtml(row.weighted_score || 0) : '-'}</td>
+                <td>${renderReTestAnswerProgress(row)}</td>
+                <td>${renderReTestScoreVisual(row)}</td>
                 <td><span class="monitor-pill ${Number(row.focus_flags || 0) ? 'warn' : 'ok'}">${Number(row.focus_flags || 0)} focus flag</span></td>
                 <td>${formatReTestDate(row.updated_at || row.started_at)}</td>
+                <td><button type="button" class="btn-action" data-open-retest-detail="${escapeReTestHtml(row.nik || '')}" title="Lihat hasil"><i class="fas fa-chart-column"></i></button></td>
             </tr>
         `;
     }).join('');
@@ -181,6 +190,82 @@ function updateReTestStats() {
     setReTestText('retestLiveCount', retestRows.filter(row => row.status === 'started').length);
     setReTestText('retestSubmittedCount', retestRows.filter(row => row.status === 'submitted').length);
     setReTestText('retestMediaCount', retestRows.filter(row => row.camera_status === 'granted' && row.mic_status === 'granted').length);
+}
+
+function renderReTestAnswerProgress(row) {
+    const answered = Number(row.answered_count || 0);
+    const total = Number(row.total_questions || 0);
+    const percent = total ? Math.min(100, Math.round((answered / total) * 100)) : 0;
+    return `
+        <div class="test-progress-visual">
+            <div class="test-progress-label"><strong>${answered}</strong><span>/${total || '-'} jawaban</span></div>
+            <div class="test-progress-track"><span style="width:${percent}%"></span></div>
+            <small>${percent}% terisi</small>
+        </div>
+    `;
+}
+
+function renderReTestScoreVisual(row) {
+    if (row.status !== 'submitted') return '<span class="monitor-pill warn">Belum submit</span>';
+    return `
+        <div class="test-score-visual">
+            <span><small>Raw</small><strong>${escapeReTestHtml(row.score || 0)}</strong></span>
+            <span><small>Bobot</small><strong>${escapeReTestHtml(row.weighted_score || 0)}</strong></span>
+        </div>
+    `;
+}
+
+function renderReTestSectionScores(sectionScores) {
+    const labels = { math: 'Math', logic: 'Logic', psychology: 'Psikologi' };
+    return Object.keys(labels).map(section => {
+        const value = Number(sectionScores[section] || 0);
+        const width = Math.min(100, Math.max(0, Math.round((Math.max(0, value) / 50) * 100)));
+        return `
+            <div class="test-section-score">
+                <div><strong>${labels[section]}</strong><span>${value.toFixed(2)}</span></div>
+                <div class="test-progress-track"><span style="width:${width}%"></span></div>
+            </div>
+        `;
+    }).join('');
+}
+
+function openReTestDetail(row) {
+    const modal = document.getElementById('retestDetailModal');
+    const body = document.getElementById('retestDetailBody');
+    if (!modal || !body) return;
+    const sectionScores = parseReTestJson(row.section_scores, {});
+    const history = parseReTestJson(row.history_events, []);
+    body.innerHTML = `
+        <div class="competency-detail-grid">
+            <div><strong>Peserta</strong><span>${escapeReTestHtml(row.nama_lengkap || '-')}<br>${escapeReTestHtml(row.nik || '-')}</span></div>
+            <div><strong>Status</strong><span>${escapeReTestHtml(row.status || 'not_started')}</span></div>
+            <div><strong>Section Aktif</strong><span>${escapeReTestHtml(row.active_section || '-')}</span></div>
+            <div><strong>Skor Raw</strong><span>${escapeReTestHtml(row.score || '-')}</span></div>
+            <div><strong>Skor Bobot</strong><span>${escapeReTestHtml(row.weighted_score || '-')}</span></div>
+            <div><strong>Focus Flag</strong><span>${escapeReTestHtml(row.focus_flags || 0)}</span></div>
+        </div>
+        <h3 class="competency-detail-title">Progress Jawaban</h3>
+        ${renderReTestAnswerProgress(row)}
+        <h3 class="competency-detail-title">Hasil Pembobotan Section</h3>
+        <div class="test-section-score-list">${renderReTestSectionScores(sectionScores)}</div>
+        <h3 class="competency-detail-title">Riwayat Aktivitas</h3>
+        <div class="competency-history-list">
+            ${(Array.isArray(history) ? history.slice(-20).reverse() : []).map(item => `
+                <div><strong>${formatReTestDate(item.at)}</strong><span>${escapeReTestHtml(item.event || '-')} • ${escapeReTestHtml(item.section || '-')} • ${escapeReTestHtml(item.answered_count || 0)} terjawab</span></div>
+            `).join('') || '<p class="profile-message">Belum ada riwayat aktivitas.</p>'}
+        </div>
+    `;
+    modal.classList.add('active');
+}
+
+function parseReTestJson(value, fallback) {
+    if (!value) return fallback;
+    if (typeof value !== 'string') return value;
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return fallback;
+    }
 }
 
 function switchReTestTab(tabName) {

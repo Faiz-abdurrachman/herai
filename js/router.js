@@ -130,6 +130,9 @@ const router = {
         if (html && sidebarContainer.innerHTML.trim() === "") {
             sidebarContainer.innerHTML = html;
         }
+        if (typeof window.applyAdminSidebarAccess === "function") {
+            window.applyAdminSidebarAccess(sidebarContainer);
+        }
 
         if (typeof window.updateSidebarActiveState === "function") {
             window.updateSidebarActiveState();
@@ -210,6 +213,27 @@ const router = {
             // Jika rute tidak terdaftar di routes object
             if (!routeUrl) throw new Error("404");
 
+            if (adminPages.includes(path) && path !== "/dashboard" && typeof window.canAdminAccessPath === "function" && !window.canAdminAccessPath(path)) {
+                appContent.innerHTML = `
+                    <div class="dashboard-layout">
+                        <div id="sidebar-container"></div>
+                        <main class="main-content">
+                            <section class="access-denied-panel glass-panel">
+                                <i class="fas fa-lock"></i>
+                                <h1>Akses Modul Dibatasi</h1>
+                                <p>Role admin aktif tidak memiliki permission untuk membuka modul ini.</p>
+                                <a href="#/dashboard" class="btn-cyber"><i class="fas fa-arrow-left"></i> Kembali ke Overview</a>
+                            </section>
+                        </main>
+                    </div>
+                `;
+                if (navContainer) navContainer.style.display = "none";
+                if (footerContainer) footerContainer.style.display = "none";
+                this.currentPath = path;
+                this.hydrateAdminSidebar();
+                return;
+            }
+
             const globalSettings = typeof window.getGlobalSettingsAsync === "function"
                 ? await window.getGlobalSettingsAsync()
                 : (typeof window.getGlobalSettings === "function" ? window.getGlobalSettings() : {});
@@ -275,6 +299,7 @@ const router = {
                     if (navContainer) navContainer.style.display = "none";
                     if (footerContainer) footerContainer.style.display = "none";
                     this.hydrateAdminSidebar();
+                    if (typeof window.applyAdminSidebarAccess === "function") window.applyAdminSidebarAccess();
                 } else {
                     if (navContainer) navContainer.style.display = "block";
                     if (footerContainer) footerContainer.style.display = "block";

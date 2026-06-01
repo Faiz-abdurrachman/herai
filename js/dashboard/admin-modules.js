@@ -101,6 +101,76 @@
        }
        return true;
    };
+
+   const ADMIN_ROUTE_ACCESS = {
+       superadmin: ['*'],
+       reviewer: ['/dashboard', '/dashboard/seleksi', '/skoring', '/ai-prescreening', '/competency-monitor', '/retest-monitor'],
+       kurator: ['/dashboard', '/dashboard/seleksi', '/anti-fraud', '/comm-engine', '/assets']
+   };
+
+   function getStoredAdminProfile() {
+       try {
+           return JSON.parse(localStorage.getItem('heraiAdminProfile') || '{}');
+       } catch (error) {
+           return {};
+       }
+   }
+
+   function normalizeAdminRole(profile) {
+       const raw = String(profile.role || profile.peran_admin || 'reviewer').toLowerCase().replace(/[\s_-]+/g, '');
+       if (raw.includes('super')) return 'superadmin';
+       if (raw.includes('kurator') || raw === 'admin') return 'kurator';
+       return 'reviewer';
+   }
+
+   function parseAdminPermissions(value) {
+       if (Array.isArray(value)) return value.map(item => String(item).trim()).filter(Boolean);
+       return String(value || '').split(',').map(item => item.trim()).filter(Boolean);
+   }
+
+   window.getCurrentAdminAccess = function() {
+       const profile = getStoredAdminProfile();
+       const role = normalizeAdminRole(profile);
+       const explicit = parseAdminPermissions(profile.permissions);
+       const routes = explicit.length && !explicit.includes('all')
+           ? explicit.map(item => item.startsWith('/') ? item : `/${item}`)
+           : (explicit.includes('all') ? ['*'] : (ADMIN_ROUTE_ACCESS[role] || ADMIN_ROUTE_ACCESS.reviewer));
+       return { profile, role, routes };
+   };
+
+   window.canAdminAccessPath = function(path) {
+       if (path === '/dashboard') return true;
+       if (!localStorage.getItem('adminId') || !sessionStorage.getItem('isAdminLoggedIn')) return false;
+       const access = window.getCurrentAdminAccess();
+       return access.routes.includes('*') || access.routes.includes(path);
+   };
+
+   window.applyAdminSidebarAccess = function(container = document.getElementById('sidebar-container')) {
+       if (!container) return;
+       container.querySelectorAll('.nav-menu .nav-item').forEach(item => {
+           const link = item.querySelector('a[href^="#/"]');
+           if (!link) return;
+           const path = link.getAttribute('href').slice(1);
+           item.style.display = window.canAdminAccessPath(path) ? '' : 'none';
+       });
+       container.querySelectorAll('.nav-label').forEach(label => {
+           let next = label.nextElementSibling;
+           let hasVisibleItem = false;
+           while (next && !next.classList.contains('nav-label')) {
+               if (next.classList.contains('nav-item') && next.style.display !== 'none') hasVisibleItem = true;
+               next = next.nextElementSibling;
+           }
+           label.style.display = hasVisibleItem ? '' : 'none';
+       });
+   };
+
+   window.applyAdminDashboardAccess = function() {
+       document.querySelectorAll('.feature-card').forEach(card => {
+           const link = card.querySelector('a[href^="#/"]');
+           if (!link) return;
+           card.style.display = window.canAdminAccessPath(link.getAttribute('href').slice(1)) ? '' : 'none';
+       });
+   };
    
    // PERBAIKAN LOGOUT: Synchronous & Clean
    window.handleAdminLogout = function(event) {
@@ -118,6 +188,7 @@
        
        // Hapus sesi
        localStorage.removeItem('adminId');
+       localStorage.removeItem('heraiAdminProfile');
        sessionStorage.clear();
        
        // Redirect dan reload
@@ -162,6 +233,7 @@
                return;
            }
        }
+       window.applyAdminSidebarAccess(sidebarContainer);
    
        // Update active state berdasarkan hash saat ini
        updateSidebarActiveState();

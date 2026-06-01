@@ -79,7 +79,7 @@
             </div>
             <div class="table-responsive">
                 <table class="cyber-table competency-monitor-table">
-                    <thead><tr><th>Peserta</th><th>Status</th><th>Live Camera</th><th>Media</th><th>Progress</th><th>Raw</th><th>Bobot</th><th>Aktivitas</th><th>Update</th></tr></thead>
+                    <thead><tr><th>Peserta</th><th>Status</th><th>Live Camera</th><th>Media</th><th>Progress</th><th>Hasil Nilai</th><th>Aktivitas</th><th>Update</th><th>Aksi</th></tr></thead>
                     <tbody id="retestMonitorBody">
                         <tr><td colspan="9" style="text-align:center; padding:32px; color:var(--text-muted);">Klik Sync Re-Test untuk memperbarui monitor.</td></tr>
                     </tbody>
@@ -88,4 +88,14 @@
         </section>
         </div>
     </main>
+</div>
+
+<div class="modal-overlay" id="retestDetailModal">
+    <div class="modal-content glass-panel" style="max-width: 860px;">
+        <div class="modal-header">
+            <h2>Detail Hasil Re-Test</h2>
+            <button class="btn-close" id="btnCloseReTestDetail"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="retestDetailBody"></div>
+    </div>
 </div>

@@ -919,6 +919,109 @@
     cursor: pointer;
 }
 
+.test-progress-visual {
+    min-width: 118px;
+}
+
+.test-progress-label {
+    align-items: baseline;
+    display: flex;
+    gap: 3px;
+}
+
+.test-progress-label strong,
+.test-score-visual strong {
+    color: var(--dark-purple);
+}
+
+.test-progress-label span,
+.test-progress-visual small,
+.test-score-visual small {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.test-progress-track {
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 6px;
+    margin: 6px 0 4px;
+    overflow: hidden;
+}
+
+.test-progress-track span {
+    background: var(--primary-pink);
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+    transition: width 0.25s ease;
+}
+
+.test-score-visual {
+    display: flex;
+    gap: 7px;
+    min-width: 116px;
+}
+
+.test-score-visual span {
+    background: #f8fafc;
+    border: 1px solid var(--gray-border);
+    border-radius: 7px;
+    display: grid;
+    gap: 2px;
+    min-width: 52px;
+    padding: 6px 7px;
+}
+
+.test-section-score-list {
+    display: grid;
+    gap: 10px;
+}
+
+.test-section-score {
+    background: #f8fafc;
+    border: 1px solid var(--gray-border);
+    border-radius: 9px;
+    padding: 10px 12px;
+}
+
+.test-section-score > div:first-child {
+    display: flex;
+    justify-content: space-between;
+}
+
+.test-section-score span {
+    color: var(--primary-pink);
+    font-weight: 800;
+}
+
+.access-denied-panel {
+    margin: auto;
+    max-width: 560px;
+    padding: 44px;
+    text-align: center;
+}
+
+.access-denied-panel > i {
+    color: var(--primary-pink);
+    font-size: 2.2rem;
+}
+
+.access-denied-panel h1 {
+    color: var(--dark-purple);
+    margin: 15px 0 8px;
+}
+
+.access-denied-panel p {
+    color: var(--text-muted);
+    margin-bottom: 22px;
+}
+
+.access-denied-panel .btn-cyber {
+    display: inline-flex;
+    text-decoration: none;
+}
+
 .competency-detail-grid {
     display: grid;
     gap: 12px;
