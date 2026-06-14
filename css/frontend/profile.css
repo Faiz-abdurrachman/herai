@@ -572,3 +572,3735 @@
         position: static;
     }
 }
+
+/* ==========================================================================
+   Participant Dashboard
+   ========================================================================== */
+
+.participant-profile-content {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+    margin: -110px -20px -90px;
+    min-height: 100vh;
+}
+
+.participant-side-nav {
+    background: linear-gradient(180deg, #fff 0%, #fff7fb 100%);
+    border-right: 1px solid rgba(255, 20, 147, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    min-height: 100vh;
+    padding: 28px 18px;
+    position: sticky;
+    top: 0;
+}
+
+.participant-brand {
+    color: var(--primary-pink);
+    display: grid;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.15rem;
+    font-weight: 800;
+    line-height: 0.9;
+    padding: 6px 10px 20px;
+}
+
+.participant-brand span {
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+.participant-side-nav nav {
+    display: grid;
+    gap: 8px;
+}
+
+.participant-side-nav nav a {
+    align-items: center;
+    border-radius: 8px;
+    color: #5f6b7a;
+    display: flex;
+    font-weight: 700;
+    gap: 12px;
+    padding: 13px 14px;
+    text-decoration: none;
+}
+
+.participant-side-nav nav a i {
+    color: #667085;
+    width: 20px;
+}
+
+.participant-side-nav nav a.active,
+.participant-side-nav nav a:hover {
+    background: #ffe6f2;
+    color: var(--primary-pink);
+}
+
+.participant-side-nav nav a.active i,
+.participant-side-nav nav a:hover i {
+    color: var(--primary-pink);
+}
+
+.participant-invite-card {
+    background: #fff;
+    border: 1px solid rgba(255, 20, 147, 0.14);
+    border-radius: 8px;
+    box-shadow: 0 18px 36px rgba(255, 20, 147, 0.06);
+    display: grid;
+    gap: 8px;
+    margin-top: auto;
+    padding: 18px;
+}
+
+.participant-invite-card strong {
+    color: var(--primary-pink);
+}
+
+.participant-invite-card span {
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.participant-dashboard-shell {
+    background: #fcfcfd;
+    min-width: 0;
+    padding: 30px;
+}
+
+.participant-topbar {
+    align-items: center;
+    display: flex;
+    gap: 22px;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.participant-topbar h1 {
+    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.9rem;
+    line-height: 1.15;
+    margin: 0 0 6px;
+}
+
+.participant-topbar p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.participant-top-actions {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+    min-width: 0;
+}
+
+.participant-search {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 10px;
+    min-width: 300px;
+    padding: 12px 14px;
+}
+
+.participant-icon-btn,
+.participant-profile-chip {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #101828;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 800;
+    gap: 10px;
+    min-height: 46px;
+    padding: 8px 12px;
+}
+
+.participant-icon-btn {
+    border-radius: 50%;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    width: 46px;
+}
+
+.participant-icon-btn span {
+    align-items: center;
+    background: var(--primary-pink);
+    border-radius: 999px;
+    color: #fff;
+    display: flex;
+    font-size: 0.66rem;
+    height: 18px;
+    justify-content: center;
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 18px;
+}
+
+#profileAvatar {
+    align-items: center;
+    background: #ffe6f2;
+    border-radius: 50%;
+    color: var(--primary-pink);
+    display: inline-flex;
+    height: 34px;
+    justify-content: center;
+    width: 34px;
+}
+
+.participant-main-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+}
+
+.participant-hero,
+.participant-panel {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(16, 24, 40, 0.04);
+}
+
+.participant-hero {
+    align-items: center;
+    background:
+        radial-gradient(circle at 72% 18%, rgba(255, 255, 255, 0.85), transparent 28%),
+        linear-gradient(135deg, #ffe6f2 0%, #fff4fa 54%, #f7ecff 100%);
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    min-height: 250px;
+    overflow: hidden;
+    padding: 38px;
+}
+
+.participant-hero h2 {
+    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.35rem;
+    line-height: 1.15;
+    margin: 0 0 14px;
+    max-width: 540px;
+}
+
+.participant-hero p {
+    color: #586174;
+    line-height: 1.65;
+    margin: 0 0 22px;
+    max-width: 520px;
+}
+
+.participant-hero-visual {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.46);
+    border: 1px solid rgba(255, 20, 147, 0.12);
+    border-radius: 50%;
+    display: flex;
+    height: 170px;
+    justify-content: center;
+    width: 170px;
+}
+
+.participant-hero-visual img {
+    display: block;
+    max-width: 94px;
+}
+
+.participant-panel {
+    padding: 22px;
+}
+
+.participant-wide {
+    grid-column: 1 / -1;
+}
+
+.participant-panel-header {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.participant-panel-header h3,
+.participant-challenge-card h3 {
+    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+.participant-panel-header a,
+.participant-panel-header span {
+    color: var(--primary-pink);
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.participant-module-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.participant-module-card {
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #f0ddea;
+    border-radius: 8px;
+    color: #101828;
+    display: grid;
+    gap: 12px;
+    min-height: 158px;
+    padding: 18px;
+    text-decoration: none;
+}
+
+.participant-module-card span {
+    align-items: center;
+    background: #ffe6f2;
+    border-radius: 8px;
+    color: var(--primary-pink);
+    display: flex;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+}
+
+.participant-module-card small {
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.participant-progress-track {
+    background: #f0f2f5;
+    border-radius: 999px;
+    height: 5px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.participant-progress-track i {
+    background: var(--primary-pink);
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+}
+
+.profile-progress-item {
+    display: grid;
+    gap: 2px;
+}
+
+.profile-progress-item small {
+    color: var(--primary-pink);
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.profile-progress-item.active {
+    background: #fff5fb;
+    border-color: rgba(255, 20, 147, 0.28);
+}
+
+.event-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.event-item span {
+    grid-column: 1;
+}
+
+.event-item a {
+    align-self: center;
+    background: #fff5fb;
+    border: 1px solid rgba(255, 20, 147, 0.16);
+    border-radius: 8px;
+    color: var(--primary-pink);
+    font-size: 0.78rem;
+    font-weight: 800;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 8px 12px;
+    text-decoration: none;
+}
+
+.participant-challenge-card {
+    background: linear-gradient(135deg, #fff5fb 0%, #fff 48%, #fff7e8 100%);
+}
+
+.participant-challenge-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 12px 0 18px;
+}
+
+.participant-profile-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.participant-profile-form label,
+.participant-profile-form textarea,
+.participant-profile-form button {
+    grid-column: span 2;
+}
+
+@media (max-width: 1180px) {
+    .participant-profile-content {
+        grid-template-columns: 84px minmax(0, 1fr);
+    }
+
+    .participant-brand span,
+    .participant-side-nav nav a span,
+    .participant-invite-card {
+        display: none;
+    }
+
+    .participant-brand {
+        font-size: 1.35rem;
+        padding: 4px;
+    }
+
+    .participant-side-nav nav a {
+        justify-content: center;
+        padding: 14px 0;
+    }
+
+    .participant-main-grid,
+    .participant-module-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .participant-hero,
+    .participant-wide {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .profile-page {
+        padding: 110px 14px 70px;
+    }
+
+    .participant-profile-content {
+        display: block;
+        margin: -70px -14px -70px;
+    }
+
+    .participant-side-nav {
+        border-bottom: 1px solid rgba(255, 20, 147, 0.12);
+        border-right: 0;
+        min-height: 0;
+        padding: 14px;
+        position: static;
+    }
+
+    .participant-side-nav nav {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .participant-side-nav nav a {
+        flex: 0 0 auto;
+        min-width: 54px;
+    }
+
+    .participant-dashboard-shell {
+        padding: 18px 14px;
+    }
+
+    .participant-topbar,
+    .participant-top-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .participant-search {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .participant-main-grid,
+    .participant-module-grid,
+    .participant-hero,
+    .participant-profile-form {
+        grid-template-columns: 1fr;
+    }
+
+    .participant-hero {
+        padding: 26px;
+    }
+
+    .participant-hero h2 {
+        font-size: 1.8rem;
+    }
+
+    .participant-hero-visual {
+        display: none;
+    }
+}
+
+/* Participant home v2: reference-aligned first screen */
+body.participant-dashboard-open {
+    background: #fff;
+    overflow-x: hidden;
+}
+
+body.participant-dashboard-open .profile-page {
+    background: #fff;
+    padding: 0;
+}
+
+body.participant-dashboard-open .profile-page > .container {
+    max-width: none;
+    padding: 0;
+}
+
+body.participant-dashboard-open .participant-dashboard {
+    display: block !important;
+}
+
+body.participant-dashboard-open .participant-profile-content {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    margin: 0;
+    min-height: 100vh;
+}
+
+body.participant-dashboard-open .participant-side-nav {
+    background: linear-gradient(180deg, #fff 0%, #fff8fc 100%);
+    border-right: 1px solid #f7dbe9;
+    gap: 0;
+    min-height: 100vh;
+    padding: 30px 16px;
+    position: sticky;
+    top: 0;
+}
+
+body.participant-dashboard-open .participant-brand {
+    display: block;
+    padding: 0 8px 28px;
+}
+
+body.participant-dashboard-open .participant-brand img {
+    display: block;
+    height: auto;
+    width: 158px;
+}
+
+body.participant-dashboard-open .participant-side-nav nav {
+    display: grid;
+    gap: 9px;
+}
+
+body.participant-dashboard-open .participant-side-nav nav a {
+    align-items: center;
+    border-radius: 10px;
+    color: #4b5565;
+    display: grid;
+    font-size: 0.96rem;
+    font-weight: 650;
+    gap: 12px;
+    grid-template-columns: 26px 1fr auto;
+    min-height: 44px;
+    padding: 10px 13px;
+}
+
+body.participant-dashboard-open .participant-side-nav nav a i {
+    color: #475467;
+    font-size: 1.05rem;
+    text-align: center;
+}
+
+body.participant-dashboard-open .participant-side-nav nav a.active {
+    background: #ffe0ef;
+    color: #f72585;
+}
+
+body.participant-dashboard-open .participant-side-nav nav a.active i {
+    color: #f72585;
+}
+
+body.participant-dashboard-open .participant-side-nav nav a b {
+    align-items: center;
+    background: #f72585;
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    font-size: 0.72rem;
+    height: 22px;
+    justify-content: center;
+    width: 22px;
+}
+
+body.participant-dashboard-open .participant-side-label {
+    border-top: 1px solid #f2d7e5;
+    color: #6b7280;
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 24px 12px 12px;
+    padding-top: 22px;
+    text-transform: uppercase;
+}
+
+body.participant-dashboard-open .participant-invite-card {
+    background: linear-gradient(145deg, #fff3fa, #fff);
+    border: 1px solid #f7cfe1;
+    border-radius: 10px;
+    box-shadow: none;
+    margin: auto 8px 0;
+    padding: 18px 16px;
+}
+
+body.participant-dashboard-open .participant-invite-card strong {
+    color: #f72585;
+    font-size: 0.98rem;
+}
+
+body.participant-dashboard-open .participant-invite-card span {
+    color: #667085;
+    font-size: 0.82rem;
+}
+
+body.participant-dashboard-open .participant-invite-card button {
+    background: #f72585;
+    border: 0;
+    border-radius: 7px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 800;
+    margin-top: 8px;
+    min-height: 34px;
+    padding: 8px 12px;
+}
+
+body.participant-dashboard-open .participant-dashboard-shell {
+    background: #fff;
+    min-height: 100vh;
+    padding: 34px 30px 28px;
+}
+
+body.participant-dashboard-open .participant-topbar {
+    align-items: flex-start;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(360px, 1fr) minmax(560px, auto);
+    margin: 0 0 20px;
+}
+
+body.participant-dashboard-open .participant-topbar h1 {
+    color: #14141f;
+    font-size: 1.68rem;
+    line-height: 1.15;
+    margin: 0 0 6px;
+}
+
+body.participant-dashboard-open .participant-topbar p {
+    color: #667085;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    max-width: 560px;
+}
+
+body.participant-dashboard-open .participant-top-actions {
+    align-items: center;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 370px 46px auto;
+}
+
+body.participant-dashboard-open .participant-search {
+    border-color: #e5e7ef;
+    border-radius: 10px;
+    min-width: 0;
+    padding: 0 14px;
+}
+
+body.participant-dashboard-open .participant-search input {
+    background: transparent;
+    border: 0;
+    color: #344054;
+    font: inherit;
+    height: 46px;
+    outline: 0;
+    width: 100%;
+}
+
+body.participant-dashboard-open .participant-icon-btn {
+    background: transparent;
+    border: 0;
+    color: #8a034c;
+    font-size: 1.24rem;
+}
+
+body.participant-dashboard-open .participant-profile-chip {
+    border: 0;
+    gap: 11px;
+    min-width: 178px;
+    padding: 0;
+}
+
+body.participant-dashboard-open .participant-profile-chip > span:first-child,
+body.participant-dashboard-open .mini-avatar {
+    background: linear-gradient(135deg, #ff9fc8, #ffe2ef);
+    color: #8a034c;
+    font-size: 0.74rem;
+    font-weight: 900;
+}
+
+body.participant-dashboard-open .participant-profile-chip > span:nth-child(2) {
+    display: grid;
+    gap: 2px;
+}
+
+body.participant-dashboard-open .participant-profile-chip small {
+    color: #667085;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+body.participant-dashboard-open .participant-home-grid {
+    display: grid;
+    gap: 18px 22px;
+    grid-template-columns: minmax(0, 1fr) 384px;
+    grid-template-areas:
+        "hero journey"
+        "learning events"
+        "community leaderboard"
+        "tracks help";
+}
+
+body.participant-dashboard-open .participant-panel,
+body.participant-dashboard-open .participant-hero,
+body.participant-dashboard-open .participant-challenge-card,
+body.participant-dashboard-open .participant-help-card {
+    border: 1px solid #f2d7e5;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+body.participant-dashboard-open .participant-hero {
+    grid-area: hero;
+    min-height: 256px;
+    padding: 38px 40px;
+    position: relative;
+}
+
+body.participant-dashboard-open .participant-hero::before {
+    background:
+        radial-gradient(circle at 72% 25%, rgba(255,255,255,.9), transparent 16%),
+        radial-gradient(circle at 64% 62%, rgba(255,255,255,.55), transparent 24%),
+        linear-gradient(135deg, #ffe0ef 0%, #ffd1e7 48%, #f7d9ef 100%);
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+body.participant-dashboard-open .participant-hero-copy {
+    max-width: 470px;
+    position: relative;
+    z-index: 2;
+}
+
+body.participant-dashboard-open .participant-hero h2 {
+    color: #171421;
+    font-size: 2.05rem;
+    letter-spacing: 0;
+    line-height: 1.32;
+    margin: 0 0 12px;
+}
+
+body.participant-dashboard-open .participant-hero h2 span {
+    color: #f72585;
+}
+
+body.participant-dashboard-open .participant-hero p {
+    color: #667085;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 20px;
+}
+
+body.participant-dashboard-open .participant-primary-action {
+    align-items: center;
+    background: #f72585;
+    border-radius: 8px;
+    color: #fff;
+    display: inline-flex;
+    font-weight: 850;
+    gap: 9px;
+    min-height: 38px;
+    padding: 9px 18px;
+    text-decoration: none;
+}
+
+body.participant-dashboard-open .participant-hero-persona {
+    bottom: 0;
+    height: 100%;
+    max-height: 270px;
+    object-fit: cover;
+    object-position: center top;
+    position: absolute;
+    right: 18px;
+    width: 380px;
+    z-index: 1;
+}
+
+body.participant-dashboard-open .participant-journey-panel { grid-area: journey; }
+body.participant-dashboard-open .participant-learning-panel { grid-area: learning; }
+body.participant-dashboard-open .participant-events-panel { grid-area: events; }
+body.participant-dashboard-open .participant-community-panel { grid-area: community; }
+body.participant-dashboard-open .participant-leaderboard-panel { grid-area: leaderboard; }
+body.participant-dashboard-open .participant-track-panel { grid-area: tracks; }
+body.participant-dashboard-open .participant-help-card { grid-area: help; }
+
+body.participant-dashboard-open .participant-panel {
+    padding: 18px;
+}
+
+body.participant-dashboard-open .participant-panel-header {
+    margin-bottom: 14px;
+}
+
+body.participant-dashboard-open .participant-panel-header h3 {
+    color: #171421;
+    font-size: 1rem;
+}
+
+body.participant-dashboard-open .participant-panel-header a {
+    color: #f72585;
+    font-size: 0.78rem;
+    font-weight: 850;
+}
+
+body.participant-dashboard-open .profile-progress-list {
+    gap: 18px;
+}
+
+body.participant-dashboard-open .profile-progress-item {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 40px minmax(0, 1fr) 38px;
+    padding: 0;
+}
+
+body.participant-dashboard-open .journey-icon {
+    align-items: center;
+    border-radius: 10px;
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+}
+
+body.participant-dashboard-open .is-pink .journey-icon,
+body.participant-dashboard-open .is-pink .module-icon,
+body.participant-dashboard-open .is-pink.participant-track-card span { background: #ff4fab; color: #fff; }
+body.participant-dashboard-open .is-purple .journey-icon,
+body.participant-dashboard-open .is-purple .module-icon,
+body.participant-dashboard-open .is-purple.participant-track-card span { background: #a855f7; color: #fff; }
+body.participant-dashboard-open .is-yellow .journey-icon { background: #fbbf24; color: #fff; }
+body.participant-dashboard-open .is-green .journey-icon,
+body.participant-dashboard-open .is-green.participant-track-card span { background: #34d399; color: #fff; }
+
+body.participant-dashboard-open .journey-copy strong,
+body.participant-dashboard-open .participant-module-card strong {
+    color: #171421;
+    font-size: 0.88rem;
+}
+
+body.participant-dashboard-open .journey-copy small,
+body.participant-dashboard-open .participant-module-card small {
+    color: #667085;
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+body.participant-dashboard-open .profile-progress-item em {
+    color: #171421;
+    font-size: 0.76rem;
+    font-style: normal;
+    font-weight: 800;
+    text-align: right;
+}
+
+body.participant-dashboard-open .participant-progress-track {
+    height: 4px;
+    margin-top: 8px;
+}
+
+body.participant-dashboard-open .participant-progress-track i {
+    background: #f72585;
+}
+
+body.participant-dashboard-open .is-purple .participant-progress-track i { background: #a855f7; }
+body.participant-dashboard-open .is-yellow .participant-progress-track i { background: #fbbf24; }
+body.participant-dashboard-open .is-green .participant-progress-track i { background: #34d399; }
+
+body.participant-dashboard-open .participant-module-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+body.participant-dashboard-open .participant-module-card {
+    border-radius: 9px;
+    min-height: 172px;
+    padding: 18px;
+    position: relative;
+}
+
+body.participant-dashboard-open .participant-module-card b {
+    align-items: center;
+    background: #f72585;
+    border-radius: 999px;
+    color: #fff;
+    display: flex;
+    font-size: 0.72rem;
+    height: 38px;
+    justify-content: center;
+    position: absolute;
+    right: 12px;
+    top: 13px;
+    width: 38px;
+}
+
+body.participant-dashboard-open .participant-module-card.is-purple b { background: #a855f7; }
+body.participant-dashboard-open .participant-module-card.is-orange b { background: #ff7a45; }
+
+body.participant-dashboard-open .participant-module-card .module-icon {
+    border-radius: 10px;
+    font-size: 1.32rem;
+    height: 56px;
+    width: 56px;
+}
+
+body.participant-dashboard-open .participant-module-card.is-orange .module-icon { background: #fff1e8; color: #ff7a45; }
+
+body.participant-dashboard-open .participant-module-card.is-add {
+    align-content: center;
+    border: 1px dashed #f6b8d4;
+    text-align: center;
+}
+
+body.participant-dashboard-open .participant-module-card.is-add .module-icon {
+    background: transparent;
+    border: 1px dashed #f6b8d4;
+    color: #f72585;
+    margin: 0 auto;
+}
+
+body.participant-dashboard-open .participant-event-list {
+    display: grid;
+    gap: 12px;
+}
+
+body.participant-dashboard-open .participant-event-item {
+    align-items: center;
+    border-bottom: 1px solid #f1e3eb;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 46px minmax(0, 1fr) 68px;
+    padding-bottom: 12px;
+}
+
+body.participant-dashboard-open .participant-event-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+body.participant-dashboard-open .participant-event-item time {
+    align-items: center;
+    background: #ffe7f2;
+    border-radius: 8px;
+    color: #f72585;
+    display: grid;
+    height: 46px;
+    justify-content: center;
+    text-align: center;
+}
+
+body.participant-dashboard-open .participant-event-item time strong {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+body.participant-dashboard-open .participant-event-item time span,
+body.participant-dashboard-open .participant-event-item small {
+    color: #667085;
+    font-size: 0.72rem;
+}
+
+body.participant-dashboard-open .participant-event-item > div > strong {
+    color: #171421;
+    display: block;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+body.participant-dashboard-open .participant-event-item a {
+    border: 1px solid #f7cfe1;
+    border-radius: 7px;
+    color: #f72585;
+    font-size: 0.78rem;
+    font-weight: 850;
+    padding: 7px 10px;
+    text-align: center;
+    text-decoration: none;
+}
+
+body.participant-dashboard-open .participant-community-list,
+body.participant-dashboard-open .participant-leaderboard-list {
+    display: grid;
+    gap: 12px;
+}
+
+body.participant-dashboard-open .participant-community-item {
+    align-items: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 34px minmax(0, 1fr) 8px;
+}
+
+body.participant-dashboard-open .mini-avatar {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    height: 34px;
+    justify-content: center;
+    width: 34px;
+}
+
+body.participant-dashboard-open .participant-community-item p {
+    color: #475467;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+body.participant-dashboard-open .participant-community-item p strong {
+    color: #171421;
+}
+
+body.participant-dashboard-open .participant-community-item small {
+    color: #98a2b3;
+    display: block;
+}
+
+body.participant-dashboard-open .participant-community-item i {
+    border-radius: 50%;
+    height: 6px;
+    width: 6px;
+}
+
+body.participant-dashboard-open .dot-pink { background: #f72585; }
+body.participant-dashboard-open .dot-blue { background: #60a5fa; }
+body.participant-dashboard-open .dot-green { background: #34d399; }
+
+body.participant-dashboard-open .participant-challenge-card {
+    align-items: center;
+    background: linear-gradient(135deg, #fff0f7, #ffe0ef);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    padding: 28px 22px;
+}
+
+body.participant-dashboard-open .participant-challenge-card h3 {
+    color: #f72585;
+    font-size: 1.1rem;
+    line-height: 1.35;
+}
+
+body.participant-dashboard-open .participant-challenge-card p {
+    color: #667085;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 10px 0 16px;
+}
+
+body.participant-dashboard-open .participant-trophy {
+    color: #f59e0b;
+    font-size: 5.2rem;
+    text-align: center;
+}
+
+body.participant-dashboard-open .participant-leaderboard-item {
+    align-items: center;
+    border-radius: 8px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 20px 34px minmax(0, 1fr) 82px 22px;
+    padding: 9px 10px;
+}
+
+body.participant-dashboard-open .participant-leaderboard-item.active {
+    background: #fff0f7;
+}
+
+body.participant-dashboard-open .participant-leaderboard-item span:first-child {
+    color: #171421;
+    font-weight: 800;
+}
+
+body.participant-dashboard-open .participant-leaderboard-item strong {
+    color: #171421;
+    font-size: 0.82rem;
+}
+
+body.participant-dashboard-open .participant-leaderboard-item em {
+    color: #667085;
+    font-size: 0.78rem;
+    font-style: normal;
+    text-align: right;
+}
+
+body.participant-dashboard-open .medal-gold { color: #f59e0b; }
+body.participant-dashboard-open .medal-silver { color: #cbd5e1; }
+body.participant-dashboard-open .medal-bronze { color: #c47b45; }
+
+body.participant-dashboard-open .participant-track-list {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+body.participant-dashboard-open .participant-track-card {
+    border: 1px solid #f1e3eb;
+    border-radius: 9px;
+    color: #171421;
+    display: grid;
+    gap: 6px;
+    min-height: 82px;
+    padding: 12px;
+    text-decoration: none;
+}
+
+body.participant-dashboard-open .participant-track-card span {
+    align-items: center;
+    background: #ffe7f2;
+    border-radius: 50%;
+    color: #f72585;
+    display: flex;
+    height: 26px;
+    justify-content: center;
+    width: 26px;
+}
+
+body.participant-dashboard-open .participant-track-card strong {
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+body.participant-dashboard-open .participant-track-card small {
+    color: #667085;
+    font-size: 0.66rem;
+    line-height: 1.25;
+}
+
+body.participant-dashboard-open .participant-help-card {
+    align-items: center;
+    background: linear-gradient(135deg, #fff0f7, #fff);
+    display: grid;
+    gap: 14px;
+    grid-template-columns: 48px minmax(0, 1fr) 38px;
+    padding: 18px;
+}
+
+body.participant-dashboard-open .participant-help-card > span,
+body.participant-dashboard-open .participant-help-card > a {
+    align-items: center;
+    background: #f72585;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    height: 38px;
+    justify-content: center;
+    text-decoration: none;
+    width: 38px;
+}
+
+body.participant-dashboard-open .participant-help-card > span {
+    background: #ffe0ef;
+    color: #f72585;
+    height: 48px;
+    width: 48px;
+}
+
+body.participant-dashboard-open .participant-help-card strong {
+    color: #171421;
+    display: block;
+    font-size: 0.86rem;
+}
+
+body.participant-dashboard-open .participant-help-card p {
+    color: #667085;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    margin: 3px 0 0;
+}
+
+@media (max-width: 1280px) {
+    body.participant-dashboard-open .participant-profile-content {
+        grid-template-columns: 88px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .participant-brand img {
+        width: 54px;
+    }
+
+    body.participant-dashboard-open .participant-side-nav nav a {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    body.participant-dashboard-open .participant-side-nav nav a span,
+    body.participant-dashboard-open .participant-side-label,
+    body.participant-dashboard-open .participant-invite-card {
+        display: none;
+    }
+
+    body.participant-dashboard-open .participant-topbar,
+    body.participant-dashboard-open .participant-home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .participant-home-grid {
+        grid-template-areas:
+            "hero"
+            "journey"
+            "learning"
+            "events"
+            "community"
+            "leaderboard"
+            "tracks"
+            "help";
+    }
+}
+
+@media (max-width: 760px) {
+    body.participant-dashboard-open .participant-profile-content {
+        display: block;
+    }
+
+    body.participant-dashboard-open .participant-side-nav {
+        min-height: auto;
+        padding: 12px;
+        position: static;
+    }
+
+    body.participant-dashboard-open .participant-side-nav nav {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    body.participant-dashboard-open .participant-dashboard-shell {
+        padding: 20px 14px;
+    }
+
+    body.participant-dashboard-open .participant-top-actions,
+    body.participant-dashboard-open .participant-module-grid,
+    body.participant-dashboard-open .participant-track-list {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .participant-hero {
+        min-height: 0;
+        padding: 26px;
+    }
+
+    body.participant-dashboard-open .participant-hero h2 {
+        font-size: 1.7rem;
+    }
+
+    body.participant-dashboard-open .participant-hero-persona {
+        display: none;
+    }
+}
+
+/* Focused fellow home dashboard */
+body.participant-dashboard-open .fellow-app {
+    background: #fff;
+    color: #171421;
+    display: grid !important;
+    font-family: 'Inter', sans-serif;
+    grid-template-columns: 250px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.fellow-sidebar {
+    background: linear-gradient(180deg, #fff 0%, #fff8fc 100%);
+    border-right: 1px solid #f7dbe9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 30px 16px;
+    position: sticky;
+    top: 0;
+}
+
+.fellow-logo {
+    height: auto;
+    margin: 0 0 28px 8px;
+    width: 158px;
+}
+
+.fellow-nav {
+    display: grid;
+    gap: 9px;
+}
+
+.fellow-sidebar-nav {
+    display: grid;
+    gap: 0;
+    min-height: 0;
+}
+
+.fellow-nav a {
+    align-items: center;
+    border-radius: 10px;
+    color: #4b5565;
+    display: grid;
+    font-size: 0.96rem;
+    font-weight: 650;
+    gap: 12px;
+    grid-template-columns: 26px 1fr auto;
+    min-height: 44px;
+    padding: 10px 13px;
+    text-decoration: none;
+}
+
+.fellow-nav a i {
+    color: #475467;
+    text-align: center;
+}
+
+.fellow-nav a.active {
+    background: #ffe0ef;
+    color: #f72585;
+}
+
+.fellow-nav a.active i {
+    color: #f72585;
+}
+
+.fellow-nav a b {
+    align-items: center;
+    background: #f72585;
+    border-radius: 999px;
+    color: #fff;
+    display: flex;
+    font-size: 0.72rem;
+    height: 22px;
+    justify-content: center;
+    width: 22px;
+}
+
+.fellow-nav-label {
+    border-top: 1px solid #f2d7e5;
+    color: #6b7280;
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 24px 12px 12px;
+    padding-top: 22px;
+    text-transform: uppercase;
+}
+
+.fellow-invite {
+    background: linear-gradient(145deg, #fff3fa, #fff);
+    border: 1px solid #f7cfe1;
+    border-radius: 10px;
+    display: grid;
+    gap: 8px;
+    margin: auto 8px 0;
+    padding: 18px 16px;
+}
+
+.fellow-invite strong {
+    color: #f72585;
+}
+
+.fellow-invite span {
+    color: #667085;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.fellow-invite button {
+    background: #f72585;
+    border: 0;
+    border-radius: 7px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 800;
+    min-height: 34px;
+}
+
+.fellow-main {
+    min-width: 0;
+    padding: 34px 30px 28px;
+}
+
+.fellow-header {
+    align-items: start;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(360px, 1fr) minmax(560px, auto);
+    margin-bottom: 20px;
+}
+
+.fellow-header h1 {
+    color: #14141f;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.68rem;
+    line-height: 1.15;
+    margin: 0 0 6px;
+}
+
+.fellow-header p {
+    color: #667085;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin: 0;
+    max-width: 560px;
+}
+
+.fellow-header-actions {
+    align-items: center;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 370px 46px auto;
+}
+
+.fellow-search {
+    align-items: center;
+    border: 1px solid #e5e7ef;
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    padding: 0 14px;
+}
+
+.fellow-search input {
+    border: 0;
+    font: inherit;
+    height: 46px;
+    outline: 0;
+    width: 100%;
+}
+
+.fellow-bell {
+    background: transparent;
+    border: 0;
+    color: #8a034c;
+    cursor: pointer;
+    font-size: 1.24rem;
+    height: 46px;
+    position: relative;
+}
+
+.fellow-bell span {
+    align-items: center;
+    background: #f72585;
+    border-radius: 999px;
+    color: #fff;
+    display: flex;
+    font-size: 0.66rem;
+    height: 18px;
+    justify-content: center;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    width: 18px;
+}
+
+.fellow-user {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    display: grid;
+    gap: 11px;
+    grid-template-columns: 40px minmax(0, 1fr) 18px;
+    min-width: 178px;
+    text-align: left;
+}
+
+.fellow-user > span:first-child,
+.fellow-activity > span,
+.fellow-rank b {
+    align-items: center;
+    background: linear-gradient(135deg, #ff9fc8, #ffe2ef);
+    border-radius: 50%;
+    color: #8a034c;
+    display: flex;
+    font-size: 0.74rem;
+    font-weight: 900;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+}
+
+.fellow-user strong {
+    color: #171421;
+    display: block;
+    font-size: 0.88rem;
+}
+
+.fellow-user small {
+    color: #667085;
+    font-size: 0.78rem;
+}
+
+.fellow-grid {
+    display: grid;
+    gap: 18px 22px;
+    grid-template-columns: minmax(0, 1fr) 384px;
+    grid-template-areas:
+        "hero journey"
+        "learning events"
+        "community leaderboard"
+        "tracks help";
+}
+
+.fellow-card,
+.fellow-hero,
+.fellow-challenge,
+.fellow-help {
+    border: 1px solid #f2d7e5;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+.fellow-hero {
+    background: linear-gradient(135deg, #ffe0ef 0%, #ffd1e7 48%, #f7d9ef 100%);
+    grid-area: hero;
+    min-height: 256px;
+    overflow: hidden;
+    padding: 38px 40px;
+    position: relative;
+}
+
+.fellow-hero div {
+    max-width: 470px;
+    position: relative;
+    z-index: 2;
+}
+
+.fellow-hero h2 {
+    color: #171421;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.05rem;
+    line-height: 1.32;
+    margin: 0 0 12px;
+}
+
+.fellow-hero h2 span {
+    color: #f72585;
+}
+
+.fellow-hero p {
+    color: #667085;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 20px;
+}
+
+.fellow-btn {
+    align-items: center;
+    background: #f72585;
+    border-radius: 8px;
+    color: #fff;
+    display: inline-flex;
+    font-size: 0.86rem;
+    font-weight: 850;
+    gap: 9px;
+    min-height: 38px;
+    padding: 9px 18px;
+    text-decoration: none;
+}
+
+.fellow-hero img {
+    bottom: -14px;
+    height: 112%;
+    object-fit: cover;
+    object-position: 45% 18%;
+    position: absolute;
+    right: 0;
+    width: 382px;
+}
+
+.fellow-card {
+    background: #fff;
+    padding: 18px;
+}
+
+.fellow-card-head {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.fellow-card-head h3 {
+    color: #171421;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.fellow-card-head a {
+    color: #f72585;
+    font-size: 0.78rem;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.fellow-journey { grid-area: journey; }
+.fellow-learning { grid-area: learning; }
+.fellow-events { grid-area: events; }
+.fellow-community { grid-area: community; }
+.fellow-leaderboard { grid-area: leaderboard; }
+.fellow-tracks { grid-area: tracks; }
+.fellow-help { grid-area: help; }
+
+.fellow-journey-item {
+    align-items: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 40px minmax(0, 1fr) 38px;
+    margin-bottom: 18px;
+}
+
+.fellow-journey-item:last-child {
+    margin-bottom: 0;
+}
+
+.fellow-journey-item > span,
+.fellow-module > span,
+.fellow-track span {
+    align-items: center;
+    border-radius: 10px;
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+}
+
+.fellow-journey-item.is-pink > span,
+.fellow-module.is-pink > span { background: #ff4fab; color: #fff; }
+.fellow-journey-item.is-purple > span,
+.fellow-module.is-purple > span { background: #a855f7; color: #fff; }
+.fellow-journey-item.is-yellow > span { background: #fbbf24; color: #fff; }
+.fellow-journey-item.is-green > span { background: #34d399; color: #fff; }
+
+.fellow-journey-item strong,
+.fellow-module strong {
+    color: #171421;
+    display: block;
+    font-size: 0.88rem;
+}
+
+.fellow-journey-item small,
+.fellow-module small {
+    color: #667085;
+    display: block;
+    font-size: 0.78rem;
+}
+
+.fellow-journey-item em {
+    color: #171421;
+    font-size: 0.76rem;
+    font-style: normal;
+    font-weight: 800;
+    text-align: right;
+}
+
+.fellow-journey-item i:not(.fas) {
+    background: #f0f2f5;
+    border-radius: 999px;
+    display: block;
+    height: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.fellow-journey-item i:not(.fas) b {
+    background: #f72585;
+    display: block;
+    height: 100%;
+}
+
+.fellow-journey-item.is-purple i:not(.fas) b { background: #a855f7; }
+.fellow-journey-item.is-yellow i:not(.fas) b { background: #fbbf24; }
+.fellow-journey-item.is-green i:not(.fas) b { background: #34d399; }
+
+.fellow-module-grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.fellow-module {
+    border: 1px solid #f1d7e5;
+    border-radius: 10px;
+    color: inherit;
+    display: grid;
+    min-height: 172px;
+    padding: 18px;
+    position: relative;
+    text-decoration: none;
+}
+
+.fellow-module b {
+    align-items: center;
+    background: #f72585;
+    border-radius: 999px;
+    color: #fff;
+    display: flex;
+    font-size: 0.72rem;
+    height: 38px;
+    justify-content: center;
+    position: absolute;
+    right: 12px;
+    top: 13px;
+    width: 38px;
+}
+
+.fellow-module.is-purple b { background: #a855f7; }
+.fellow-module.is-orange b { background: #ff7a45; }
+.fellow-module.is-orange > span { background: #fff1e8; color: #ff7a45; }
+.fellow-module.is-add {
+    align-content: center;
+    border-style: dashed;
+    text-align: center;
+}
+.fellow-module.is-add > span {
+    background: transparent;
+    border: 1px dashed #f6b8d4;
+    color: #f72585;
+    margin: 0 auto;
+}
+
+.fellow-event {
+    align-items: center;
+    border-bottom: 1px solid #f1e3eb;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 46px minmax(0, 1fr) 68px;
+    padding: 0 0 12px;
+    margin-bottom: 12px;
+}
+
+.fellow-event:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+.fellow-event time {
+    background: #ffe7f2;
+    border-radius: 8px;
+    color: #f72585;
+    display: grid;
+    height: 46px;
+    place-items: center;
+    text-align: center;
+}
+.fellow-event time strong { font-size: 1.1rem; line-height: 1; }
+.fellow-event time span,
+.fellow-event small { color: #667085; font-size: 0.72rem; }
+.fellow-event div strong { color: #171421; display: block; font-size: 0.82rem; line-height: 1.35; }
+.fellow-event a {
+    border: 1px solid #f7cfe1;
+    border-radius: 7px;
+    color: #f72585;
+    font-size: 0.78rem;
+    font-weight: 850;
+    padding: 7px 10px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.fellow-activity {
+    align-items: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 34px minmax(0, 1fr) 8px;
+    margin-bottom: 12px;
+}
+.fellow-activity > span,
+.fellow-rank b { height: 34px; width: 34px; }
+.fellow-activity p { color: #475467; font-size: 0.82rem; line-height: 1.4; margin: 0; }
+.fellow-activity p strong { color: #171421; }
+.fellow-activity small { color: #98a2b3; display: block; }
+.fellow-activity > i { border-radius: 50%; height: 6px; width: 6px; }
+.fellow-activity > i.is-pink { background: #f72585; }
+.fellow-activity > i.is-blue { background: #60a5fa; }
+.fellow-activity > i.is-green { background: #34d399; }
+
+.fellow-challenge {
+    align-items: center;
+    background: linear-gradient(135deg, #fff0f7, #ffe0ef);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    padding: 28px 22px;
+}
+.fellow-challenge h3 { color: #f72585; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; line-height: 1.35; margin: 0; }
+.fellow-challenge p { color: #667085; font-size: 0.82rem; line-height: 1.5; margin: 10px 0 16px; }
+.fellow-challenge > i { color: #f59e0b; font-size: 5.2rem; text-align: center; }
+
+.fellow-rank {
+    align-items: center;
+    border-radius: 8px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 20px 34px minmax(0, 1fr) 82px 22px;
+    padding: 9px 10px;
+}
+.fellow-rank.active { background: #fff0f7; }
+.fellow-rank > span { color: #171421; font-weight: 800; }
+.fellow-rank strong { color: #171421; font-size: 0.82rem; }
+.fellow-rank em { color: #667085; font-size: 0.78rem; font-style: normal; text-align: right; }
+.fellow-rank .is-gold { color: #f59e0b; }
+.fellow-rank .is-silver { color: #cbd5e1; }
+.fellow-rank .is-bronze { color: #c47b45; }
+
+.fellow-tracks #participantTrackList {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.fellow-track {
+    border: 1px solid #f1e3eb;
+    border-radius: 9px;
+    color: #171421;
+    display: grid;
+    gap: 6px;
+    min-height: 82px;
+    padding: 12px;
+    text-decoration: none;
+}
+.fellow-track span {
+    background: #ffe7f2;
+    border-radius: 50%;
+    color: #f72585;
+    height: 26px;
+    width: 26px;
+}
+.fellow-track strong { font-size: 0.72rem; line-height: 1.2; }
+.fellow-track small { color: #667085; font-size: 0.66rem; line-height: 1.25; }
+
+.fellow-help {
+    align-items: center;
+    background: linear-gradient(135deg, #fff0f7, #fff);
+    display: grid;
+    gap: 14px;
+    grid-template-columns: 48px minmax(0, 1fr) 38px;
+    padding: 18px;
+}
+.fellow-help > span,
+.fellow-help > a {
+    align-items: center;
+    background: #f72585;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    height: 38px;
+    justify-content: center;
+    text-decoration: none;
+    width: 38px;
+}
+.fellow-help > span { background: #ffe0ef; color: #f72585; height: 48px; width: 48px; }
+.fellow-help strong { color: #171421; display: block; font-size: 0.86rem; }
+.fellow-help p { color: #667085; font-size: 0.76rem; line-height: 1.4; margin: 3px 0 0; }
+
+@media (max-width: 1280px) {
+    body.participant-dashboard-open .fellow-app { grid-template-columns: 88px minmax(0, 1fr); }
+    .fellow-logo { width: 54px; }
+    .fellow-nav a { grid-template-columns: 1fr; justify-items: center; }
+    .fellow-nav a span,
+    .fellow-nav-label,
+    .fellow-invite { display: none; }
+    .fellow-header,
+    .fellow-grid { grid-template-columns: 1fr; }
+    .fellow-grid {
+        grid-template-areas:
+            "hero"
+            "journey"
+            "learning"
+            "events"
+            "community"
+            "leaderboard"
+            "tracks"
+            "help";
+    }
+}
+
+/* Collision fix: desktop sidebar uses a dedicated scrollable nav lane. */
+@media (min-width: 1024px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        min-height: 100dvh;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        display: grid;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 0 4px 0 0;
+        scrollbar-gutter: stable;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav::-webkit-scrollbar-thumb {
+        background: #f6b8d4;
+        border-radius: 999px;
+    }
+
+    body.participant-dashboard-open .fellow-invite {
+        margin: 18px 8px 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        align-items: center;
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 760px) {
+    body.participant-dashboard-open .fellow-app { display: block !important; }
+    .fellow-sidebar { min-height: auto; padding: 12px; position: static; }
+    .fellow-nav { display: flex; overflow-x: auto; }
+    .fellow-main { padding: 20px 14px; }
+    .fellow-header-actions,
+    .fellow-module-grid,
+    .fellow-tracks #participantTrackList { grid-template-columns: 1fr; }
+    .fellow-hero { min-height: 0; padding: 26px; }
+    .fellow-hero h2 { font-size: 1.7rem; }
+    .fellow-hero img { display: none; }
+}
+
+/* Responsive baseline for the fellow dashboard */
+body.participant-dashboard-open .fellow-app {
+    --fellow-gap: clamp(14px, 1.35vw, 22px);
+    --fellow-card-radius: 10px;
+    --fellow-main-pad: clamp(16px, 2vw, 34px);
+    grid-template-columns: clamp(220px, 16vw, 250px) minmax(0, 1fr);
+}
+
+body.participant-dashboard-open .fellow-main {
+    container-type: inline-size;
+    padding: var(--fellow-main-pad);
+}
+
+body.participant-dashboard-open .fellow-header {
+    align-items: start;
+    display: grid;
+    gap: var(--fellow-gap);
+    grid-template-columns: minmax(280px, 1fr) minmax(360px, 0.9fr);
+}
+
+body.participant-dashboard-open .fellow-header-actions {
+    display: grid;
+    gap: clamp(10px, 1.2vw, 18px);
+    grid-template-columns: minmax(220px, 1fr) 46px minmax(150px, max-content);
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-search,
+body.participant-dashboard-open .fellow-user {
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-user strong,
+body.participant-dashboard-open .fellow-rank strong,
+body.participant-dashboard-open .fellow-event div strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.participant-dashboard-open .fellow-grid {
+    align-items: start;
+    display: grid;
+    gap: var(--fellow-gap);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-areas:
+        "hero hero hero hero hero hero hero hero journey journey journey journey"
+        "learning learning learning learning learning learning learning learning events events events events"
+        "community community community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard"
+        "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+}
+
+body.participant-dashboard-open .fellow-hero { grid-area: hero; }
+body.participant-dashboard-open .fellow-journey { grid-area: journey; }
+body.participant-dashboard-open .fellow-learning { grid-area: learning; }
+body.participant-dashboard-open .fellow-events { grid-area: events; }
+body.participant-dashboard-open .fellow-community { grid-area: community; }
+body.participant-dashboard-open .fellow-challenge { grid-area: challenge; }
+body.participant-dashboard-open .fellow-leaderboard { grid-area: leaderboard; }
+body.participant-dashboard-open .fellow-tracks { grid-area: tracks; }
+body.participant-dashboard-open .fellow-help { grid-area: help; }
+
+body.participant-dashboard-open .fellow-card,
+body.participant-dashboard-open .fellow-hero,
+body.participant-dashboard-open .fellow-challenge,
+body.participant-dashboard-open .fellow-help {
+    border-radius: var(--fellow-card-radius);
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-card {
+    height: 100%;
+}
+
+body.participant-dashboard-open .fellow-hero {
+    min-height: clamp(230px, 22vw, 286px);
+    padding: clamp(24px, 3vw, 40px);
+}
+
+body.participant-dashboard-open .fellow-hero div {
+    max-width: min(52%, 500px);
+}
+
+body.participant-dashboard-open .fellow-hero h2 {
+    font-size: clamp(1.7rem, 2.1vw, 2.25rem);
+}
+
+body.participant-dashboard-open .fellow-hero img {
+    height: min(116%, 330px);
+    right: clamp(-44px, -2vw, 8px);
+    width: clamp(300px, 28vw, 420px);
+}
+
+body.participant-dashboard-open .fellow-module-grid {
+    display: grid;
+    gap: clamp(12px, 1.4vw, 22px);
+    grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+}
+
+body.participant-dashboard-open .fellow-module {
+    align-content: start;
+    min-height: 160px;
+}
+
+body.participant-dashboard-open .fellow-tracks #participantTrackList {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(min(138px, 100%), 1fr));
+}
+
+body.participant-dashboard-open .fellow-track {
+    min-height: 88px;
+}
+
+body.participant-dashboard-open .fellow-card-head {
+    gap: 12px;
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-card-head h3 {
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-card-head a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+body.participant-dashboard-open .fellow-event {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+}
+
+body.participant-dashboard-open .fellow-rank {
+    grid-template-columns: 20px 34px minmax(0, 1fr) auto 20px;
+}
+
+@media (max-width: 1440px) {
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-areas:
+            "hero hero hero hero hero hero hero journey journey journey journey journey"
+            "learning learning learning learning learning learning learning events events events events events"
+            "community community community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard"
+            "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(58%, 500px);
+    }
+}
+
+@media (max-width: 1180px) {
+    body.participant-dashboard-open .fellow-app {
+        grid-template-columns: 88px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        margin-left: auto;
+        margin-right: auto;
+        width: 58px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        padding-inline: 8px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a span,
+    body.participant-dashboard-open .fellow-nav-label,
+    body.participant-dashboard-open .fellow-invite {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-header {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        grid-template-areas:
+            "hero hero hero hero hero hero hero hero"
+            "journey journey journey journey events events events events"
+            "learning learning learning learning learning learning learning learning"
+            "community community community community challenge challenge challenge challenge"
+            "leaderboard leaderboard leaderboard leaderboard help help help help"
+            "tracks tracks tracks tracks tracks tracks tracks tracks";
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(60%, 520px);
+    }
+}
+
+@media (max-width: 860px) {
+    body.participant-dashboard-open .fellow-app {
+        display: block !important;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        border-bottom: 1px solid #f7dbe9;
+        border-right: 0;
+        min-height: 0;
+        padding: 12px;
+        position: static;
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+    }
+
+    body.participant-dashboard-open .fellow-nav + .fellow-nav {
+        margin-top: 8px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        flex: 0 0 52px;
+        min-height: 46px;
+    }
+
+    body.participant-dashboard-open .fellow-main {
+        padding: 18px 14px 28px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(0, 1fr) 46px;
+    }
+
+    body.participant-dashboard-open .fellow-user {
+        grid-column: 1 / -1;
+        grid-template-columns: 40px minmax(0, 1fr) 18px;
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "hero"
+            "journey"
+            "learning"
+            "events"
+            "community"
+            "challenge"
+            "leaderboard"
+            "tracks"
+            "help";
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        min-height: 0;
+        padding: 24px;
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(68%, 460px);
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        opacity: 0.8;
+        right: -110px;
+        width: 330px;
+    }
+
+    body.participant-dashboard-open .fellow-module-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    body.participant-dashboard-open .fellow-header h1 {
+        font-size: 1.35rem;
+    }
+
+    body.participant-dashboard-open .fellow-header p {
+        font-size: 0.84rem;
+    }
+
+    body.participant-dashboard-open .fellow-search {
+        padding-inline: 12px;
+    }
+
+    body.participant-dashboard-open .fellow-search input {
+        height: 42px;
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-card,
+    body.participant-dashboard-open .fellow-hero,
+    body.participant-dashboard-open .fellow-challenge,
+    body.participant-dashboard-open .fellow-help {
+        border-radius: 9px;
+    }
+
+    body.participant-dashboard-open .fellow-card,
+    body.participant-dashboard-open .fellow-help {
+        padding: 14px;
+    }
+
+    body.participant-dashboard-open .fellow-card-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    body.participant-dashboard-open .fellow-module-grid,
+    body.participant-dashboard-open .fellow-tracks #participantTrackList {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-event {
+        grid-template-columns: 46px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-event a {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    body.participant-dashboard-open .fellow-challenge {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-challenge > i {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-rank {
+        grid-template-columns: 18px 32px minmax(0, 1fr) 20px;
+    }
+
+    body.participant-dashboard-open .fellow-rank em {
+        grid-column: 3;
+        text-align: left;
+    }
+
+    body.participant-dashboard-open .fellow-help {
+        grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-help > a {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
+/* Device-specific hardening: tablet, phones, and narrow browser panes */
+@media (min-width: 1181px) and (max-width: 1366px) {
+    body.participant-dashboard-open .fellow-app {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        padding-inline: 12px;
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        width: 140px;
+    }
+
+    body.participant-dashboard-open .fellow-main {
+        padding: 24px;
+    }
+
+    body.participant-dashboard-open .fellow-header {
+        grid-template-columns: minmax(280px, 0.9fr) minmax(460px, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(220px, 1fr) 44px minmax(150px, max-content);
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+        grid-template-areas:
+            "hero hero hero hero hero hero journey journey journey journey"
+            "learning learning learning learning learning learning events events events events"
+            "community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard"
+            "tracks tracks tracks tracks tracks tracks help help help help";
+    }
+
+    body.participant-dashboard-open .fellow-module-grid {
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        right: -74px;
+    }
+}
+
+@media (min-width: 861px) and (max-width: 1180px) {
+    body.participant-dashboard-open .fellow-app {
+        grid-template-columns: 76px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        padding: 18px 10px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        min-height: 48px;
+        padding: 10px 6px;
+    }
+
+    body.participant-dashboard-open .fellow-main {
+        padding: 22px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(260px, 1fr) 46px minmax(170px, max-content);
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-areas:
+            "hero hero hero hero hero hero"
+            "journey journey journey events events events"
+            "learning learning learning learning learning learning"
+            "community community community challenge challenge challenge"
+            "leaderboard leaderboard leaderboard help help help"
+            "tracks tracks tracks tracks tracks tracks";
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        min-height: 240px;
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: 58%;
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        right: -56px;
+        width: 340px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 860px) {
+    body.participant-dashboard-open .fellow-header {
+        gap: 14px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(0, 1fr) 46px minmax(190px, max-content);
+    }
+
+    body.participant-dashboard-open .fellow-user {
+        grid-column: auto;
+        min-width: 190px;
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        gap: 16px;
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        min-height: 230px;
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: 62%;
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        display: block;
+        opacity: 0.75;
+        right: -128px;
+        width: 340px;
+    }
+
+    body.participant-dashboard-open .fellow-module-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body.participant-dashboard-open .fellow-tracks #participantTrackList {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    body.participant-dashboard-open .fellow-app {
+        min-height: 100dvh;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        background: rgba(255, 255, 255, 0.96);
+        left: 0;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        border: 1px solid #f2d7e5;
+        flex-basis: 50px;
+    }
+
+    body.participant-dashboard-open .fellow-main {
+        padding:
+            16px
+            max(12px, env(safe-area-inset-right))
+            max(24px, env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left));
+    }
+
+    body.participant-dashboard-open .fellow-header {
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        gap: 10px;
+        grid-template-columns: minmax(0, 1fr) 44px;
+    }
+
+    body.participant-dashboard-open .fellow-bell {
+        height: 44px;
+    }
+
+    body.participant-dashboard-open .fellow-user {
+        background: #fff;
+        border: 1px solid #f2d7e5;
+        border-radius: 10px;
+        grid-column: 1 / -1;
+        min-height: 52px;
+        padding: 6px 10px;
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        gap: 14px;
+    }
+
+    body.participant-dashboard-open .fellow-card,
+    body.participant-dashboard-open .fellow-hero,
+    body.participant-dashboard-open .fellow-challenge,
+    body.participant-dashboard-open .fellow-help {
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        padding: 22px;
+    }
+
+    body.participant-dashboard-open .fellow-hero h2 {
+        font-size: clamp(1.45rem, 7vw, 1.85rem);
+    }
+
+    body.participant-dashboard-open .fellow-hero p {
+        font-size: 0.86rem;
+    }
+
+    body.participant-dashboard-open .fellow-btn {
+        justify-content: center;
+        min-height: 42px;
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-module {
+        min-height: 142px;
+    }
+
+    body.participant-dashboard-open .fellow-journey-item {
+        grid-template-columns: 38px minmax(0, 1fr) 34px;
+    }
+
+    body.participant-dashboard-open .fellow-journey-item > span {
+        height: 38px;
+        width: 38px;
+    }
+
+    body.participant-dashboard-open .fellow-card-head a {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 430px) {
+    body.participant-dashboard-open .fellow-nav a {
+        flex-basis: 46px;
+        min-height: 44px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a i {
+        font-size: 0.95rem;
+    }
+
+    body.participant-dashboard-open .fellow-header h1 {
+        font-size: 1.25rem;
+    }
+
+    body.participant-dashboard-open .fellow-header p {
+        font-size: 0.8rem;
+    }
+
+    body.participant-dashboard-open .fellow-search input::placeholder {
+        color: transparent;
+    }
+
+    body.participant-dashboard-open .fellow-user {
+        grid-template-columns: 36px minmax(0, 1fr) 16px;
+    }
+
+    body.participant-dashboard-open .fellow-user > span:first-child {
+        height: 36px;
+        width: 36px;
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        padding: 20px 18px;
+    }
+
+    body.participant-dashboard-open .fellow-card {
+        padding: 13px;
+    }
+
+    body.participant-dashboard-open .fellow-card-head {
+        margin-bottom: 12px;
+    }
+
+    body.participant-dashboard-open .fellow-module {
+        min-height: 132px;
+        padding: 15px;
+    }
+
+    body.participant-dashboard-open .fellow-module b {
+        height: 34px;
+        width: 34px;
+    }
+
+    body.participant-dashboard-open .fellow-module > span {
+        height: 38px;
+        width: 38px;
+    }
+
+    body.participant-dashboard-open .fellow-event {
+        gap: 10px;
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-event time {
+        height: 42px;
+    }
+
+    body.participant-dashboard-open .fellow-event div strong {
+        white-space: normal;
+    }
+
+    body.participant-dashboard-open .fellow-rank {
+        gap: 8px;
+        grid-template-columns: 16px 30px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-rank i {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-rank em {
+        color: #f72585;
+        font-weight: 800;
+    }
+
+    body.participant-dashboard-open .fellow-help {
+        grid-template-columns: 40px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-help > span {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+@media (max-width: 360px) {
+    body.participant-dashboard-open .fellow-main {
+        padding-inline: 10px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-bell {
+        justify-self: start;
+    }
+
+    body.participant-dashboard-open .fellow-journey-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-journey-item em {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    body.participant-dashboard-open .fellow-event {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-event time {
+        align-items: center;
+        display: flex;
+        gap: 4px;
+        height: auto;
+        justify-content: flex-start;
+        padding: 8px 10px;
+        width: max-content;
+    }
+
+    body.participant-dashboard-open .fellow-event a {
+        grid-column: auto;
+    }
+}
+
+/* Temporary: notification dots/badges are disabled until the notification module is implemented. */
+body.participant-dashboard-open .fellow-nav a b,
+body.participant-dashboard-open .fellow-bell span,
+body.participant-dashboard-open .fellow-activity > i,
+body.participant-dashboard-open .participant-community-item i {
+    display: none !important;
+}
+
+/* Dashboard shell interactions prepared for the next module implementations. */
+body.participant-dashboard-open .fellow-sidebar {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    position: sticky;
+    scrollbar-gutter: stable;
+    top: 0;
+}
+
+body.participant-dashboard-open .fellow-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+body.participant-dashboard-open .fellow-sidebar::-webkit-scrollbar-thumb {
+    background: #f6b8d4;
+    border-radius: 999px;
+}
+
+body.participant-dashboard-open .fellow-nav a,
+body.participant-dashboard-open .fellow-module,
+body.participant-dashboard-open .fellow-track,
+body.participant-dashboard-open .fellow-event a,
+body.participant-dashboard-open .fellow-help > a,
+body.participant-dashboard-open .fellow-btn {
+    transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+body.participant-dashboard-open .fellow-nav a:hover,
+body.participant-dashboard-open .fellow-nav a:focus-visible {
+    background: #fff0f7;
+    color: #f72585;
+    transform: translateX(2px);
+}
+
+body.participant-dashboard-open .fellow-nav a:hover i,
+body.participant-dashboard-open .fellow-nav a:focus-visible i {
+    color: #f72585;
+}
+
+body.participant-dashboard-open .fellow-module:hover,
+body.participant-dashboard-open .fellow-module:focus-visible,
+body.participant-dashboard-open .fellow-track:hover,
+body.participant-dashboard-open .fellow-track:focus-visible {
+    border-color: #f6b8d4;
+    box-shadow: 0 14px 34px rgba(247, 37, 133, 0.12);
+    transform: translateY(-3px);
+}
+
+body.participant-dashboard-open .fellow-event a:hover,
+body.participant-dashboard-open .fellow-event a:focus-visible,
+body.participant-dashboard-open .fellow-help > a:hover,
+body.participant-dashboard-open .fellow-help > a:focus-visible,
+body.participant-dashboard-open .fellow-btn:hover,
+body.participant-dashboard-open .fellow-btn:focus-visible {
+    box-shadow: 0 10px 24px rgba(247, 37, 133, 0.2);
+    transform: translateY(-1px);
+}
+
+body.participant-dashboard-open .fellow-grid[hidden],
+body.participant-dashboard-open .fellow-module-welcome[hidden] {
+    display: none !important;
+}
+
+body.participant-dashboard-open .fellow-module-welcome {
+    align-items: center;
+    background:
+        radial-gradient(circle at 82% 18%, rgba(247, 37, 133, 0.14), transparent 28%),
+        linear-gradient(135deg, #fff0f7 0%, #fff 58%, #f8fbff 100%);
+    border: 1px solid #f7dbe9;
+    border-radius: 12px;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 74px minmax(0, 1fr) auto;
+    margin-top: 18px;
+    min-height: clamp(360px, 52vh, 620px);
+    padding: clamp(24px, 4vw, 48px);
+}
+
+body.participant-dashboard-open .fellow-module-welcome > span {
+    align-items: center;
+    background: #f72585;
+    border-radius: 20px;
+    color: #fff;
+    display: flex;
+    font-size: 1.8rem;
+    height: 74px;
+    justify-content: center;
+    width: 74px;
+}
+
+body.participant-dashboard-open .fellow-welcome-kicker {
+    color: #f72585;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+}
+
+body.participant-dashboard-open .fellow-module-welcome h2 {
+    color: #171421;
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    line-height: 1.05;
+    margin: 0;
+}
+
+body.participant-dashboard-open .fellow-module-welcome p:last-child {
+    color: #667085;
+    font-size: clamp(0.96rem, 1.4vw, 1.08rem);
+    line-height: 1.7;
+    margin: 12px 0 0;
+    max-width: 720px;
+}
+
+@media (max-width: 860px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x proximity;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar::-webkit-scrollbar {
+        height: 4px;
+        width: 4px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        scroll-snap-align: start;
+    }
+
+    body.participant-dashboard-open .fellow-nav a:hover,
+    body.participant-dashboard-open .fellow-nav a:focus-visible {
+        transform: none;
+    }
+
+    body.participant-dashboard-open .fellow-module-welcome {
+        align-items: start;
+        grid-template-columns: 1fr;
+        min-height: calc(100dvh - 180px);
+    }
+}
+
+@media (max-width: 520px) {
+    body.participant-dashboard-open .fellow-module-welcome {
+        gap: 16px;
+        margin-top: 14px;
+        padding: 22px;
+    }
+
+    body.participant-dashboard-open .fellow-module-welcome > span {
+        border-radius: 16px;
+        font-size: 1.45rem;
+        height: 58px;
+        width: 58px;
+    }
+}
+
+/* Keep the dashboard nav as one non-overlapping horizontal rail on tablet and phone screens. */
+@media (max-width: 1023px) {
+    body.participant-dashboard-open .fellow-app {
+        display: block !important;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid #f7dbe9;
+        border-right: 0;
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        height: auto;
+        left: 0;
+        max-width: 100vw;
+        min-height: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+        z-index: 40;
+    }
+
+    body.participant-dashboard-open .fellow-logo,
+    body.participant-dashboard-open .fellow-nav-label,
+    body.participant-dashboard-open .fellow-invite {
+        display: none !important;
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+        margin: 0;
+        overflow: visible;
+        padding: 0;
+    }
+
+    body.participant-dashboard-open .fellow-nav + .fellow-nav {
+        margin-top: 0;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        aspect-ratio: 1;
+        display: inline-flex;
+        flex: 0 0 48px;
+        height: 48px;
+        justify-content: center;
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0;
+    }
+
+    body.participant-dashboard-open .fellow-nav a span {
+        display: none !important;
+    }
+
+    body.participant-dashboard-open .fellow-nav a i {
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    body.participant-dashboard-open .fellow-main {
+        padding: clamp(16px, 2.4vw, 28px);
+    }
+}
+
+@media (max-width: 430px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        gap: 7px;
+        padding-inline: 10px;
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        gap: 7px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        flex-basis: 44px;
+        height: 44px;
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+@media (max-width: 360px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        gap: 6px;
+        padding-inline: 8px;
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        gap: 6px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        flex-basis: 42px;
+        height: 42px;
+        min-height: 42px;
+        min-width: 42px;
+    }
+}
+
+/* Restore the full vertical sidebar on laptop/desktop widths after older compact rules. */
+@media (min-width: 1024px) {
+    body.participant-dashboard-open .fellow-app {
+        display: grid !important;
+        grid-template-columns: clamp(220px, 17vw, 250px) minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        align-items: stretch;
+        border-bottom: 0;
+        border-right: 1px solid #f7dbe9;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 24px 12px;
+        position: sticky;
+        top: 0;
+        white-space: normal;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar > * {
+        flex-shrink: 0;
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        display: block !important;
+        margin: 0 0 24px 6px;
+        width: clamp(132px, 11vw, 158px);
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        display: grid;
+        flex: initial;
+        flex-shrink: 0;
+        gap: 8px;
+        overflow: visible;
+    }
+
+    body.participant-dashboard-open .fellow-nav + .fellow-nav {
+        margin-top: 0;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        align-items: center;
+        aspect-ratio: auto;
+        box-sizing: border-box;
+        display: grid;
+        flex: initial;
+        gap: 10px;
+        grid-template-columns: 24px minmax(0, 1fr);
+        height: auto;
+        justify-content: stretch;
+        justify-items: start;
+        min-height: 42px;
+        min-width: 0;
+        padding: 9px 12px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a span {
+        display: block !important;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    body.participant-dashboard-open .fellow-nav-label {
+        display: block !important;
+        flex-shrink: 0;
+        margin: 18px 10px 10px;
+        padding-top: 16px;
+    }
+
+    body.participant-dashboard-open .fellow-invite {
+        display: grid !important;
+        flex-shrink: 0;
+        margin-top: 22px;
+    }
+}
+
+/* Desktop density pass: keep the sidebar vertical on 100% browser view without stacked controls. */
+@media (min-width: 1024px) and (max-height: 820px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        padding: 16px 12px;
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        margin-bottom: 16px;
+        width: clamp(118px, 10vw, 142px);
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        gap: 5px;
+    }
+
+    body.participant-dashboard-open .fellow-nav a {
+        border-radius: 9px;
+        font-size: 0.88rem;
+        gap: 9px;
+        grid-template-columns: 22px minmax(0, 1fr);
+        min-height: 36px;
+        padding: 7px 10px;
+    }
+
+    body.participant-dashboard-open .fellow-nav-label {
+        margin: 12px 10px 8px;
+        padding-top: 12px;
+    }
+
+    body.participant-dashboard-open .fellow-invite {
+        gap: 6px;
+        margin-top: 14px;
+        padding: 12px;
+    }
+
+    body.participant-dashboard-open .fellow-invite span {
+        font-size: 0.76rem;
+        line-height: 1.35;
+    }
+
+    body.participant-dashboard-open .fellow-invite button {
+        min-height: 30px;
+    }
+}
+
+@media (min-width: 1024px) and (max-height: 700px) {
+    body.participant-dashboard-open .fellow-invite {
+        display: none !important;
+    }
+}
+
+/* Final desktop navbar guard: prevents zoom/height collisions between menu groups. */
+@media (min-width: 1024px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        display: grid !important;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: 4px;
+        scrollbar-gutter: stable;
+    }
+
+    body.participant-dashboard-open .fellow-nav {
+        min-height: max-content;
+    }
+
+    body.participant-dashboard-open .fellow-nav-label {
+        position: static;
+    }
+}
+
+@media (min-width: 1024px) and (max-height: 820px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        max-height: 100%;
+    }
+}
+
+/* Desktop nav overflow: keep buttons horizontal, scroll only the nav lane when space is tight. */
+@media (min-width: 1024px) {
+    body.participant-dashboard-open .fellow-sidebar {
+        overflow: hidden;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        align-content: start;
+        display: grid !important;
+        gap: 0;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        scrollbar-width: thin;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav {
+        display: grid !important;
+        flex: none;
+        gap: clamp(5px, 0.7vh, 9px);
+        min-height: max-content;
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:first-of-type {
+        padding-bottom: 10px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:last-of-type {
+        padding-top: 4px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav a {
+        align-items: center;
+        display: grid !important;
+        grid-template-columns: 24px minmax(0, 1fr);
+        justify-items: start;
+        min-width: 0;
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav a span {
+        display: block !important;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav-label {
+        align-items: center;
+        background: #fff8fc;
+        border-top: 1px solid #f2d7e5;
+        display: block !important;
+        flex: none;
+        line-height: 1.1;
+        margin: 0 8px 8px;
+        min-height: 24px;
+        padding-top: 11px;
+        position: static;
+    }
+}
+
+@media (min-width: 1024px) and (max-height: 820px) {
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:first-of-type {
+        padding-bottom: 8px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:last-of-type {
+        padding-top: 3px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav-label {
+        margin: 0 8px 7px;
+        min-height: 22px;
+        padding-top: 9px;
+    }
+}
+
+/* Responsive navbar wrapper reset: stable across browser zoom percentages. */
+body.participant-dashboard-open {
+    --fellow-sidebar-width: clamp(220px, 17vw, 250px);
+    --fellow-sidebar-pad-x: clamp(10px, 0.9vw, 16px);
+    --fellow-sidebar-pad-y: clamp(12px, 2.4dvh, 30px);
+    --fellow-sidebar-logo: clamp(124px, 11vw, 158px);
+    --fellow-nav-row: clamp(36px, 5.2dvh, 44px);
+    --fellow-nav-gap: clamp(5px, 0.9dvh, 9px);
+    --fellow-nav-font: clamp(0.86rem, 0.8vw, 0.96rem);
+    --fellow-nav-section-gap: clamp(10px, 1.8dvh, 18px);
+}
+
+@media (min-width: 1024px) {
+    body.participant-dashboard-open .fellow-app {
+        display: grid !important;
+        grid-template-columns: var(--fellow-sidebar-width) minmax(0, 1fr) !important;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar {
+        background: linear-gradient(180deg, #fff 0%, #fff8fc 100%);
+        block-size: 100dvh;
+        border-bottom: 0;
+        border-right: 1px solid #f7dbe9;
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        inline-size: var(--fellow-sidebar-width);
+        min-block-size: 0;
+        overflow: hidden;
+        padding: var(--fellow-sidebar-pad-y) var(--fellow-sidebar-pad-x);
+        position: sticky;
+        top: 0;
+        white-space: normal;
+    }
+
+    body.participant-dashboard-open .fellow-logo {
+        display: block !important;
+        inline-size: var(--fellow-sidebar-logo);
+        margin: 0 0 var(--fellow-nav-section-gap) 8px;
+        max-inline-size: calc(100% - 16px);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        align-content: start;
+        display: grid !important;
+        gap: 0;
+        grid-auto-rows: max-content;
+        min-block-size: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 0 4px 0 0;
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav::-webkit-scrollbar {
+        inline-size: 5px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav::-webkit-scrollbar-thumb {
+        background: #f6b8d4;
+        border-radius: 999px;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav {
+        display: grid !important;
+        flex: none !important;
+        gap: var(--fellow-nav-gap);
+        inline-size: 100%;
+        margin: 0;
+        min-block-size: max-content;
+        overflow: visible;
+        padding: 0;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:first-of-type {
+        padding-block-end: calc(var(--fellow-nav-section-gap) * 0.6);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav:last-of-type {
+        padding-block-start: calc(var(--fellow-nav-section-gap) * 0.35);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav a {
+        align-items: center;
+        aspect-ratio: auto;
+        block-size: var(--fellow-nav-row);
+        border-radius: 10px;
+        box-sizing: border-box;
+        display: grid !important;
+        flex: none !important;
+        font-size: var(--fellow-nav-font);
+        gap: clamp(8px, 0.8vw, 12px);
+        grid-template-columns: 24px minmax(0, 1fr);
+        inline-size: 100%;
+        justify-content: stretch;
+        justify-items: start;
+        min-block-size: var(--fellow-nav-row);
+        min-inline-size: 0;
+        padding: 0 clamp(9px, 1vw, 13px);
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav a i {
+        inline-size: 24px;
+        text-align: center;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav a span {
+        display: block !important;
+        min-inline-size: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    body.participant-dashboard-open .fellow-sidebar-nav .fellow-nav-label {
+        background: #fff8fc;
+        border-top: 1px solid #f2d7e5;
+        display: block !important;
+        font-size: clamp(0.68rem, 0.7vw, 0.73rem);
+        line-height: 1;
+        margin: 0 8px calc(var(--fellow-nav-section-gap) * 0.45);
+        min-block-size: clamp(20px, 3dvh, 30px);
+        padding-block-start: calc(var(--fellow-nav-section-gap) * 0.65);
+        position: static;
+    }
+
+    body.participant-dashboard-open .fellow-invite {
+        align-self: end;
+        display: grid !important;
+        margin: var(--fellow-nav-section-gap) 8px 0;
+        min-block-size: 0;
+    }
+}
+
+@media (min-width: 1024px) and (max-height: 760px) {
+    body.participant-dashboard-open {
+        --fellow-sidebar-pad-y: 12px;
+        --fellow-sidebar-logo: clamp(112px, 9vw, 132px);
+        --fellow-nav-row: 34px;
+        --fellow-nav-gap: 4px;
+        --fellow-nav-font: 0.84rem;
+        --fellow-nav-section-gap: 8px;
+    }
+
+    body.participant-dashboard-open .fellow-invite {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    body.participant-dashboard-open .fellow-sidebar-nav {
+        align-items: center;
+        display: flex !important;
+        flex: 0 0 auto;
+        gap: 8px;
+        min-width: max-content;
+        overflow: visible;
+    }
+}
+
+/* Home dashboard responsive pass: consistent component layout across desktop, zoom, tablet, and phone. */
+body.participant-dashboard-open {
+    --home-gap: clamp(14px, 1.4vw, 22px);
+    --home-card-pad: clamp(14px, 1.35vw, 20px);
+    --home-card-radius: 10px;
+}
+
+body.participant-dashboard-open .fellow-main,
+body.participant-dashboard-open .fellow-header,
+body.participant-dashboard-open .fellow-header-actions,
+body.participant-dashboard-open .fellow-grid,
+body.participant-dashboard-open .fellow-card,
+body.participant-dashboard-open .fellow-hero,
+body.participant-dashboard-open .fellow-challenge,
+body.participant-dashboard-open .fellow-help,
+body.participant-dashboard-open .fellow-module,
+body.participant-dashboard-open .fellow-track,
+body.participant-dashboard-open .fellow-event,
+body.participant-dashboard-open .fellow-rank {
+    min-width: 0;
+}
+
+body.participant-dashboard-open .fellow-main {
+    padding: clamp(18px, 2vw, 34px);
+}
+
+body.participant-dashboard-open .fellow-header {
+    align-items: start;
+    display: grid;
+    gap: var(--home-gap);
+    grid-template-columns: minmax(280px, 1fr) minmax(420px, 0.9fr);
+    margin-bottom: var(--home-gap);
+}
+
+body.participant-dashboard-open .fellow-header h1 {
+    font-size: clamp(1.35rem, 1.9vw, 1.8rem);
+    overflow-wrap: anywhere;
+}
+
+body.participant-dashboard-open .fellow-header p {
+    max-width: 64ch;
+}
+
+body.participant-dashboard-open .fellow-header-actions {
+    align-items: center;
+    display: grid;
+    gap: clamp(10px, 1vw, 18px);
+    grid-template-columns: minmax(180px, 1fr) 46px minmax(150px, max-content);
+    justify-self: stretch;
+}
+
+body.participant-dashboard-open .fellow-search {
+    width: 100%;
+}
+
+body.participant-dashboard-open .fellow-user {
+    max-width: 100%;
+}
+
+body.participant-dashboard-open .fellow-grid {
+    align-items: stretch;
+    display: grid;
+    gap: var(--home-gap);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-areas:
+        "hero hero hero hero hero hero hero hero journey journey journey journey"
+        "learning learning learning learning learning learning learning learning events events events events"
+        "community community community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard"
+        "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+}
+
+body.participant-dashboard-open .fellow-card,
+body.participant-dashboard-open .fellow-hero,
+body.participant-dashboard-open .fellow-challenge,
+body.participant-dashboard-open .fellow-help {
+    border-radius: var(--home-card-radius);
+}
+
+body.participant-dashboard-open .fellow-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--home-card-pad);
+}
+
+body.participant-dashboard-open .fellow-card-head {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+body.participant-dashboard-open .fellow-card-head h3 {
+    flex: 1 1 160px;
+}
+
+body.participant-dashboard-open .fellow-card-head a {
+    flex: 0 0 auto;
+}
+
+body.participant-dashboard-open .fellow-hero {
+    min-height: clamp(220px, 21vw, 286px);
+    padding: clamp(22px, 3vw, 40px);
+}
+
+body.participant-dashboard-open .fellow-hero div {
+    max-width: min(56%, 520px);
+}
+
+body.participant-dashboard-open .fellow-hero h2 {
+    font-size: clamp(1.6rem, 2.2vw, 2.25rem);
+    line-height: 1.24;
+}
+
+body.participant-dashboard-open .fellow-hero p {
+    max-width: 46ch;
+}
+
+body.participant-dashboard-open .fellow-hero img {
+    height: min(116%, 330px);
+    max-width: 48%;
+    object-fit: contain;
+    right: clamp(-72px, -3vw, 8px);
+    width: clamp(260px, 27vw, 420px);
+}
+
+body.participant-dashboard-open .fellow-module-grid {
+    display: grid;
+    gap: clamp(12px, 1.2vw, 20px);
+    grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+}
+
+body.participant-dashboard-open .fellow-module {
+    align-content: start;
+    gap: 10px;
+    min-height: clamp(132px, 13vw, 168px);
+    padding: clamp(14px, 1.2vw, 18px);
+}
+
+body.participant-dashboard-open .fellow-module strong,
+body.participant-dashboard-open .fellow-track strong,
+body.participant-dashboard-open .fellow-event div strong,
+body.participant-dashboard-open .fellow-rank strong {
+    overflow-wrap: anywhere;
+}
+
+body.participant-dashboard-open .fellow-event {
+    align-items: center;
+    display: grid;
+    gap: 10px 12px;
+    grid-template-columns: 46px minmax(0, 1fr) minmax(64px, auto);
+}
+
+body.participant-dashboard-open .fellow-event a {
+    justify-self: end;
+    white-space: nowrap;
+}
+
+body.participant-dashboard-open .fellow-challenge {
+    align-items: center;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) minmax(72px, 112px);
+    padding: var(--home-card-pad);
+}
+
+body.participant-dashboard-open .fellow-challenge > i {
+    font-size: clamp(3.8rem, 5vw, 5.2rem);
+}
+
+body.participant-dashboard-open .fellow-rank {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 20px 34px minmax(0, 1fr) minmax(64px, auto) 20px;
+}
+
+body.participant-dashboard-open .fellow-rank em {
+    white-space: nowrap;
+}
+
+body.participant-dashboard-open .fellow-tracks #participantTrackList {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(min(128px, 100%), 1fr));
+}
+
+body.participant-dashboard-open .fellow-track {
+    min-height: clamp(78px, 7vw, 96px);
+}
+
+body.participant-dashboard-open .fellow-help {
+    align-items: center;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 48px minmax(0, 1fr) 38px;
+    padding: var(--home-card-pad);
+}
+
+@media (min-width: 1181px) and (max-width: 1440px) {
+    body.participant-dashboard-open .fellow-header {
+        grid-template-columns: minmax(280px, 0.95fr) minmax(380px, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-areas:
+            "hero hero hero hero hero hero hero journey journey journey journey journey"
+            "learning learning learning learning learning learning learning events events events events events"
+            "community community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard leaderboard"
+            "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+    }
+
+    body.participant-dashboard-open .fellow-module-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(145px, 100%), 1fr));
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(60%, 520px);
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1180px) {
+    body.participant-dashboard-open .fellow-header {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(0, 1fr) 46px minmax(170px, max-content);
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        grid-template-areas:
+            "hero hero hero hero hero hero hero hero"
+            "journey journey journey journey events events events events"
+            "learning learning learning learning learning learning learning learning"
+            "community community community community challenge challenge challenge challenge"
+            "leaderboard leaderboard leaderboard leaderboard help help help help"
+            "tracks tracks tracks tracks tracks tracks tracks tracks";
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(62%, 520px);
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        right: clamp(-120px, -9vw, -48px);
+    }
+}
+
+@media (max-width: 1023px) {
+    body.participant-dashboard-open .fellow-header {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(0, 1fr) 46px minmax(140px, max-content);
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-areas:
+            "hero hero hero hero hero hero"
+            "journey journey journey events events events"
+            "learning learning learning learning learning learning"
+            "community community community challenge challenge challenge"
+            "leaderboard leaderboard leaderboard help help help"
+            "tracks tracks tracks tracks tracks tracks";
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: min(64%, 480px);
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        opacity: 0.75;
+        right: -110px;
+        width: 330px;
+    }
+
+    body.participant-dashboard-open .fellow-module-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    body.participant-dashboard-open .fellow-main {
+        padding: 16px 12px 24px;
+    }
+
+    body.participant-dashboard-open .fellow-header-actions {
+        grid-template-columns: minmax(0, 1fr) 44px;
+    }
+
+    body.participant-dashboard-open .fellow-user {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "hero"
+            "journey"
+            "learning"
+            "events"
+            "community"
+            "challenge"
+            "leaderboard"
+            "tracks"
+            "help";
+    }
+
+    body.participant-dashboard-open .fellow-hero {
+        min-height: 0;
+    }
+
+    body.participant-dashboard-open .fellow-hero div {
+        max-width: 100%;
+    }
+
+    body.participant-dashboard-open .fellow-hero img {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-module-grid,
+    body.participant-dashboard-open .fellow-tracks #participantTrackList {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-event {
+        grid-template-columns: 46px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-event a {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    body.participant-dashboard-open .fellow-challenge {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-challenge > i {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-help {
+        grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-help > a {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
+@media (max-width: 430px) {
+    body.participant-dashboard-open .fellow-header-actions,
+    body.participant-dashboard-open .fellow-event,
+    body.participant-dashboard-open .fellow-help {
+        grid-template-columns: 1fr;
+    }
+
+    body.participant-dashboard-open .fellow-bell {
+        display: none;
+    }
+
+    body.participant-dashboard-open .fellow-event a,
+    body.participant-dashboard-open .fellow-help > a {
+        grid-column: auto;
+        justify-self: start;
+    }
+
+    body.participant-dashboard-open .fellow-rank {
+        grid-template-columns: 18px 32px minmax(0, 1fr);
+    }
+
+    body.participant-dashboard-open .fellow-rank em {
+        grid-column: 3;
+        text-align: left;
+    }
+
+    body.participant-dashboard-open .fellow-rank i {
+        display: none;
+    }
+}

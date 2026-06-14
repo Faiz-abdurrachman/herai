@@ -26,76 +26,146 @@
             </form>
         </div>
 
-        <div id="participantDashboardView" class="participant-dashboard" style="display: none;">
-            <section id="participantProfileHoldView" class="profile-hold-card">
-                <span class="profile-badge">HerAI Fellow Profile</span>
-                <h1>Profil peserta sedang dipersiapkan</h1>
-                <p>Informasi profil, progress program, task, mentoring, dan dokumen peserta akan ditampilkan setelah portal profil resmi dibuka.</p>
-                <button type="button" class="btn btn-outline" id="btnLogoutParticipantHold">Logout</button>
+        <div id="participantDashboardView" class="fellow-app" style="display: none;">
+            <aside class="fellow-sidebar" aria-label="Navigasi peserta">
+                <img class="fellow-logo" src="/assets/logo-her-ai-reference.png" alt="HerAI Fellowship">
+
+                <div class="fellow-sidebar-nav">
+                    <nav class="fellow-nav">
+                        <a href="#participant-home" class="active"><i class="fas fa-house"></i><span>Beranda</span></a>
+                        <a href="#participant-chatroom"><i class="far fa-comment-dots"></i><span>Chatroom</span></a>
+                        <a href="#participant-mentor"><i class="fas fa-user-group"></i><span>Mentor</span></a>
+                        <a href="#participant-modules"><i class="fas fa-book-open"></i><span>Modul</span></a>
+                        <a href="#participant-tasks"><i class="far fa-clipboard"></i><span>Tugas</span></a>
+                        <a href="#participant-project"><i class="far fa-folder-open"></i><span>Proyek</span></a>
+                        <a href="#participant-events"><i class="far fa-calendar-days"></i><span>Events</span></a>
+                        <a href="#participant-community"><i class="fas fa-users"></i><span>Komunitas</span></a>
+                    </nav>
+
+                    <p class="fellow-nav-label">Lainnya</p>
+                    <nav class="fellow-nav">
+                        <a href="#participant-certificate"><i class="far fa-bookmark"></i><span>Sertifikat</span></a>
+                        <a href="#participant-leaderboard"><i class="far fa-chess-queen"></i><span>Leaderboard</span></a>
+                        <a href="#participant-help"><i class="far fa-circle-question"></i><span>FAQ & Bantuan</span></a>
+                        <a href="#participant-settings"><i class="fas fa-gear"></i><span>Pengaturan</span></a>
+                    </nav>
+                </div>
+
+                <section class="fellow-invite">
+                    <strong>Ajak Temanmu!</strong>
+                    <span>Dapatkan poin tambahan untuk setiap teman yang bergabung.</span>
+                    <button type="button">Undang Sekarang</button>
+                </section>
+            </aside>
+
+            <section class="fellow-main" id="participant-home">
+                <header class="fellow-header">
+                    <div>
+                        <h1 id="profileGreeting">Halo, Fellow! 👋</h1>
+                        <p>Semangat belajar hari ini! Setiap langkah kecil membawamu lebih dekat ke masa depan yang kamu impikan.</p>
+                    </div>
+
+                    <div class="fellow-header-actions">
+                        <label class="fellow-search" aria-label="Cari">
+                            <i class="fas fa-search"></i>
+                            <input type="search" placeholder="Cari modul, topik, atau teman...">
+                        </label>
+                        <button type="button" class="fellow-bell" aria-label="Notifikasi"><i class="far fa-bell"></i></button>
+                        <button type="button" class="fellow-user" id="btnLogoutParticipant" title="Logout">
+                            <span id="profileAvatar">H</span>
+                            <span><strong id="profileName">Nama Peserta</strong><small>Fellow</small></span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="fellow-grid">
+                    <section class="fellow-hero">
+                        <div>
+                            <h2>Perempuan bisa memimpin <span>inovasi AI.</span></h2>
+                            <p>Belajar, berkolaborasi, dan berdampak bersama komunitas HerAI Fellowship.</p>
+                            <a href="#participant-modules" class="fellow-btn nav-link">Lihat Perjalananmu <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <img src="/assets/persona-her-ai.png" alt="HerAI Fellow">
+                    </section>
+
+                    <section class="fellow-card fellow-journey">
+                        <div class="fellow-card-head">
+                            <h3>Perjalanan Fellowship</h3>
+                            <a href="#participant-journey">Lihat Detail <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div id="profileProgressList"></div>
+                    </section>
+
+                    <section class="fellow-card fellow-learning" id="participant-modules">
+                        <div class="fellow-card-head">
+                            <h3>Lanjutkan Belajarmu</h3>
+                            <a href="#/curriculum" class="nav-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="fellow-module-grid" id="participantModuleList"></div>
+                    </section>
+
+                    <section class="fellow-card fellow-events" id="participant-events">
+                        <div class="fellow-card-head">
+                            <h3>Upcoming Events</h3>
+                            <a href="#/meeting" class="nav-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div id="participantEventList"></div>
+                    </section>
+
+                    <section class="fellow-card fellow-community" id="participant-community">
+                        <div class="fellow-card-head">
+                            <h3>Aktivitas di Komunitas</h3>
+                            <a href="#participant-community">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div id="participantCommunityList"></div>
+                    </section>
+
+                    <section class="fellow-challenge">
+                        <div>
+                            <h3>Weekly Challenge<br>sudah tersedia!</h3>
+                            <p id="participantChallengeText">Selesaikan tantangan mingguan dan dapatkan poin & badge menarik.</p>
+                            <a href="#participant-tasks" class="fellow-btn nav-link">Ikuti Sekarang</a>
+                        </div>
+                        <i class="fas fa-trophy"></i>
+                    </section>
+
+                    <section class="fellow-card fellow-leaderboard" id="participant-leaderboard">
+                        <div class="fellow-card-head">
+                            <h3>Leaderboard</h3>
+                            <a href="#/leaderboard" class="nav-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div id="participantLeaderboardList"></div>
+                    </section>
+
+                    <section class="fellow-card fellow-tracks">
+                        <div class="fellow-card-head">
+                            <h3>Jelajahi Specialization Track</h3>
+                            <a href="#/curriculum" class="nav-link">Lihat Semua Track <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div id="participantTrackList"></div>
+                    </section>
+
+                    <section class="fellow-help" id="participant-help">
+                        <span><i class="fas fa-headset"></i></span>
+                        <div>
+                            <strong>Butuh bantuan?</strong>
+                            <p>Tanya apapun ke HerAI Assistant di chatroom atau klik di sini.</p>
+                        </div>
+                        <a href="#participant-chatroom" class="nav-link"><i class="fas fa-arrow-right"></i></a>
+                    </section>
+                </div>
+
+                <section class="fellow-module-welcome" id="participantModuleWelcome" hidden>
+                    <span id="participantModuleWelcomeIcon"><i class="fas fa-sparkles"></i></span>
+                    <div>
+                        <p class="fellow-welcome-kicker">Modul Dashboard</p>
+                        <h2 id="participantModuleWelcomeTitle">Selamat datang</h2>
+                        <p id="participantModuleWelcomeMessage">Modul ini sedang disiapkan untuk implementasi lanjutan.</p>
+                    </div>
+                    <button type="button" id="btnBackToFellowHome" class="fellow-btn">Kembali ke Beranda</button>
+                </section>
             </section>
-
-            <div id="participantProfileContent" class="participant-profile-content" hidden>
-            <div class="profile-hero-card">
-                <div>
-                    <span class="profile-badge">HerAI Fellow Profile</span>
-                    <h1 id="profileName">Nama Peserta</h1>
-                    <p id="profileStage">Status peserta akan tampil di sini.</p>
-                </div>
-                <div class="profile-actions">
-                    <button type="button" class="btn btn-outline" id="btnGenerateAtsCv"><i class="fas fa-file-lines"></i> Generate CV ATS</button>
-                    <button type="button" class="btn btn-primary" id="btnLogoutParticipant">Logout</button>
-                </div>
-            </div>
-
-            <div class="profile-grid">
-                <section class="profile-panel">
-                    <h3>Data Diri</h3>
-                    <form id="participantProfileForm" class="profile-form compact">
-                        <label>NIK</label>
-                        <input type="text" id="editNik" readonly>
-                        <label>Nama Lengkap</label>
-                        <input type="text" id="editName">
-                        <label>Email</label>
-                        <input type="email" id="editEmail">
-                        <label>WhatsApp</label>
-                        <input type="tel" id="editWhatsapp">
-                        <label>Alamat</label>
-                        <textarea id="editAddress" rows="3"></textarea>
-                        <label>LinkedIn / Portfolio</label>
-                        <input type="url" id="editPortfolio" placeholder="https://...">
-                        <button type="submit" class="btn btn-primary">Simpan Profil</button>
-                    </form>
-                </section>
-
-                <section class="profile-panel">
-                    <h3>Progress Program</h3>
-                    <div class="profile-progress-list" id="profileProgressList"></div>
-                </section>
-
-                <section class="profile-panel profile-full">
-                    <h3>Data Pendaftaran</h3>
-                    <div id="profileRegistrationDetails" class="profile-detail-list"></div>
-                </section>
-
-                <section class="profile-panel">
-                    <h3>Task Peserta</h3>
-                    <div id="participantTaskList" class="profile-list"></div>
-                </section>
-
-                <section class="profile-panel">
-                    <h3>Mentoring</h3>
-                    <div id="participantMentoringList" class="profile-list"></div>
-                </section>
-            </div>
-
-            <section class="profile-panel ats-panel">
-                <div class="ats-header">
-                    <h3>Draft CV ATS</h3>
-                    <button type="button" class="btn btn-outline" id="btnCopyAtsCv"><i class="far fa-copy"></i> Copy</button>
-                </div>
-                <textarea id="atsCvOutput" rows="14" readonly placeholder="Klik Generate CV ATS untuk membuat draft dari profil dan progress program."></textarea>
-            </section>
-            </div>
         </div>
     </div>
 </section>
