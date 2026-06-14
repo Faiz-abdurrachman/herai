@@ -369,6 +369,7 @@ function handleLocalGasFallback(body, res) {
         },
         setParticipantPassword: () => setLocalParticipantPassword(payload),
         updateParticipantProfile: () => updateLocalParticipantProfile(payload),
+        getParticipantDashboard: () => getLocalParticipantDashboard(payload),
         updateStatus: () => updateLocalParticipantByKey('rowId', payload.rowId, {
             status_seleksi: payload.status || payload.newStatus,
             participant_stage: (payload.status || payload.newStatus) === 'lolos' ? 'accepted_stage_1' : 'rejected_stage_1'
@@ -513,6 +514,67 @@ function updateLocalParticipantProfile(payload) {
         cv_link: payload.cv_link || participant.cv_link,
         profile_updated_at: new Date().toISOString()
     });
+}
+
+function getLocalParticipantDashboard(payload) {
+    const participant = findLocalParticipantByNik(payload.nik);
+    if (!participant) return { status: 'error', message: 'NIK belum terdaftar.' };
+    if (!participant.participant_password && participant.nik !== TEST_PARTICIPANT.nik) {
+        return { status: 'needs_password', message: 'Password belum dibuat.' };
+    }
+    const expectedPassword = participant.participant_password || TEST_PASSWORD;
+    if (String(expectedPassword) !== String(payload.password || '')) {
+        return { status: 'error', message: 'Session tidak valid. Silakan login ulang.' };
+    }
+    const cleanNik = normalizeLocalNik(participant.nik);
+    const rowId = String(participant.rowId || '');
+    const name = String(participant.nama_lengkap || '').toLowerCase();
+    const projects = readLocalProjectSubmissions().filter(project => {
+        const haystack = [
+            project.participant_rowId,
+            project.rowId,
+            project.nik,
+            project.members,
+            project.team_name,
+            project.nama_lengkap
+        ].join(' ').toLowerCase();
+        return (rowId && haystack.includes(rowId.toLowerCase())) ||
+            (cleanNik && haystack.replace(/\D/g, '').includes(cleanNik)) ||
+            (name && haystack.includes(name));
+    });
+    const competencySessions = readLocalCompetencySessions()
+        .filter(session => normalizeLocalNik(session.nik) === cleanNik)
+        .sort(sortLocalUpdatedDesc);
+    const assets = [
+        { asset_id: 'asset-module-python', title: 'Python for AI Beginner', type: 'kurikulum', url: '#/curriculum', visible_to: 'peserta', status: 'active', notes: 'Modul 3 dari 10' },
+        { asset_id: 'asset-module-ml', title: 'Machine Learning Fundamentals', type: 'kurikulum', url: '#/curriculum', visible_to: 'peserta', status: 'active', notes: 'Modul 6 dari 12' },
+        { asset_id: 'asset-live-rag', title: 'Live Session: Build RAG Chatbot', type: 'webinar', url: '#/meeting', visible_to: 'peserta', status: 'active', notes: '10.00 - 12.00 WIB' }
+    ];
+    const certificates = Number(participant.skor_akhir || 0) >= 75 || String(participant.participant_stage) === 'graduated'
+        ? [{ certificate_no: 'HERAI-2026-DEMO', participant_rowId: rowId, nama_lengkap: participant.nama_lengkap, final_score: participant.skor_akhir, status: 'eligible', certificate_url: '' }]
+        : [];
+    return {
+        status: 'success',
+        profile: stripLocalParticipantSensitive(participant),
+        dashboard: {
+            assets,
+            projects,
+            certificates,
+            competencySessions,
+            retestSessions: []
+        },
+        assets,
+        projects,
+        certificates,
+        competencySessions,
+        retestSessions: []
+    };
+}
+
+function sortLocalUpdatedDesc(a, b) {
+    const left = Date.parse(a.updated_at || a.submitted_at || a.started_at || 0) || 0;
+    const right = Date.parse(b.updated_at || b.submitted_at || b.started_at || 0) || 0;
+    return right - left;
 }
 
 function runLocalAiAnalysis(payload) {

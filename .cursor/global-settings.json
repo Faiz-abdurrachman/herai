@@ -3,7 +3,7 @@
   "afirmasiOpen": true,
   "announcementLive": false,
   "announcementLaunchAt": "2026-05-25T19:00",
-  "participantPortalOpen": false,
+  "participantPortalOpen": true,
   "competencyTestOpen": false,
   "maintenanceMode": false,
   "registrationClosedMessage": "Pendaftaran HerAI Fellowship Batch 1 (2026) telah resmi ditutup.",

@@ -69,6 +69,7 @@ function doPost(e) {
       participantLogin: () => participantLogin(payload),
       setParticipantPassword: () => setParticipantPassword(payload),
       updateParticipantProfile: () => updateParticipantProfile(payload),
+      getParticipantDashboard: () => getParticipantDashboard(payload),
       getData: () => getParticipants(),
       updateStatus: () => updateParticipantStatus(payload),
       updateScore: () => updateScore(payload),
@@ -362,6 +363,80 @@ function updateParticipantProfile(payload) {
   updateByKey(SHEETS.participants, 'nik', participant.nik, allowed);
   const updated = findParticipantByNik(payload.nik);
   return { status: 'success', profile: stripSensitiveParticipant(updated) };
+}
+
+function getParticipantDashboard(payload) {
+  const participant = validateParticipantSession(payload);
+  if (participant.status === 'error' || participant.status === 'needs_password') return participant;
+  const profile = participant.profile;
+  const cleanNik = String(profile.nik || '').replace(/\D/g, '');
+  const rowId = String(profile.rowId || '');
+  const name = String(profile.nama_lengkap || '').toLowerCase();
+  const assets = getRows(SHEETS.assets).filter(isParticipantAssetVisible);
+  const projects = getRows(SHEETS.projects).filter(project => {
+    const haystack = [
+      project.participant_rowId,
+      project.rowId,
+      project.nik,
+      project.members,
+      project.team_name,
+      project.nama_lengkap
+    ].join(' ').toLowerCase();
+    return (rowId && haystack.indexOf(rowId.toLowerCase()) >= 0) ||
+      (cleanNik && haystack.replace(/\D/g, '').indexOf(cleanNik) >= 0) ||
+      (name && haystack.indexOf(name) >= 0);
+  });
+  const certificates = getRows(SHEETS.certificates).filter(cert => {
+    return String(cert.participant_rowId || '') === rowId ||
+      String(cert.nik || '').replace(/\D/g, '') === cleanNik ||
+      String(cert.nama_lengkap || '').toLowerCase() === name;
+  });
+  const competencySessions = getRows(SHEETS.competencySessions)
+    .filter(session => String(session.nik || '').replace(/\D/g, '') === cleanNik)
+    .sort(sortByUpdatedDesc);
+  const retestSessions = getRows(SHEETS.retestSessions)
+    .filter(session => String(session.nik || '').replace(/\D/g, '') === cleanNik)
+    .sort(sortByUpdatedDesc);
+  return {
+    status: 'success',
+    profile: stripSensitiveParticipant(profile),
+    dashboard: {
+      assets,
+      projects,
+      certificates,
+      competencySessions,
+      retestSessions
+    },
+    assets,
+    projects,
+    certificates,
+    competencySessions,
+    retestSessions
+  };
+}
+
+function validateParticipantSession(payload) {
+  if (!payload.nik) return { status: 'error', message: 'NIK wajib diisi.' };
+  const participant = findParticipantByNik(payload.nik);
+  if (!participant) return { status: 'error', message: 'NIK belum terdaftar.' };
+  if (!participant.participant_password) return { status: 'needs_password', message: 'Password belum dibuat.' };
+  if (String(participant.participant_password) !== String(payload.password || '')) {
+    return { status: 'error', message: 'Session tidak valid. Silakan login ulang.' };
+  }
+  return { status: 'success', profile: participant };
+}
+
+function isParticipantAssetVisible(asset) {
+  const status = String(asset.status || 'active').toLowerCase();
+  const visibleTo = String(asset.visible_to || 'all').toLowerCase();
+  return status !== 'inactive' && status !== 'disabled' && status !== 'hidden' &&
+    ['all', 'peserta', 'participant', 'fellow', 'fellows'].some(key => visibleTo.indexOf(key) >= 0);
+}
+
+function sortByUpdatedDesc(a, b) {
+  const left = Date.parse(a.updated_at || a.submitted_at || a.started_at || 0) || 0;
+  const right = Date.parse(b.updated_at || b.submitted_at || b.started_at || 0) || 0;
+  return right - left;
 }
 
 function stripSensitiveParticipant(participant) {
