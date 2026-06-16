@@ -978,14 +978,13 @@ function renderParticipantModules(assets = []) {
         { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', percent: 50, url: '#/curriculum', tone: 'purple', icon: 'fa-brain', image: '/assets/modules/machine-learning.png' }
     ];
     container.innerHTML = rows.map((item, index) => `
-        <a class="fellow-module is-${escapeAttr(item.tone || ['pink', 'purple'][index] || 'pink')} nav-link" href="${escapeAttr(item.url || '#/curriculum')}">
-            <span class="fellow-module-thumb"><img src="${escapeAttr(moduleImage(index, item))}" alt="" loading="lazy"><i class="fas ${escapeAttr(item.icon || moduleIcon(index))}"></i></span>
-            <b>${Number(item.percent || [80, 50][index] || 20)}%</b>
+        <a class="fellow-module is-${escapeAttr(item.tone || ['pink', 'purple'][index] || 'pink')}" href="${escapeAttr(item.url || '#/curriculum')}">
+            <span class="fellow-module-thumb"><img src="${escapeAttr(moduleImage(index, item))}" alt="" loading="lazy"><i class="fas ${escapeAttr(item.icon || moduleIcon(index))}"></i><b>${Number(item.percent || [80, 50][index] || 20)}%</b></span>
             <strong>${escapeProfileHtml(item.title || item.name || `Modul ${index + 1}`)}</strong>
             <small>${escapeProfileHtml(item.notes || item.description || 'Materi pembelajaran')}</small>
         </a>
     `).join('') + `
-        <a class="fellow-module is-add nav-link" href="#/curriculum"><span><i class="fas fa-plus"></i></span><strong>Pilih Modul Lainnya</strong><small>Jelajahi semua modul</small></a>
+        <a class="fellow-module is-add" href="#/curriculum"><span><i class="fas fa-plus"></i></span><strong>Pilih Modul Lainnya</strong><small>Jelajahi semua modul</small></a>
     `;
 }
 

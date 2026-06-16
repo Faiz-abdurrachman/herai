@@ -4421,13 +4421,16 @@ body.participant-dashboard-open .fellow-module .fellow-module-thumb {
     display: flex;
     inline-size: clamp(58px, 5vw, 76px);
     justify-content: center;
+    position: relative;
+    overflow: visible;
 }
 
 body.participant-dashboard-open .fellow-module .fellow-module-thumb img {
     block-size: 100%;
     display: block;
     inline-size: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    border-radius: 12px;
 }
 
 body.participant-dashboard-open .fellow-module .fellow-module-thumb i {
@@ -4463,15 +4466,7 @@ body.participant-dashboard-open .fellow-module.is-add span:not(.fellow-module-th
         grid-row: 1 / span 2;
     }
 
-    body.participant-dashboard-open .fellow-module b {
-        inset-block-start: 12px;
-        inset-inline-end: 12px;
-        position: absolute;
-    }
-
-    body.participant-dashboard-open .fellow-module strong {
-        padding-inline-end: 48px;
-    }
+    /* removed b absolute positioning and strong padding since b is inside thumb */
 
     body.participant-dashboard-open .fellow-module small {
         grid-column: 2;
