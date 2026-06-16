@@ -2654,9 +2654,10 @@ body.participant-dashboard-open .fellow-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-areas:
         "hero hero hero hero hero hero hero hero journey journey journey journey"
-        "learning learning learning learning learning learning learning learning events events events events"
-        "community community community community community community challenge challenge leaderboard leaderboard leaderboard leaderboard"
-        "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+        "learning learning learning learning learning learning learning learning journey journey journey journey"
+        "community community community community community community challenge challenge events events events events"
+        "tracks tracks tracks tracks tracks tracks tracks tracks leaderboard leaderboard leaderboard leaderboard"
+        ". . . . . . . . help help help help";
 }
 
 body.participant-dashboard-open .fellow-hero { grid-area: hero; }
@@ -4082,9 +4083,10 @@ body.participant-dashboard-open .fellow-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-areas:
         "hero hero hero hero hero hero hero hero journey journey journey journey"
-        "learning learning learning learning learning learning learning learning events events events events"
-        "community community community community community challenge challenge challenge leaderboard leaderboard leaderboard leaderboard"
-        "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+        "learning learning learning learning learning learning learning learning journey journey journey journey"
+        "community community community community community challenge challenge challenge events events events events"
+        "tracks tracks tracks tracks tracks tracks tracks tracks leaderboard leaderboard leaderboard leaderboard"
+        ". . . . . . . . help help help help";
 }
 
 body.participant-dashboard-open .fellow-card,
@@ -4239,9 +4241,10 @@ body.participant-dashboard-open .fellow-help {
     body.participant-dashboard-open .fellow-grid {
         grid-template-areas:
             "hero hero hero hero hero hero hero journey journey journey journey journey"
-            "learning learning learning learning learning learning learning events events events events events"
-            "community community community community challenge challenge challenge leaderboard leaderboard leaderboard leaderboard leaderboard"
-            "tracks tracks tracks tracks tracks tracks tracks tracks help help help help";
+            "learning learning learning learning learning learning learning journey journey journey journey journey"
+            "community community community community challenge challenge challenge events events events events events"
+            "tracks tracks tracks tracks tracks tracks tracks tracks leaderboard leaderboard leaderboard leaderboard"
+            ". . . . . . . . help help help help";
     }
 
     body.participant-dashboard-open .fellow-module-grid {

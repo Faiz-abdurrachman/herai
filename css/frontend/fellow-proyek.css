@@ -46,6 +46,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
+    white-space: nowrap;
 }
 .p-btn-new:hover { background: #e02a63; }
 

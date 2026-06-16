@@ -154,17 +154,29 @@ function showParticipantDashboard(profile) {
         '#/sertifikat': 'participant-certificate',
         '#/leaderboard': 'participant-leaderboard',
         '#/faq': 'participant-help',
-        '#/profil': 'participant-profile'
+        '#/profil': 'participant-profile',
+        '#/profile': 'participant-profile'
     };
     
     if (initialRouteMap[hash]) {
-        // Mock a click event on the corresponding nav link to trigger the navigation logic
         setTimeout(() => {
-            const link = document.querySelector(`a[href="#${initialRouteMap[hash]}"]`);
-            if (link) {
-                link.click();
+            if (initialRouteMap[hash] === 'participant-profile') {
+                const btnProfile = document.getElementById('btnOpenProfile');
+                if (btnProfile) {
+                    btnProfile.click();
+                } else {
+                    showFellowModuleWelcome('participant-profile');
+                }
             } else {
-                showFellowHome();
+                const link = document.querySelector(`a[href="#${initialRouteMap[hash]}"]`);
+                if (link) {
+                    link.click();
+                } else if (document.body.classList.contains('participant-dashboard-open')) {
+                    setFellowHeader('Halo, Fellow HerAI!', 'Semangat belajar hari ini! Setiap langkah kecil membawamu lebih dekat ke masa depan yang kamu impikan.');
+                    document.querySelector('.fellow-grid').hidden = false;
+                    document.getElementById('participantModuleWelcome').hidden = true;
+                    setFellowActiveNav('participant-home');
+                }
             }
         }, 100);
     } else {
@@ -704,18 +716,24 @@ function renderParticipantModules(assets = []) {
         { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', percent: 50, url: '#/curriculum', tone: 'purple', icon: 'fa-brain', image: '/assets/modules/machine-learning.png' },
         { title: 'Data Analysis with Pandas', notes: 'Modul 2 dari 8', percent: 30, url: '#/curriculum', tone: 'orange', icon: 'fa-share-nodes', image: '/assets/modules/data-analysis.png' }
     ];
-    container.innerHTML = rows.map((item, index) => `
-        <a class="fellow-module is-${escapeAttr(item.tone || ['pink', 'purple', 'orange'][index] || 'pink')} nav-link" href="${escapeAttr(item.url || '#/curriculum')}">
-            <span class="fellow-module-thumb"><img src="${escapeAttr(moduleImage(index, item))}" alt="" loading="lazy"><i class="fas ${escapeAttr(item.icon || moduleIcon(index))}"></i></span>
-            <b>${Number(item.percent || [80, 50, 30][index] || 20)}%</b>
-            <strong>${escapeProfileHtml(item.title || item.name || `Modul ${index + 1}`)}</strong>
-            <small>${escapeProfileHtml(item.notes || item.description || 'Materi pembelajaran')}</small>
+    container.innerHTML = rows.map((item, index) => {
+        const bgColors = ['', 'background: #f0f0ff; color: #4c3cff;', 'background: #fff8f0; color: #ff9800;'];
+        return `
+        <a class="card-course" href="${escapeAttr(item.url || '#/curriculum')}" style="text-decoration: none; cursor: pointer;">
+            <div class="card-course-progress-circle">${Number(item.percent || [80, 50, 30][index] || 20)}%</div>
+            <div class="card-course-icon" style="${bgColors[index] || ''}"><i class="fas ${escapeAttr(item.icon || moduleIcon(index))}"></i></div>
+            <div class="card-course-info">
+                <h4 style="font: var(--font-card-title); color: var(--fellow-text-main); margin: 0 0 4px 0; line-height: 1.2;">${escapeProfileHtml(item.title || item.name || `Modul ${index + 1}`)}</h4>
+                <p style="font: var(--font-caption); color: var(--fellow-text-muted); margin: 0;">${escapeProfileHtml(item.notes || item.description || 'Materi pembelajaran')}</p>
+            </div>
         </a>
-    `).join('') + `
-        <a class="fellow-module is-add nav-link" href="#/curriculum">
-            <span><i class="fas fa-plus"></i></span>
-            <strong>Pilih Modul Lainnya</strong>
-            <small>Jelajahi semua modul</small>
+    `;}).join('') + `
+        <a class="card-course" href="#/curriculum" style="border: 2px dashed #f0f0f0; text-decoration: none; cursor: pointer;">
+            <div class="card-course-icon" style="background: #fcfcfd; color: #B0B7C3; border: 1px solid #f0f0f0;"><i class="fas fa-plus"></i></div>
+            <div class="card-course-info">
+                <h4 style="font: var(--font-card-title); color: var(--fellow-text-main); margin: 0 0 4px 0; line-height: 1.2;">Pilih Modul Lainnya</h4>
+                <p style="font: var(--font-caption); color: var(--fellow-text-muted); margin: 0;">Jelajahi semua modul</p>
+            </div>
         </a>
     `;
 }
@@ -748,13 +766,20 @@ function renderParticipantCommunity(profile) {
         ['Siti Aulia', 'menyelesaikan tugas “Data Preprocessing”', '3 jam yang lalu', 'blue'],
         ['Dewi Lestari', 'bergabung di chat room #Python', '5 jam yang lalu', 'green']
     ];
-    container.innerHTML = rows.map(([name, text, time, tone]) => `
-        <article class="fellow-activity">
-            <span>${getInitials(name)}</span>
-            <p><strong>${escapeProfileHtml(name)}</strong> ${escapeProfileHtml(text)}<small>${escapeProfileHtml(time)}</small></p>
-            <i class="is-${tone}"></i>
-        </article>
-    `).join('');
+    container.innerHTML = rows.map(([name, text, time, tone], index) => {
+        const toneColors = {'pink': '#f53f7c', 'blue': '#3b82f6', 'green': '#10b981'};
+        const color = toneColors[tone] || '#f53f7c';
+        const img = index === 1 ? '/assets/referensi/persona2.png' : '/assets/referensi/persona-her-ai.png';
+        return `
+        <div class="activity-item" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <img src="${img}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+            <div style="flex: 1;">
+                <p style="font: var(--font-body); margin: 0; font-size: 13px;"><b>${escapeProfileHtml(name)}</b> ${escapeProfileHtml(text)}</p>
+                <small style="font: var(--font-caption); color: var(--fellow-text-muted);">${escapeProfileHtml(time)}</small>
+            </div>
+            <div style="width: 8px; height: 8px; background: ${color}; border-radius: 50%;"></div>
+        </div>
+    `;}).join('');
 }
 
 function renderParticipantLeaderboard(profile) {
@@ -788,13 +813,23 @@ function renderParticipantTracks() {
         ['Bioinformatics', 'Kombinasikan AI dan biologi', 'fa-dna', 'orange'],
         ['Multimodal AI', 'Gabungkan berbagai jenis data', 'fa-object-group', 'yellow']
     ];
-    container.innerHTML = rows.map(([title, caption, icon, tone]) => `
-        <a href="#/curriculum" class="fellow-track is-${tone}">
-            <span><i class="fas ${icon}"></i></span>
-            <strong>${escapeProfileHtml(title)}</strong>
-            <small>${escapeProfileHtml(caption)}</small>
+    container.innerHTML = rows.map(([title, caption, icon, tone]) => {
+        const toneColors = {
+            'pink': 'background: #fdf5f7; color: #f53f7c;',
+            'purple': 'background: #f5f3ff; color: #7c3aed;',
+            'blue': 'background: #eff6ff; color: #3b82f6;',
+            'green': 'background: #ecfdf5; color: #10b981;',
+            'orange': 'background: #fff7ed; color: #ea580c;',
+            'yellow': 'background: #fefce8; color: #ca8a04;'
+        };
+        const colorStyle = toneColors[tone] || toneColors['pink'];
+        return `
+        <a href="#/curriculum" class="track-card" style="background: white; border: 1px solid #f0f0f0; border-radius: 20px; padding: 20px; text-align: left; transition: all 0.2s ease; cursor: pointer; text-decoration: none; display: block;">
+            <div class="track-icon" style="${colorStyle} width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px;"><i class="fas ${icon}"></i></div>
+            <h5 style="font: var(--font-card-title); font-size: 13px; margin: 0 0 4px 0; color: var(--fellow-text-main);">${escapeProfileHtml(title)}</h5>
+            <p style="font: var(--font-caption); color: var(--fellow-text-muted); font-size: 11px; margin: 0; line-height: 1.4;">${escapeProfileHtml(caption)}</p>
         </a>
-    `).join('');
+    `;}).join('');
 }
 
 function renderParticipantChallenge(profile, dashboard) {
@@ -835,17 +870,29 @@ function renderProfileProgress(profile) {
     ];
     const container = document.getElementById('profileProgressList');
     if (!container) return;
-    container.innerHTML = items.map(item => `
-        <div class="profile-progress-item is-${item.tone}">
-            <span class="journey-icon"><i class="fas ${item.icon}"></i></span>
-            <div class="journey-copy">
-                <strong>${escapeProfileHtml(item.label)}</strong>
-                <small>${escapeProfileHtml(item.caption)}</small>
-                <div class="participant-progress-track"><i style="width:${item.percent}%"></i></div>
+    container.innerHTML = items.map((item, index) => {
+        const colors = {
+            'pink': { bg: '#fdf5f7', text: '#f53f7c' },
+            'purple': { bg: '#f5f3ff', text: '#7c3aed' },
+            'yellow': { bg: '#fffbeb', text: '#f59e0b' },
+            'green': { bg: '#ecfdf5', text: '#10b981' }
+        };
+        const c = colors[item.tone] || colors['pink'];
+        return `
+        <div class="journey-item" style="display: flex; gap: 16px; align-items: center; margin-bottom: ${index === items.length - 1 ? '0' : '24px'};">
+            <div class="journey-icon-box" style="background: ${c.bg}; color: ${c.text}; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;"><i class="fas ${item.icon}"></i></div>
+            <div class="journey-content" style="flex: 1;">
+                <div class="journey-label" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font: var(--font-card-title); color: var(--fellow-text-main);">${escapeProfileHtml(item.label)}</span>
+                        <span style="font: var(--font-caption); color: var(--fellow-text-muted);">${escapeProfileHtml(item.caption)}</span>
+                    </div>
+                    <span style="font: var(--font-caption); color: ${c.text}; font-weight: 800;">${item.percent}%</span>
+                </div>
+                <div class="journey-bar-bg" style="height: 6px; background: #f8f9fa; border-radius: 10px; overflow: hidden;"><div class="journey-bar-fill" style="width: ${item.percent}%; height: 100%; background: ${c.text}; border-radius: 10px;"></div></div>
             </div>
-            <em>${item.percent}%</em>
         </div>
-    `).join('');
+    `;}).join('');
 }
 
 function renderParticipantModules(assets = []) {
@@ -1691,289 +1738,331 @@ function renderFellowLeaderboardPage() {
 
 function renderFellowMyProfilePage() {
     return `
-        <div class="fellow-my-profile-page">
-            <div class="fmp-hero">
-                <div class="fmp-hero-content">
-                    <div class="fmp-avatar">
-                        <img src="/assets/referensi/persona2.png" alt="Aisyah Putri" onerror="this.src='/assets/persona-her-ai.png'">
-                        <div class="fmp-camera-btn"><i class="fas fa-camera"></i></div>
-                    </div>
-                    <div class="fmp-info">
-                        <div class="fmp-info-header">
-                            <div>
-                                <div class="fmp-name">
-                                    <h2>Aisyah Putri</h2>
-                                    <span class="fmp-badge">Fellow</span>
+            <div class="dash-grid" style="grid-template-columns: 1fr 300px; gap: 30px; align-items: start; margin-top: 32px;">
+                <div class="dash-left-col">
+                    <!-- FASE 2: Hero Profil Utama -->
+                    <div class="p-hero">
+                        <div class="ph-bg"></div>
+                        <div class="ph-content">
+                            <div class="ph-avatar-box">
+                                <img src="/assets/referensi/persona-her-ai.png" alt="Aisyah Putri" class="ph-avatar">
+                                <button class="ph-cam-btn"><i class="fas fa-camera"></i></button>
+                            </div>
+                            <div class="ph-info">
+                                <div class="phi-top">
+                                    <div class="phi-name">
+                                        <h2>Aisyah Putri</h2>
+                                        <span class="phi-badge">Fellow</span>
+                                    </div>
+                                    <button class="phi-edit-btn"><i class="fas fa-pencil-alt"></i> Edit Profil</button>
                                 </div>
-                                <p class="fmp-title">AI Enthusiast &amp; Lifelong Learner <i class="fas fa-sparkles" style="color:#F59E0B;"></i></p>
+                                <div class="phi-tagline">AI Enthusiast & Lifelong Learner <i class="fas fa-sparkles" style="color: #f59e0b; margin-left: 4px;"></i></div>
+                                <div class="phi-meta">
+                                    <span><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</span>
+                                    <span><i class="far fa-envelope"></i> aisyah.putri@example.com</span>
+                                    <span><i class="far fa-calendar-alt"></i> Bergabung sejak April 2024</span>
+                                </div>
+                                <div class="phi-skills">
+                                    <span class="ps-tag">Machine Learning</span>
+                                    <span class="ps-tag">NLP</span>
+                                    <span class="ps-tag">Python</span>
+                                    <span class="ps-tag">Data Analysis</span>
+                                    <span class="ps-tag ps-add"><i class="fas fa-plus"></i></span>
+                                </div>
                             </div>
-                            <button class="fmp-edit-btn"><i class="fas fa-pencil-alt"></i> Edit Profil</button>
                         </div>
-                        <div class="fmp-details">
-                            <div class="fmp-detail-item"><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</div>
-                            <div class="fmp-detail-item"><i class="far fa-envelope"></i> aisyah.putri@example.com</div>
-                            <div class="fmp-detail-item"><i class="far fa-calendar-alt"></i> Bergabung sejak April 2024</div>
-                        </div>
-                        <div class="fmp-tags">
-                            <span class="fmp-tag">Machine Learning</span>
-                            <span class="fmp-tag">NLP</span>
-                            <span class="fmp-tag">Python</span>
-                            <span class="fmp-tag">Data Analysis</span>
-                            <span class="fmp-tag">+</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="fmp-quote">
-                    <p>Belajar AI bukan hanya tentang teknologi,<br>tapi tentang berdampak untuk masa depan.</p>
-                    <div class="fmp-quote-icon"><i class="fas fa-sparkles"></i> <i class="fas fa-heart"></i></div>
-                </div>
-            </div>
-
-            <div class="fmp-layout">
-                <main class="fmp-main">
-                    ${renderFellowTabs(['Ringkasan', 'Perjalanan Belajar', 'Proyek', 'Sertifikat', 'Aktivitas', 'Pengaturan Akun'])}
-
-                    <div class="fmp-card">
-                        <div class="fmp-card-header">
-                            <div class="fmp-card-title">
-                                <i class="far fa-user"></i>
-                                <h3>Tentang Saya</h3>
-                            </div>
-                            <button class="fmp-edit-sm">Edit</button>
-                        </div>
-                        <p class="fmp-about-text">
-                            Saya seorang mahasiswa Informatika yang sangat tertarik dengan Artificial Intelligence. Saya bergabung di HerAI Fellowship untuk memperdalam ilmu AI, berkolaborasi dengan teman-teman hebat, dan membangun proyek yang bermanfaat.
-                        </p>
-                        <div class="fmp-about-grid">
-                            <div class="fmp-about-item">
-                                <i class="fas fa-university"></i>
-                                <span>Universitas</span>
-                                <strong>Universitas Indonesia</strong>
-                            </div>
-                            <div class="fmp-about-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>Jurusan</span>
-                                <strong>Informatika</strong>
-                            </div>
-                            <div class="fmp-about-item">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Tingkat</span>
-                                <strong>Mahasiswa S1</strong>
-                            </div>
-                            <div class="fmp-about-item">
-                                <i class="fab fa-linkedin"></i>
-                                <span>LinkedIn</span>
-                                <a href="#">linkedin.com/in/aisyahputri <i class="fas fa-external-link-alt" style="font-size:10px;"></i></a>
+                        <div class="ph-quote">
+                            <i class="fas fa-quote-left"></i>
+                            <p>Berlearning AI bukan hanya tentang teknologi,<br>tapi tentang berdampak untuk masa depan.</p>
+                            <div class="phq-deco">
+                                <i class="fas fa-sparkles phq-spark"></i>
+                                <i class="fas fa-heart phq-heart"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="fmp-card">
-                        <div class="fmp-card-header">
-                            <div class="fmp-card-title">
-                                <i class="fas fa-chart-bar"></i>
-                                <h3>Statistik</h3>
+                    <!-- FASE 3: Tabs Profil -->
+                    <div class="p-tabs-container">
+                        <nav class="p-tabs">
+                            <a href="#" class="pt-link active">Ringkasan</a>
+                            <a href="#" class="pt-link">Perjalanan Belajar</a>
+                            <a href="#" class="pt-link">Proyek</a>
+                            <a href="#" class="pt-link">Sertifikat</a>
+                            <a href="#" class="pt-link">Aktivitas</a>
+                            <a href="#" class="pt-link">Pengaturan Akun</a>
+                        </nav>
+                    </div>
+
+                    <!-- FASE 4: Tentang Saya & Statistik -->
+                    <div class="p-summary-grid">
+                        <!-- Tentang Saya -->
+                        <div class="p-box p-about">
+                            <div class="pb-header">
+                                <div class="pb-title">
+                                    <i class="far fa-user text-pink"></i> <h3>Tentang Saya</h3>
+                                </div>
+                                <button class="pb-edit-btn">Edit</button>
                             </div>
+                            <p class="pa-bio">Saya seorang mahasiswa Informatika yang sangat tertarik dengan Artificial Intelligence. Saya bergabung di HerAI Fellowship untuk memperdalam ilmu AI, berkolaborasi dengan teman-teman hebat, dan membangun proyek yang bermanfaat.</p>
+                            
+                            <ul class="pa-details">
+                                <li>
+                                    <div class="pad-icon"><i class="fas fa-university"></i> Universitas</div>
+                                    <div class="pad-val">Universitas Indonesia</div>
+                                </li>
+                                <li>
+                                    <div class="pad-icon"><i class="fas fa-book-open"></i> Jurusan</div>
+                                    <div class="pad-val">Informatika</div>
+                                </li>
+                                <li>
+                                    <div class="pad-icon"><i class="fas fa-graduation-cap"></i> Tingkat</div>
+                                    <div class="pad-val">Mahasiswa S1</div>
+                                </li>
+                                <li>
+                                    <div class="pad-icon"><i class="fab fa-linkedin"></i> LinkedIn</div>
+                                    <div class="pad-val"><a href="#" class="text-pink">linkedin.com/in/aisyahputri <i class="fas fa-external-link-alt"></i></a></div>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="fmp-stats-grid">
-                            <div class="fmp-stat-box">
-                                <div class="fmp-stat-icon is-pink"><i class="far fa-file-alt"></i></div>
-                                <div class="fmp-stat-info">
-                                    <small>Modul Selesai</small>
-                                    <strong>18</strong>
-                                    <span>dari 25 modul</span>
+
+                        <!-- Statistik -->
+                        <div class="p-box p-stats">
+                            <div class="pb-title">
+                                <i class="fas fa-chart-bar text-purple"></i> <h3>Statistik</h3>
+                            </div>
+                            <div class="ps-grid">
+                                <div class="ps-card">
+                                    <i class="far fa-file-alt text-pink"></i>
+                                    <div>
+                                        <small>Modul Selesai</small>
+                                        <b>18</b>
+                                        <span>dari 25 modul</span>
+                                    </div>
+                                </div>
+                                <div class="ps-card">
+                                    <i class="fas fa-clipboard-check text-pink"></i>
+                                    <div>
+                                        <small>Tugas Selesai</small>
+                                        <b>12</b>
+                                        <span>dari 18 tugas</span>
+                                    </div>
+                                </div>
+                                <div class="ps-card">
+                                    <i class="fas fa-graduation-cap text-pink"></i>
+                                    <div>
+                                        <small>Proyek</small>
+                                        <b>2</b>
+                                        <span>proyek dibuat</span>
+                                    </div>
+                                </div>
+                                <div class="ps-card">
+                                    <i class="far fa-clock text-pink"></i>
+                                    <div>
+                                        <small>Jam Belajar</small>
+                                        <b>48</b>
+                                        <span>jam total</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="fmp-stat-box">
-                                <div class="fmp-stat-icon is-purple"><i class="fas fa-clipboard-check"></i></div>
-                                <div class="fmp-stat-info">
-                                    <small>Tugas Selesai</small>
-                                    <strong>12</strong>
-                                    <span>dari 18 tugas</span>
-                                </div>
-                            </div>
-                            <div class="fmp-stat-box">
-                                <div class="fmp-stat-icon is-pink"><i class="fas fa-graduation-cap"></i></div>
-                                <div class="fmp-stat-info">
-                                    <small>Proyek</small>
-                                    <strong>2</strong>
-                                    <span>proyek dibuat</span>
-                                </div>
-                            </div>
-                            <div class="fmp-stat-box">
-                                <div class="fmp-stat-icon is-pink" style="color:#F59E0B;background:#FFF7ED;"><i class="far fa-clock"></i></div>
-                                <div class="fmp-stat-info">
-                                    <small>Jam Belajar</small>
-                                    <strong>48</strong>
-                                    <span>jam total</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fmp-spec-track">
-                            <div class="fmp-spec-info">
-                                <div class="fmp-spec-icon"><i class="fas fa-code-branch"></i></div>
-                                <div>
+                            
+                            <div class="ps-track">
+                                <div class="pst-icon"><i class="fas fa-layer-group text-pink"></i></div>
+                                <div class="pst-info">
                                     <small>Specialization Track</small>
-                                    <strong>Machine Learning</strong>
+                                    <b>Machine Learning</b>
                                 </div>
+                                <button class="pst-btn">Lihat Detail</button>
                             </div>
-                            <button class="fmp-spec-btn">Lihat Detail</button>
                         </div>
                     </div>
 
-                    <div class="fmp-card">
-                        <div class="fmp-card-header">
-                            <div class="fmp-card-title">
-                                <i class="fas fa-trophy"></i>
-                                <h3>Pencapaian</h3>
+                    <!-- Pencapaian (Hexagons) -->
+                    <div class="p-box p-achievements">
+                        <div class="pb-header">
+                            <div class="pb-title">
+                                <i class="fas fa-trophy text-pink"></i> <h3>Pencapaian</h3>
                             </div>
-                            <a href="#">Lihat Semua</a>
+                            <a href="#" class="pb-link text-pink">Lihat Semua</a>
                         </div>
-                        <div class="fmp-badges-row">
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-pink"><i class="fas fa-rocket"></i></div>
-                                <strong>Welcome Aboard</strong>
+                        <div class="pac-list">
+                            <!-- Hex 1 -->
+                            <div class="pac-item">
+                                <div class="pac-hex-wrap hex-pink">
+                                    <div class="pac-hex"><i class="fas fa-rocket"></i></div>
+                                </div>
+                                <b>Welcome Aboard</b>
                                 <small>Bergabung di HerAI</small>
                             </div>
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-orange"><i class="fas fa-book-reader"></i></div>
-                                <strong>First Steps</strong>
+                            <!-- Hex 2 -->
+                            <div class="pac-item">
+                                <div class="pac-hex-wrap hex-orange">
+                                    <div class="pac-hex"><i class="fas fa-book-open"></i></div>
+                                </div>
+                                <b>First Steps</b>
                                 <small>Selesaikan 5 modul</small>
                             </div>
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-orange"><i class="fas fa-fire"></i></div>
-                                <strong>Consistent Learner</strong>
-                                <small>Belajar 7 hari berturut-turut</small>
+                            <!-- Hex 3 -->
+                            <div class="pac-item">
+                                <div class="pac-hex-wrap hex-red">
+                                    <div class="pac-hex"><i class="fas fa-fire"></i></div>
+                                </div>
+                                <b>Consistent Learner</b>
+                                <small>Belajar 7 hr berturut</small>
                             </div>
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-pink"><i class="fas fa-clipboard-list"></i></div>
-                                <strong>Task Master</strong>
+                            <!-- Hex 4 -->
+                            <div class="pac-item">
+                                <div class="pac-hex-wrap hex-pink-dark">
+                                    <div class="pac-hex"><i class="fas fa-clipboard-check"></i></div>
+                                </div>
+                                <b>Task Master</b>
                                 <small>Selesaikan 10 tugas</small>
                             </div>
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-purple"><i class="fas fa-code"></i></div>
-                                <strong>Project Starter</strong>
+                            <!-- Hex 5 -->
+                            <div class="pac-item">
+                                <div class="pac-hex-wrap hex-purple">
+                                    <div class="pac-hex"><i class="fas fa-code"></i></div>
+                                </div>
+                                <b>Project Starter</b>
                                 <small>Buat proyek pertama</small>
                             </div>
-                            <div class="fmp-badge-item">
-                                <div class="fmp-hex is-locked"><i class="fas fa-lock"></i></div>
-                                <strong style="color:#94A3B8;">AI Explorer</strong>
-                                <small style="color:#CBD5E1;">Selesaikan 20 modul</small>
+                            <!-- Hex 6 Locked -->
+                            <div class="pac-item pac-locked">
+                                <div class="pac-hex-wrap hex-gray">
+                                    <div class="pac-hex"><i class="fas fa-lock"></i></div>
+                                </div>
+                                <b>AI Explorer</b>
+                                <small>Selesaikan 20 modul</small>
                             </div>
                         </div>
                     </div>
-                </main>
-                <aside class="fmp-side">
-                    <div class="fmp-side-card">
-                        <div class="fmp-side-header">
-                            <h3>Perjalanan Fellowship</h3>
-                            <a href="#">Lihat Detail <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
-                        </div>
-                        <div class="fmp-journey-list">
-                            <div class="fmp-journey-item">
-                                <div class="fmp-journey-icon is-pink"><i class="fas fa-book-open"></i></div>
-                                <div class="fmp-journey-info">
-                                    <div class="fmp-journey-title">
-                                        <strong>Foundation Phase</strong>
-                                        <span style="color:#F74281;">80%</span>
-                                    </div>
-                                    <small>Pemahaman dasar AI</small>
-                                    <div class="fmp-progress"><div class="fmp-progress-bar" style="width:80%;background:#F74281;"></div></div>
-                                </div>
-                            </div>
-                            <div class="fmp-journey-item">
-                                <div class="fmp-journey-icon is-purple"><i class="fas fa-code"></i></div>
-                                <div class="fmp-journey-info">
-                                    <div class="fmp-journey-title">
-                                        <strong>Specialization</strong>
-                                        <span style="color:#1E293B;">35%</span>
-                                    </div>
-                                    <small>Pilih & dalami track AI</small>
-                                    <div class="fmp-progress"><div class="fmp-progress-bar" style="width:35%;background:#8B5CF6;"></div></div>
-                                </div>
-                            </div>
-                            <div class="fmp-journey-item">
-                                <div class="fmp-journey-icon is-orange"><i class="fas fa-briefcase"></i></div>
-                                <div class="fmp-journey-info">
-                                    <div class="fmp-journey-title">
-                                        <strong>Project Building</strong>
-                                        <span style="color:#1E293B;">20%</span>
-                                    </div>
-                                    <small>Bangun proyek nyata</small>
-                                    <div class="fmp-progress"><div class="fmp-progress-bar" style="width:20%;background:#F59E0B;"></div></div>
-                                </div>
-                            </div>
-                            <div class="fmp-journey-item">
-                                <div class="fmp-journey-icon is-green"><i class="fas fa-graduation-cap"></i></div>
-                                <div class="fmp-journey-info">
-                                    <div class="fmp-journey-title">
-                                        <strong>Graduation</strong>
-                                        <span style="color:#1E293B;">0%</span>
-                                    </div>
-                                    <small>Persiapan karier & sertifikasi</small>
-                                    <div class="fmp-progress"><div class="fmp-progress-bar" style="width:0%;background:#10B981;"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
 
-                    <div class="fmp-side-card">
-                        <div class="fmp-side-header">
-                            <h3>Badge Saya</h3>
-                            <a href="#">Lihat Semua <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+                <div class="dash-right-col">
+                    <!-- FASE 5 & 6: Widget Kanan -->
+                    <div class="p-widgets">
+                        <!-- Widget 1: Perjalanan Fellowship -->
+                        <div class="p-widget">
+                            <div class="pw-header">
+                                <h4 class="pw-title">Perjalanan Fellowship</h4>
+                                <a href="#" class="pb-link text-pink">Lihat Detail ></a>
+                            </div>
+                            <div class="pw-journey">
+                                <!-- Step 1 -->
+                                <div class="pwj-item">
+                                    <div class="pwj-icon bg-pink"><i class="fas fa-book-open"></i></div>
+                                    <div class="pwj-info">
+                                        <div class="pwj-top">
+                                            <b>Foundation Phase</b>
+                                            <span>80%</span>
+                                        </div>
+                                        <small>Pemahaman dasar AI</small>
+                                        <div class="pwj-bar"><div class="pwj-fill bg-pink" style="width: 80%;"></div></div>
+                                    </div>
+                                </div>
+                                <!-- Step 2 -->
+                                <div class="pwj-item">
+                                    <div class="pwj-icon bg-purple"><i class="fas fa-code"></i></div>
+                                    <div class="pwj-info">
+                                        <div class="pwj-top">
+                                            <b>Specialization</b>
+                                            <span>35%</span>
+                                        </div>
+                                        <small>Pilih & dalami track AI</small>
+                                        <div class="pwj-bar"><div class="pwj-fill bg-purple" style="width: 35%;"></div></div>
+                                    </div>
+                                </div>
+                                <!-- Step 3 -->
+                                <div class="pwj-item">
+                                    <div class="pwj-icon bg-orange"><i class="fas fa-camera"></i></div>
+                                    <div class="pwj-info">
+                                        <div class="pwj-top">
+                                            <b>Project Building</b>
+                                            <span>20%</span>
+                                        </div>
+                                        <small>Bangun proyek nyata</small>
+                                        <div class="pwj-bar"><div class="pwj-fill bg-orange" style="width: 20%;"></div></div>
+                                    </div>
+                                </div>
+                                <!-- Step 4 -->
+                                <div class="pwj-item">
+                                    <div class="pwj-icon bg-green"><i class="fas fa-graduation-cap"></i></div>
+                                    <div class="pwj-info">
+                                        <div class="pwj-top">
+                                            <b>Graduation</b>
+                                            <span>0%</span>
+                                        </div>
+                                        <small>Persiapan karier & sertifikasi</small>
+                                        <div class="pwj-bar"><div class="pwj-fill bg-green" style="width: 0%;"></div></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="fmp-mini-badges">
-                            <div class="fmp-mini-badge is-pink"><i class="fas fa-rocket"></i></div>
-                            <div class="fmp-mini-badge is-purple"><i class="fas fa-book-reader"></i></div>
-                            <div class="fmp-mini-badge is-orange"><i class="fas fa-fire"></i></div>
-                            <div class="fmp-mini-badge is-pink"><i class="fas fa-clipboard-list"></i></div>
-                            <div class="fmp-mini-more">+6</div>
-                        </div>
-                    </div>
 
-                    <div class="fmp-side-card">
-                        <div class="fmp-side-header">
-                            <h3>Aktivitas Terbaru</h3>
-                            <a href="#">Lihat Semua <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+                        <!-- Widget 2: Badge Saya -->
+                        <div class="p-widget">
+                            <div class="pw-header">
+                                <h4 class="pw-title">Badge Saya</h4>
+                                <a href="#" class="pb-link text-pink">Lihat Semua ></a>
+                            </div>
+                            <div class="pwb-list">
+                                <div class="pwb-item border-pink"><div class="pwb-inner bg-pink-grad"><i class="fas fa-rocket"></i></div></div>
+                                <div class="pwb-item border-purple"><div class="pwb-inner bg-purple-grad"><i class="fas fa-book-open"></i></div></div>
+                                <div class="pwb-item border-orange"><div class="pwb-inner bg-orange-grad"><i class="fas fa-fire"></i></div></div>
+                                <div class="pwb-item border-pink-dark"><div class="pwb-inner bg-pink-dark-grad"><i class="fas fa-clipboard-check"></i></div></div>
+                                <div class="pwb-more">+6</div>
+                            </div>
                         </div>
-                        <div class="fmp-activity-list">
-                            <div class="fmp-activity-item">
-                                <div class="fmp-activity-icon is-pink"><i class="fas fa-book-open"></i></div>
-                                <div class="fmp-activity-info">
-                                    <span>Menyelesaikan modul</span>
-                                    <strong>"Linear Regression"</strong>
-                                    <small>2 jam yang lalu</small>
-                                </div>
+
+                        <!-- Widget 3: Aktivitas Terbaru -->
+                        <div class="p-widget">
+                            <div class="pw-header">
+                                <h4 class="pw-title">Aktivitas Terbaru</h4>
+                                <a href="#" class="pb-link text-pink">Lihat Semua ></a>
                             </div>
-                            <div class="fmp-activity-item">
-                                <div class="fmp-activity-icon is-purple"><i class="fas fa-clipboard-check"></i></div>
-                                <div class="fmp-activity-info">
-                                    <span>Mengumpulkan tugas</span>
-                                    <strong>"Data Preprocessing"</strong>
-                                    <small>Kemarin</small>
+                            <div class="pwa-timeline">
+                                <!-- Activity 1 -->
+                                <div class="pwa-item">
+                                    <div class="pwa-icon bg-pink-light text-pink"><i class="fas fa-book-open"></i></div>
+                                    <div class="pwa-info">
+                                        <small>Menyelesaikan modul</small>
+                                        <b>"Linear Regression"</b>
+                                        <span class="pwa-time">2 jam yang lalu</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="fmp-activity-item">
-                                <div class="fmp-activity-icon is-blue"><i class="fas fa-comment-dots"></i></div>
-                                <div class="fmp-activity-info">
-                                    <span>Bergabung di chat room</span>
-                                    <strong>"Machine Learning"</strong>
-                                    <small>2 hari yang lalu</small>
+                                <!-- Activity 2 -->
+                                <div class="pwa-item">
+                                    <div class="pwa-icon bg-purple-light text-purple"><i class="fas fa-clipboard-check"></i></div>
+                                    <div class="pwa-info">
+                                        <small>Mengumpulkan tugas</small>
+                                        <b>"Data Preprocessing"</b>
+                                        <span class="pwa-time">Kemarin</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="fmp-activity-item">
-                                <div class="fmp-activity-icon is-orange"><i class="fas fa-code"></i></div>
-                                <div class="fmp-activity-info">
-                                    <span>Membuat proyek baru</span>
-                                    <strong>"Movie Recommendation"</strong>
-                                    <small>3 hari yang lalu</small>
+                                <!-- Activity 3 -->
+                                <div class="pwa-item">
+                                    <div class="pwa-icon bg-blue-light text-blue"><i class="fas fa-comment-dots"></i></div>
+                                    <div class="pwa-info">
+                                        <small>Bergabung di chat room</small>
+                                        <b>"Machine Learning"</b>
+                                        <span class="pwa-time">2 hari yang lalu</span>
+                                    </div>
+                                </div>
+                                <!-- Activity 4 -->
+                                <div class="pwa-item">
+                                    <div class="pwa-icon bg-orange-light text-orange"><i class="fas fa-code"></i></div>
+                                    <div class="pwa-info">
+                                        <small>Membuat proyek baru</small>
+                                        <b>"Movie Recommendation"</b>
+                                        <span class="pwa-time">3 hari yang lalu</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </aside>
+                </div>
             </div>
-        </div>
+        
+
     `;
 }
 
@@ -2590,11 +2679,29 @@ function bindFellowNavigation() {
             const grid = document.querySelector('.fellow-grid');
             const welcome = document.getElementById('participantModuleWelcome');
             const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
             const fellowHeader = document.querySelector('.fellow-header');
             
             if (grid) grid.hidden = true;
             if (welcome) welcome.hidden = true;
             if (chatroomView) chatroomView.style.display = 'flex';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
             if (fellowHeader) fellowHeader.style.display = 'none';
             
             const crSearch = document.getElementById('cr-sidebar-search');
@@ -2606,11 +2713,383 @@ function bindFellowNavigation() {
             return;
         }
 
+        if (key === 'participant-modules') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'block';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Modul', 'Belajar terstruktur dengan 25+ modul yang dirancang untuk membawamu menjadi AI Talent yang siap berdampak.', 'Cari modul...');
+            setFellowActiveNav('participant-modules');
+            return;
+        }
+
+        if (key === 'participant-tasks') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'block';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Tugas', 'Selesaikan tugas untuk mengasah skill dan dapatkan poin!', 'Cari tugas...');
+            setFellowActiveNav('participant-tasks');
+            return;
+        }
+
+        if (key === 'participant-project') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'block';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Proyek', 'Wujudkan ide kreatifmu menjadi nyata dan berkolaborasi bersama tim.', 'Cari proyek atau tim...');
+            setFellowActiveNav('participant-project');
+            return;
+        }
+
+        if (key === 'participant-events') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'block';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Events', 'Ikuti berbagai acara seru untuk menambah wawasan, relasi, dan pengalamanmu.', 'Cari event, topik, atau pembicara...');
+            setFellowActiveNav('participant-events');
+            return;
+        }
+
+
+        if (key === 'participant-community') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'block';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Komunitas', 'Diskusikan ide, bertukar pengalaman, dan saling dukung dengan sesama fellow.', 'Cari topik diskusi atau member...');
+            setFellowActiveNav('participant-community');
+            return;
+        }
+
+        if (key === 'participant-certificate') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'block';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Sertifikat', 'Akses dan unduh sertifikat kelulusan HerAI Fellowship kamu.', 'Cari sertifikat...');
+            setFellowActiveNav('participant-certificate');
+            return;
+        }
+
+        if (key === 'participant-leaderboard') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'block';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('Leaderboard', 'Lihat peringkatmu dan terus kumpulkan poin dari setiap aktivitas.', 'Cari fellow...');
+            setFellowActiveNav('participant-leaderboard');
+            return;
+        }
+
+
+        if (key === 'participant-help') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'block';
+            if (fellowHeader) fellowHeader.style.display = 'flex';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowHeader('FAQ & Bantuan', 'Temukan jawaban dari pertanyaan yang sering diajukan mengenai program HerAI.', 'Cari pertanyaan...');
+            setFellowActiveNav('participant-help');
+            return;
+        }
+
+        if (key === 'participant-settings') {
+            event.preventDefault();
+            const grid = document.querySelector('.fellow-grid');
+            const welcome = document.getElementById('participantModuleWelcome');
+            const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
+            const fellowHeader = document.querySelector('.fellow-header');
+            
+            if (grid) grid.hidden = true;
+            if (welcome) welcome.hidden = true;
+            if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'block';
+            if (fellowHeader) fellowHeader.style.display = 'none';
+            
+            const crSearch = document.getElementById('cr-sidebar-search');
+            const crProfile = document.getElementById('cr-sidebar-profile');
+            if (crSearch) crSearch.style.display = 'none';
+            if (crProfile) crProfile.style.display = 'none';
+            
+            setFellowActiveNav('participant-settings');
+            return;
+        }
+
         if (FELLOW_MODULE_WELCOME[key]) {
             event.preventDefault();
             const chatroomView = document.getElementById('participant-chatroom-view');
+            const modulView = document.getElementById('participant-modul-view');
+            const tugasView = document.getElementById('participant-tugas-view');
+            const proyekView = document.getElementById('participant-proyek-view');
+            const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
             const fellowHeader = document.querySelector('.fellow-header');
             if (chatroomView) chatroomView.style.display = 'none';
+            if (modulView) modulView.style.display = 'none';
+            if (tugasView) tugasView.style.display = 'none';
+            if (proyekView) proyekView.style.display = 'none';
+            if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
             if (fellowHeader) fellowHeader.style.display = 'flex';
             
             const crSearch = document.getElementById('cr-sidebar-search');
@@ -2630,11 +3109,29 @@ function showFellowHome() {
     const grid = document.querySelector('.fellow-grid');
     const welcome = document.getElementById('participantModuleWelcome');
     const chatroomView = document.getElementById('participant-chatroom-view');
+    const modulView = document.getElementById('participant-modul-view');
+    const tugasView = document.getElementById('participant-tugas-view');
+    const proyekView = document.getElementById('participant-proyek-view');
+    const eventsView = document.getElementById('participant-events-view');
+            const komView = document.getElementById('participant-community-view');
+            const certView = document.getElementById('participant-certificate-view');
+            const leadView = document.getElementById('participant-leaderboard-view');
+            const helpView = document.getElementById('participant-help-view');
+            const settingsView = document.getElementById('participant-settings-view');
     const fellowHeader = document.querySelector('.fellow-header');
     
     if (grid) grid.hidden = false;
     if (welcome) welcome.hidden = true;
     if (chatroomView) chatroomView.style.display = 'none';
+    if (modulView) modulView.style.display = 'none';
+    if (tugasView) tugasView.style.display = 'none';
+    if (proyekView) proyekView.style.display = 'none';
+    if (eventsView) eventsView.style.display = 'none';
+            if (komView) komView.style.display = 'none';
+            if (certView) certView.style.display = 'none';
+            if (leadView) leadView.style.display = 'none';
+            if (helpView) helpView.style.display = 'none';
+            if (settingsView) settingsView.style.display = 'none';
     if (fellowHeader) fellowHeader.style.display = 'flex';
     
     const crSearch = document.getElementById('cr-sidebar-search');
