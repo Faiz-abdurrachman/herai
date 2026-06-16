@@ -1947,14 +1947,14 @@ body.participant-dashboard-open .fellow-app {
     max-width: 75%;
 }
 
-.fellow-invite-icon {
+.fellow-invite-art {
     position: absolute;
-    right: -15px;
-    bottom: -15px;
-    font-size: 6.5rem;
-    color: #f72585;
-    opacity: 0.15;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
     z-index: 1;
+    mix-blend-mode: multiply;
 }
 
 .fellow-invite strong {
