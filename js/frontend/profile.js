@@ -494,9 +494,8 @@ function renderParticipantModules(assets = []) {
         .filter(asset => isAssetVisible(asset) && ['kurikulum', 'module', 'modul', 'material'].includes(normalizeAssetType(asset)))
         .slice(0, 4);
     const fallback = [
-        { title: 'Python for AI Beginner', notes: 'Modul 3 dari 10', url: '#/curriculum' },
-        { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', url: '#/curriculum' },
-        { title: 'Data Analysis with Pandas', notes: 'Modul 2 dari 8', url: '#/curriculum' }
+        { title: 'Python for AI Beginner', notes: 'Modul 3 dari 10', percent: 80, tone: 'pink', icon: 'fa-rocket', url: '#/curriculum', image: '/assets/modules/python-for-ai.png' },
+        { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', percent: 50, tone: 'purple', icon: 'fa-brain', url: '#/curriculum', image: '/assets/modules/machine-learning.png' }
     ];
     const rows = modules.length ? modules : fallback;
     container.innerHTML = rows.map((asset, index) => {
@@ -973,16 +972,15 @@ function renderParticipantModules(assets = []) {
     if (!container) return;
     const modules = assets
         .filter(asset => isAssetVisible(asset) && ['kurikulum', 'module', 'modul', 'material'].includes(normalizeAssetType(asset)))
-        .slice(0, 3);
+        .slice(0, 2);
     const rows = modules.length ? modules : [
-        { title: 'Python for AI Beginner', notes: 'Modul 3 dari 10', percent: 80, url: '#/curriculum', tone: 'pink', icon: 'fa-rocket' },
-        { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', percent: 50, url: '#/curriculum', tone: 'purple', icon: 'fa-brain' },
-        { title: 'Data Analysis with Pandas', notes: 'Modul 2 dari 8', percent: 30, url: '#/curriculum', tone: 'orange', icon: 'fa-share-nodes' }
+        { title: 'Python for AI Beginner', notes: 'Modul 3 dari 10', percent: 80, url: '#/curriculum', tone: 'pink', icon: 'fa-rocket', image: '/assets/modules/python-for-ai.png' },
+        { title: 'Machine Learning Fundamentals', notes: 'Modul 6 dari 12', percent: 50, url: '#/curriculum', tone: 'purple', icon: 'fa-brain', image: '/assets/modules/machine-learning.png' }
     ];
     container.innerHTML = rows.map((item, index) => `
-        <a class="fellow-module is-${escapeAttr(item.tone || ['pink', 'purple', 'orange'][index] || 'pink')} nav-link" href="${escapeAttr(item.url || '#/curriculum')}">
+        <a class="fellow-module is-${escapeAttr(item.tone || ['pink', 'purple'][index] || 'pink')} nav-link" href="${escapeAttr(item.url || '#/curriculum')}">
             <span class="fellow-module-thumb"><img src="${escapeAttr(moduleImage(index, item))}" alt="" loading="lazy"><i class="fas ${escapeAttr(item.icon || moduleIcon(index))}"></i></span>
-            <b>${Number(item.percent || [80, 50, 30][index] || 20)}%</b>
+            <b>${Number(item.percent || [80, 50][index] || 20)}%</b>
             <strong>${escapeProfileHtml(item.title || item.name || `Modul ${index + 1}`)}</strong>
             <small>${escapeProfileHtml(item.notes || item.description || 'Materi pembelajaran')}</small>
         </a>
@@ -1032,11 +1030,11 @@ function renderParticipantTracks() {
     if (!container) return;
     const rows = [
         ['Computer Vision', 'Pelajari AI untuk memahami visual', 'fa-eye', 'pink'],
-        ['Natural Language Processing', 'Pahami bahasa manusia dengan AI', 'fa-message', 'purple'],
+        ['Natural Language Processing', 'Pahami bahasa manusia dengan AI', 'fa-comment-dots', 'pink'],
         ['Speech AI', 'Bangun aplikasi berbasis suara', 'fa-microphone', 'blue'],
-        ['AI Infrastructure', 'Pelajari sistem dan deploy AI', 'fa-hexagon-nodes', 'green'],
+        ['AI Infrastructure', 'Pelajari sistem dan deploy AI', 'fa-server', 'green'],
         ['Bioinformatics', 'Kombinasikan AI dan biologi', 'fa-dna', 'orange'],
-        ['Multimodal AI', 'Gabungkan berbagai jenis data', 'fa-object-group', 'yellow']
+        ['Multimodal AI', 'Gabungkan berbagai jenis data', 'fa-photo-video', 'pink']
     ];
     container.innerHTML = rows.map(([title, caption, icon, tone]) => `
         <a href="#/curriculum" class="fellow-track is-${tone} nav-link"><span><i class="fas ${icon}"></i></span><strong>${escapeProfileHtml(title)}</strong><small>${escapeProfileHtml(caption)}</small></a>
