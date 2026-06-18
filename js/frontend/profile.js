@@ -3597,7 +3597,9 @@ function showFellowModuleWelcome(key) {
             'participant-community': ['Komunitas', 'Berkolaborasi, berbagi ilmu, dan tumbuh bersama komunitas HerAI Fellowship.', 'Cari komunitas, topik, atau anggota...'],
             'participant-certificate': ['Sertifikat', 'Kumpulkan sertifikat dari setiap pencapaian belajar dan kegiatanmu.', 'Cari sertifikat, modul, atau event...'],
             'participant-leaderboard': ['Leaderboard', 'Apresiasi untuk para perempuan inspiratif yang terus belajar dan berkembang.', 'Cari nama atau pengguna...'],
-            'participant-profile': ['Profil Saya', 'Kelola informasi profil dan lihat perjalanan belajarmu', 'Cari di HerAI...']
+            'participant-profile': ['Profil Saya', 'Kelola informasi profil dan lihat perjalanan belajarmu', 'Cari di HerAI...'],
+            'participant-help': ['FAQ & Bantuan', 'Temukan jawaban dan bantuan untuk penggunaan HerAI.', 'Cari bantuan...'],
+            'participant-settings': ['Pengaturan', 'Kelola pengaturan akun dan preferensi Anda.', 'Cari pengaturan...']
         }[key];
         setFellowHeader(sectionMeta[0], sectionMeta[1], sectionMeta[2]);
         welcome.classList.add('is-section-page');
