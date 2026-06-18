@@ -71,10 +71,10 @@ function bindParticipantEvents() {
     };
     document.getElementById('btnLogoutParticipantHold')?.addEventListener('click', logoutParticipant);
     document.getElementById('btnOpenProfile')?.addEventListener('click', () => {
-        window.location.hash = '#participant-settings';
+        window.location.hash = '#participant-profile';
         // Mock a hash change click to trigger the router manually if needed
         const a = document.createElement('a');
-        a.href = '#participant-settings';
+        a.href = '#participant-profile';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

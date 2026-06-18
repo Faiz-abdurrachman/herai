@@ -2099,11 +2099,16 @@ body.participant-dashboard-open .fellow-app {
     background: transparent;
     border: 0;
     cursor: pointer;
-    display: grid;
+    display: flex;
+    justify-content: flex-start;
     gap: 11px;
-    grid-template-columns: 40px minmax(0, 1fr) 18px;
     min-width: 178px;
     text-align: left;
+}
+
+.fellow-user > span:nth-child(2) {
+    flex: 0 1 auto;
+    overflow: hidden;
 }
 
 .fellow-user > span:first-child,
@@ -2845,7 +2850,6 @@ body.participant-dashboard-open .fellow-rank {
 
     body.participant-dashboard-open .fellow-user {
         grid-column: 1 / -1;
-        grid-template-columns: 40px minmax(0, 1fr) 18px;
         width: 100%;
     }
 
@@ -3218,7 +3222,7 @@ body.participant-dashboard-open .fellow-rank {
     }
 
     body.participant-dashboard-open .fellow-user {
-        grid-template-columns: 36px minmax(0, 1fr) 16px;
+        /* Flexbox handles the layout automatically */
     }
 
     body.participant-dashboard-open .fellow-user > span:first-child {
