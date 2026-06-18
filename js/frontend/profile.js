@@ -70,7 +70,15 @@ function bindParticipantEvents() {
         showAuthView();
     };
     document.getElementById('btnLogoutParticipantHold')?.addEventListener('click', logoutParticipant);
-    document.getElementById('btnOpenProfile')?.addEventListener('click', () => showFellowModuleWelcome('participant-profile'));
+    document.getElementById('btnOpenProfile')?.addEventListener('click', () => {
+        window.location.hash = '#participant-settings';
+        // Mock a hash change click to trigger the router manually if needed
+        const a = document.createElement('a');
+        a.href = '#participant-settings';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
 
     document.getElementById('participantProfileForm')?.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -1328,9 +1336,7 @@ function renderFellowMentorPage() {
 function renderFellowCertificatePage() {
     return `
         <div class="dash-wrapper-override">
-Header Atas & Baris Tabs 
-
- FASE 2: Tabs Sertifikat 
+<!-- FASE 2: Tabs Sertifikat -->
 <div class="sert-tabs-container">
 <div class="sert-tabs">
 <button class="s-tab-btn active">Semua Sertifikat</button>
@@ -1679,8 +1685,6 @@ function renderFellowCertCard(title, subtitle, date, points, color, icon) {
 function renderFellowLeaderboardPage() {
     return `
         <div class="dash-wrapper-override">
-Header Atas 
-
 <div class="dash-grid" style="grid-template-columns: 1fr 340px; gap: 30px; align-items: start; margin-top: 24px;">
 <div class="dash-left-col">
 <!-- FASE 2: Banner & Tabs -->
@@ -2321,9 +2325,7 @@ function renderFellowMyProfilePage() {
 function renderFellowCommunityPage() {
     return `
         <div class="dash-wrapper-override">
-FASE 2: Header Atas & Baris Tabs 
-
- FASE 2: Tabs Komunitas 
+<!-- FASE 2: Tabs Komunitas -->
 <div class="komunitas-tabs-container">
 <div class="komunitas-tabs">
 <button class="k-tab-btn active">Untukmu</button>
@@ -2782,9 +2784,6 @@ function renderFellowProjectsPage() {
 function renderFellowEventsPage() {
     return `
         <div class="dash-wrapper-override">
-Header Atas (Top Bar) 
-
- Layout 2 Kolom (Kiri untuk Event List, Kanan untuk Widget) 
 <div class="dash-grid" style="grid-template-columns: 1fr 300px; gap: 30px; align-items: start; margin-top: 32px;">
 <div class="dash-left-col">
 <!-- FASE 3: Tabs & Filter -->
